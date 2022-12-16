@@ -5,10 +5,10 @@ Env setup
 - add stylelint --> done
 - add routing
 - add material and it's types
-- add localization
 - clean app create-react-app default files
 - later/nice-to-haves
-  - add linters to pre-commit-hooks 
+  - add linters to pre-commit-hooks
+  - add localization
 
 Basic implementations
 - add a map tool and control (google-map-react?, OSM?)
