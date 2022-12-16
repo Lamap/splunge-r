@@ -1,15 +1,17 @@
 Todos
 Env setup
-- add prettify
-- add eslint
-- add stylelint
+- add prettify --> done
+- add eslint --> done
+- add stylelint --> done
 - add routing
 - add material and it's types
 - add localization
 - clean app create-react-app default files
+- later/nice-to-haves
+  - add linters to pre-commit-hooks 
 
 Basic implementations
-- add a map tool and control (google-map-react?)
+- add a map tool and control (google-map-react?, OSM?)
 - work out custom markers: icon with direction
 - work out clustering
 - workout mapoverlays

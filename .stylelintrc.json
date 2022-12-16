@@ -1,0 +1,42 @@
+{
+  "extends": [
+    "stylelint-config-standard",
+    "stylelint-config-property-sort-order-smacss"
+  ],
+  "plugins": [
+    "stylelint-declaration-use-variable"
+  ],
+  "rules": {
+    "indentation": 4,
+    "sh-waqar/declaration-use-variable": [
+      [
+        "/color/",
+        "background",
+        {
+          "ignoreValues": [
+            "transparent",
+            "inherit",
+            "none",
+            "initial",
+            "inherit",
+            "unset",
+            "/linear-gradient/"
+          ]
+        }
+      ]
+    ],
+    "at-rule-no-unknown": [
+      true,
+      {
+        "ignoreAtRules": [
+          "include",
+          "mixin",
+          "if",
+          "each",
+          "extend",
+          "use"
+        ]
+      }
+    ]
+  }
+}

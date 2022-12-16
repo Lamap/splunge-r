@@ -1,7 +1,10 @@
 import './test.scss';
-import React from "react";
+import React from 'react';
 
 export function TestComponent(): React.ReactElement {
-    return <div className={'spg-test'}>testCompsss
-    </div>
+    function bela(): void {
+        console.log('bela');
+    }
+    console.log(bela());
+    return <div className={'spg-test'}>testCompsss</div>;
 }
