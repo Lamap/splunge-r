@@ -3,7 +3,7 @@ Env setup
 - add prettify --> done
 - add eslint --> done
 - add stylelint --> done
-- add routing
+- add routing --> done
 - add material and it's types
 - clean app create-react-app default files
 - later/nice-to-haves
