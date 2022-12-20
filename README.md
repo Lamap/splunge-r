@@ -4,7 +4,7 @@ Env setup
 - add eslint --> done
 - add stylelint --> done
 - add routing --> done
-- add material and it's types
+- add material and it's types --> done
 - clean app create-react-app default files
 - later/nice-to-haves
   - add linters to pre-commit-hooks
