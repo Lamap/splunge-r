@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Slider from '@mui/material/Slider';
+import { TestComponent } from '../components/test';
 
 export function Page1(): React.ReactElement {
     const [bela, setBela] = useState<number | number[]>();
@@ -12,6 +13,7 @@ export function Page1(): React.ReactElement {
         <div>
             {bela}
             page1
+            <TestComponent />
             <Slider aria-label="Volume" onChange={handleChange} />
         </div>
     );

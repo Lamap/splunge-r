@@ -11,7 +11,16 @@ Env setup
   - add localization
 
 Basic implementations
-- add a map tool and control (google-map-react?, OSM?)
+- add a map tool --> done
+  - react-leaflet
+    - custom marker with react node (is it blinking or not?)
+    - custom layer (map) https://www.npmjs.com/package/react-leaflet-distortable-imageoverlay/v/1.0.1
+    - custom cluster
+  - directly osm
+  - directly google-maps-api
+  - react-map-gl
 - work out custom markers: icon with direction
-- work out clustering
-- workout mapoverlays
+- workout custom maps: mapoverlays
+- work out clustering, custom cluster marker
+- and control (google-map-react?, OSM?)
+

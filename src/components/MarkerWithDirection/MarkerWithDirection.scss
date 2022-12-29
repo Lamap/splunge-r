@@ -1,0 +1,25 @@
+.spg--marker-with-direction {
+    $panorama-dimension: 100px;
+    position: absolute;
+    &__point {
+        width: 30px;
+        height: 30px;
+        background: #1fff3f;
+        cursor: pointer;
+        border: none;
+        border-radius: 100%;
+        position: absolute;
+        left: -15px;
+        top: -15px;
+    }
+    &__panorama {
+        position: absolute;
+        left: -$panorama-dimension / 2;
+        width: $panorama-dimension;
+        height: $panorama-dimension;
+        transform-origin: 50% 0%;
+        background-image: linear-gradient(rgba(#f00, 0.4), rgba(#f00, 0.1), rgba(#f00, 0));
+        clip-path: polygon(50% 0, 100% 100%, 0 100%);
+        pointer-events: none;
+    }
+}
