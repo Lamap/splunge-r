@@ -1,0 +1,44 @@
+$icon-dimension: 32px;
+
+.spg-marker-icon {
+    position: relative;
+    width: $icon-dimension;
+    height: $icon-dimension;
+
+    &:hover {
+        top: -1px;
+        left: -1px;
+        border: 1px solid #282c34;
+        border-radius: 100%;
+    }
+
+    &--highlighted::after {
+        content: "";
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        width: 8px;
+        height: 8px;
+        border-radius: 100%;
+        background: #ff0000;
+    }
+
+    &__panorama {
+        position: absolute;
+        top: -80px;
+        left: 20px;
+        width: 200px;
+        height: 200px;
+        transform: rotate(50deg);
+        transform-origin: 0% 50%;
+        pointer-events: none;
+    }
+
+    &__eye {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 32px;
+        height: 32px;
+    }
+}
