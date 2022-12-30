@@ -1,6 +1,6 @@
 import './SpgMap.scss';
 import '../../../node_modules/leaflet/dist/leaflet.css';
-import React, { useState } from 'react';
+import React from 'react';
 import { MapContainer, TileLayer, ImageOverlay } from 'react-leaflet';
 import mapSample from '../../assets/maps/b1_22clr.gif';
 import MarkerClusterGroup from 'react-leaflet-cluster';
@@ -8,18 +8,26 @@ import { SpgMarker } from '../SpgMarker/SpgMarker';
 import { LatLngLiteral, LeafletMouseEvent } from 'leaflet';
 import { MapEventConnector } from './MapEventConnector';
 import renderClusterIcon from './RenderClusterIcon';
+import { ISpgPointClient } from '../../interfaces/ISpgPoint';
 
-export function SpgMap(): React.ReactElement {
-    const mockPositions: LatLngLiteral[] = [{ lat: 47.48, lng: 19.03 }];
-    const [positions, setPositions] = useState<LatLngLiteral[]>(mockPositions);
+interface IProps {
+    readonly isEditing?: boolean;
+    readonly points: ISpgPointClient[];
+    readonly onPointAddedToMap?: (position: LatLngLiteral) => void;
+    readonly onPointMoved?: (id: string, newPosition: LatLngLiteral) => void;
+    readonly onPointClicked?: (id: string) => void;
+}
 
+export const SpgMap: React.FC<IProps> = ({ isEditing = false, onPointAddedToMap, onPointClicked, onPointMoved, points = [] }): React.ReactElement => {
+    console.log(isEditing);
     function addNewPoint(event: LeafletMouseEvent): void {
-        setPositions([...positions, event.latlng]);
+        !!onPointAddedToMap && onPointAddedToMap(event.latlng);
     }
+    const classNames: string[] = ['spg-map__container', ...(isEditing ? ['spg-map__container--editing'] : [])];
 
     return (
         <div className="spg-map">
-            <MapContainer center={{ lat: 47.49, lng: 19.035 }} zoom={15} className="spg-map__container">
+            <MapContainer center={{ lat: 47.49, lng: 19.035 }} zoom={15} className={classNames.join(' ')}>
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                 <MapEventConnector onClick={addNewPoint} />
                 <MarkerClusterGroup maxClusterRadius={36} showCoverageOnHover={false} iconCreateFunction={renderClusterIcon}>
@@ -33,8 +41,21 @@ export function SpgMap(): React.ReactElement {
                         onDragEnd={(newPosition: LatLngLiteral): void => console.log(newPosition)}
                     />
                     <SpgMarker position={{ lat: 47, lng: 19.0 }} onClick={(): void => console.log('dd')} direction={45} isHighLighted={true} />
-                    {positions.map((pos: LatLngLiteral): React.ReactElement => {
-                        return <SpgMarker key={`${pos.lat}-${pos.lng}`} position={pos} />;
+                    {points.map((point: ISpgPointClient): React.ReactElement => {
+                        return (
+                            <SpgMarker
+                                key={point.id}
+                                position={point.position}
+                                isDraggable={isEditing}
+                                isHighLighted={point.isSelected}
+                                onClick={(): void => {
+                                    !!onPointClicked && onPointClicked(point.id);
+                                }}
+                                onDragEnd={(newPosition: LatLngLiteral): void => {
+                                    isEditing && !!onPointMoved && onPointMoved(point.id, newPosition);
+                                }}
+                            />
+                        );
                     })}
                 </MarkerClusterGroup>
 
@@ -50,4 +71,4 @@ export function SpgMap(): React.ReactElement {
             </MapContainer>
         </div>
     );
-}
+};
