@@ -5,17 +5,36 @@ import { Marker } from 'react-leaflet';
 import { SpgMarkerIconElement } from './SpgMarkerIconElement';
 interface IProps {
     readonly direction?: number;
+    readonly hasDirection?: boolean;
     readonly isDraggable?: boolean;
-    readonly isHighLighted?: boolean;
+    readonly isHighlighted?: boolean;
+    readonly isSelected?: boolean;
     readonly onClick?: () => void;
     readonly onDragEnd?: (newPosition: LatLngLiteral) => void;
     readonly position: L.LatLngExpression;
+    readonly connectedImageCount?: number;
 }
 
-export const SpgMarker: React.FC<IProps> = ({ direction = 0, isDraggable, isHighLighted, onClick, onDragEnd, position }): React.ReactElement => {
+export const SpgMarker: React.FC<IProps> = ({
+    direction = 0,
+    hasDirection,
+    isDraggable,
+    isHighlighted,
+    isSelected,
+    onClick,
+    onDragEnd,
+    position,
+    connectedImageCount,
+}): React.ReactElement => {
     const markerSize: number = 32;
     const customIcon: L.DivIcon = new L.DivIcon({
-        html: SpgMarkerIconElement(direction, !!isHighLighted),
+        html: SpgMarkerIconElement({
+            isHighlighted,
+            rotation: direction,
+            isSelected,
+            hasDirection,
+            connectedImageCount,
+        }),
         iconSize: new L.Point(markerSize, markerSize),
         iconAnchor: new L.Point(markerSize / 2, markerSize / 2),
         className: 'spg-marker__icon',

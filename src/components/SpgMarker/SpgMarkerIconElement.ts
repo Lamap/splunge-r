@@ -1,11 +1,30 @@
 import eyeIcon from '../../assets/icons/eye-icon.svg';
 import panorama from '../../assets/icons/panorama.svg';
-
-export const SpgMarkerIconElement = (rotation: number = 0, isHighlighted: boolean): string => {
-    console.log(isHighlighted);
+export interface ISpgMarkerElementProps {
+    readonly rotation: number;
+    readonly isHighlighted?: boolean;
+    readonly isSelected?: boolean;
+    readonly hasDirection?: boolean;
+    readonly connectedImageCount?: number;
+}
+export const SpgMarkerIconElement: (props: ISpgMarkerElementProps) => string = ({
+    rotation = 0,
+    isHighlighted = false,
+    isSelected = false,
+    hasDirection = false,
+    connectedImageCount = 0,
+}): string => {
+    const panoramaDiv: string = `<div class="spg-marker-icon__panorama" style="background-image: url(${panorama}); transform: rotate(${rotation}deg)"></div>`;
+    const connectedImageCountSpan: string = `<span class="spg-marker-icon__count">${connectedImageCount}</span>`;
+    const markerIconClassNames: string[] = [
+        'spg-marker-icon',
+        ...(isHighlighted ? ['spg-marker-icon--highlighted'] : []),
+        ...(isSelected ? ['spg-marker-icon--selected'] : []),
+    ];
     return `
-        <div class="spg-marker-icon ${isHighlighted ? 'spg-marker-icon--highlighted' : ''}" >    
-            <div class="spg-marker-icon__panorama" style="background-image: url(${panorama}); transform: rotate(${rotation}deg)"></div>
+        <div class="${markerIconClassNames.join(' ')}" >    
+            ${hasDirection ? panoramaDiv : ''}
             <div class="spg-marker-icon__eye" style="background-image: url(${eyeIcon});"></div>
+            ${!!connectedImageCount ? connectedImageCountSpan : ''}
         </div>`;
 };

@@ -1,0 +1,19 @@
+.spg-dashboard {
+    &__map-and-images {
+        display: flex;
+    }
+
+    &__map {
+        width: calc(100% - 200px);
+        height: 500px;
+    }
+
+    &__edit-point {
+        width: 400px;
+        padding: 20px;
+    }
+
+    &__image-list {
+        width: 200px;
+    }
+}

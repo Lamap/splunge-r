@@ -11,49 +11,55 @@ import renderClusterIcon from './RenderClusterIcon';
 import { ISpgPointClient } from '../../interfaces/ISpgPoint';
 
 interface IProps {
+    readonly isPointAddingMode?: boolean;
     readonly isEditing?: boolean;
+    readonly className?: string;
+    readonly center?: LatLngLiteral;
     readonly points: ISpgPointClient[];
-    readonly onPointAddedToMap?: (position: LatLngLiteral) => void;
+    readonly onMapClicked?: (position: LatLngLiteral) => void;
     readonly onPointMoved?: (id: string, newPosition: LatLngLiteral) => void;
     readonly onPointClicked?: (id: string) => void;
+    readonly panTo?: LatLngLiteral;
 }
 
-export const SpgMap: React.FC<IProps> = ({ isEditing = false, onPointAddedToMap, onPointClicked, onPointMoved, points = [] }): React.ReactElement => {
-    console.log(isEditing);
+export const SpgMap: React.FC<IProps> = ({
+    isPointAddingMode = false,
+    isEditing = false,
+    center = { lat: 47.49, lng: 19.035 },
+    className,
+    onMapClicked,
+    onPointClicked,
+    onPointMoved,
+    points = [],
+    panTo,
+}): React.ReactElement => {
     function addNewPoint(event: LeafletMouseEvent): void {
-        !!onPointAddedToMap && onPointAddedToMap(event.latlng);
+        !!onMapClicked && onMapClicked(event.latlng);
     }
-    const classNames: string[] = ['spg-map__container', ...(isEditing ? ['spg-map__container--editing'] : [])];
-
+    const classNames: string[] = ['spg-map', ...(isPointAddingMode ? ['spg-map--point-adding-mode'] : []), ...(!!className ? [className] : [])];
     return (
-        <div className="spg-map">
-            <MapContainer center={{ lat: 47.49, lng: 19.035 }} zoom={15} className={classNames.join(' ')}>
+        <div className={classNames.join(' ')}>
+            <MapContainer center={center} zoom={15} className={'spg-map__container'}>
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                <MapEventConnector onClick={addNewPoint} />
+                <MapEventConnector onClick={addNewPoint} panTo={panTo} />
                 <MarkerClusterGroup maxClusterRadius={36} showCoverageOnHover={false} iconCreateFunction={renderClusterIcon}>
-                    <SpgMarker position={{ lat: 47.41, lng: 19.01 }} onClick={(): void => console.log('aaa')} />
-                    <SpgMarker position={{ lat: 47.42, lng: 19.08 }} onClick={(): void => console.log('ccc')} />
-                    <SpgMarker position={{ lat: 47.48, lng: 19.02 }} onClick={(): void => console.log('ooo')} />
-                    <SpgMarker
-                        position={{ lat: 47.42, lng: 18.2 }}
-                        isDraggable={true}
-                        onClick={(): void => console.log('bb')}
-                        onDragEnd={(newPosition: LatLngLiteral): void => console.log(newPosition)}
-                    />
-                    <SpgMarker position={{ lat: 47, lng: 19.0 }} onClick={(): void => console.log('dd')} direction={45} isHighLighted={true} />
                     {points.map((point: ISpgPointClient): React.ReactElement => {
                         return (
                             <SpgMarker
+                                direction={point.direction}
+                                hasDirection={point.hasDirection}
                                 key={point.id}
                                 position={point.position}
                                 isDraggable={isEditing}
-                                isHighLighted={point.isSelected}
+                                isHighlighted={point.isHighlighted}
+                                isSelected={point.isSelected}
                                 onClick={(): void => {
                                     !!onPointClicked && onPointClicked(point.id);
                                 }}
                                 onDragEnd={(newPosition: LatLngLiteral): void => {
                                     isEditing && !!onPointMoved && onPointMoved(point.id, newPosition);
                                 }}
+                                connectedImageCount={point.images.length}
                             />
                         );
                     })}

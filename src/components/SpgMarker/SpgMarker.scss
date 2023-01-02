@@ -5,6 +5,21 @@ $icon-dimension: 32px;
     width: $icon-dimension;
     height: $icon-dimension;
 
+    @-moz-keyframes spin {
+        100% { -moz-transform: rotate(360deg); }
+    }
+
+    @-webkit-keyframes spin {
+        100% { -webkit-transform: rotate(360deg); }
+    }
+
+    @keyframes spin {
+        100% {
+            -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+        }
+    }
+
     &:hover {
         top: -1px;
         left: -1px;
@@ -13,8 +28,22 @@ $icon-dimension: 32px;
     }
 
     &--highlighted::after {
-        content: "";
+        content: '';
         position: absolute;
+        top: -11px;
+        left: -11px;
+        width: 50px;
+        height: 50px;
+        animation: spin 8s linear infinite;
+        border: 2px dashed #000;
+        border-radius: 100%;
+        pointer-events: none;
+    }
+
+    &--selected::before {
+        content: '';
+        position: absolute;
+        z-index: 1;
         top: 12px;
         left: 12px;
         width: 8px;
@@ -25,8 +54,8 @@ $icon-dimension: 32px;
 
     &__panorama {
         position: absolute;
-        top: -80px;
-        left: 20px;
+        top: -84px;
+        left: 16px;
         width: 200px;
         height: 200px;
         transform: rotate(50deg);
@@ -36,9 +65,24 @@ $icon-dimension: 32px;
 
     &__eye {
         position: absolute;
-        top: 0px;
-        left: 0px;
+        top: 0;
+        left: 0;
         width: 32px;
         height: 32px;
+    }
+
+    &__count {
+        display: flex;
+        position: absolute;
+        top: -3px;
+        left: 20px;
+        align-items: center;
+        justify-content: center;
+        width: 18px;
+        height: 18px;
+        border: 1px solid red;
+        border-radius: 100%;
+        background: white;
+        color: #282c34;
     }
 }

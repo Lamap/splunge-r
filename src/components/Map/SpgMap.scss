@@ -1,9 +1,11 @@
 .spg-map {
     &__container {
         width: 100%;
-        height: 500px;
+        height: inherit;
+    }
 
-        &--editing {
+    &--point-adding-mode {
+        .spg-map__container {
             cursor: crosshair;
         }
     }
