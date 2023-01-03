@@ -5,6 +5,7 @@ import { ISpgPointClient } from '../../interfaces/ISpgPoint';
 import { Button } from '@mui/material';
 interface IProps {
     readonly images: ISpgImage[];
+    readonly highlightedImages?: string[];
     readonly points: ISpgPointClient[];
     readonly className?: string;
     readonly onNewImageAdded?: () => void;
@@ -22,6 +23,7 @@ export const ImageListEditor: React.FC<IProps> = ({
     onDetachImageFromPoint,
     onShowLinkedPointOfImage,
     className,
+    highlightedImages,
 }): React.ReactElement => {
     const classNames: string[] = ['spg-image-list', ...(!!className ? [className] : [])];
     function onConnectToImageClicked(id: string): void {
@@ -45,13 +47,19 @@ export const ImageListEditor: React.FC<IProps> = ({
     function addNewImage(): void {
         !!onNewImageAdded && onNewImageAdded();
     }
+    function isImageHighlighted(id: string): boolean {
+        return !!highlightedImages?.includes(id);
+    }
+    function getImageClassnames(id: string): string[] {
+        return ['spg-image-list__image', ...(isImageHighlighted(id) ? ['spg-image-list__image--highlighted'] : [''])];
+    }
     return (
         <div className={classNames.join(' ')}>
             <div>
                 <Button onClick={addNewImage}>Add new image</Button>
             </div>
             {images.map((image: ISpgImage) => (
-                <div key={image.id} className="spg-image-list__image">
+                <div key={image.id} className={getImageClassnames(image.id).join(' ')}>
                     {getIsConnected(image.id) && <div>This image is connected to a point</div>}
                     {image.id}
                     {!!getIsConnected(image.id) && (

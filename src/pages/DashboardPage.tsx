@@ -14,6 +14,7 @@ export function DashboardPage(): React.ReactElement {
     const { id } = useParams();
     const [selectedPointId, setSelectedPointId] = useState<string>();
     const [selectedImageId, setSelectedImageId] = useState<string>();
+    const [higlightedImages, setHiglightedImages] = useState<string[]>([]);
     const [panTo, setPanTo] = useState<LatLngLiteral>();
     const [points, setPoints] = useState<ISpgPointClient[]>([
         {
@@ -27,6 +28,7 @@ export function DashboardPage(): React.ReactElement {
         { id: 'sdfsdfdsfs', url: 'sdfsdfsdfsdfsdf' },
     ]);
     function createPointForImage(position: LatLngLiteral): void {
+        clearPointHighlighting();
         if (!!selectedImageId) {
             const extendedPoints: ISpgPointClient[] = createPointForImageCall(position, selectedImageId, points);
             setPoints(extendedPoints);
@@ -38,6 +40,8 @@ export function DashboardPage(): React.ReactElement {
         // if the selectedImageId is not set we set the point state to selected
         if (!selectedImageId) {
             setSelectedPointId(id);
+            const selectedPoint: ISpgPointClient | undefined = getSelectedPoint(id);
+            setHiglightedImages(selectedPoint?.images || []);
             const adjustedPoints: ISpgPointClient[] = points.map((point: ISpgPointClient): ISpgPointClient => {
                 return {
                     ...point,
@@ -46,6 +50,7 @@ export function DashboardPage(): React.ReactElement {
                 };
             });
             setPoints(adjustedPoints);
+
             return;
         }
         // if selectedImageId is set we add the image to the point
@@ -54,12 +59,21 @@ export function DashboardPage(): React.ReactElement {
         }
         return addImageToPoint(id);
     }
-    function quitPointSelection(): void {
+    function clearPointSelection(): void {
         setSelectedPointId(undefined);
+        setHiglightedImages([]);
         const adjustedPoints: ISpgPointClient[] = points.map((point: ISpgPointClient): ISpgPointClient => {
             return {
                 ...point,
                 isSelected: false,
+            };
+        });
+        setPoints(adjustedPoints);
+    }
+    function clearPointHighlighting(): void {
+        const adjustedPoints: ISpgPointClient[] = points.map((point: ISpgPointClient): ISpgPointClient => {
+            return {
+                ...point,
                 isHighlighted: false,
             };
         });
@@ -124,7 +138,8 @@ export function DashboardPage(): React.ReactElement {
     }
     function startConnectImageToPointProcess(id: string): void {
         console.log(id);
-        quitPointSelection();
+        clearPointSelection();
+        clearPointHighlighting();
         setSelectedImageId(id);
     }
     function quitImageConnection(): void {
@@ -186,7 +201,7 @@ export function DashboardPage(): React.ReactElement {
                         }
                     />
                     <button onClick={deletePoint}>Delete point</button>
-                    <button onClick={quitPointSelection}>Exit selection</button>
+                    <button onClick={clearPointSelection}>Exit selection</button>
                 </div>
             )}
             {`imageConnectionId: ${selectedImageId}`}
@@ -216,6 +231,7 @@ export function DashboardPage(): React.ReactElement {
                     onShowLinkedPointOfImage={showPointOfImage}
                     onNewImageAdded={addNewImage}
                     points={points}
+                    highlightedImages={higlightedImages}
                 />
             </div>
         </div>
