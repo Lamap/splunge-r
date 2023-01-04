@@ -10,8 +10,9 @@ export const MapEventConnector: React.FC<IProps> = ({ onClick, panTo }): React.R
         click: (event: LeafletMouseEvent) => !!onClick && onClick(event),
     });
     useEffect(() => {
+        console.log(map.getZoom());
         if (!!panTo) {
-            map.setView(panTo, map.getZoom(), { animate: true });
+            map.setView(panTo, 20, { animate: true });
         }
     }, [panTo, map]);
     return null;

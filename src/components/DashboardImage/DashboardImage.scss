@@ -1,0 +1,43 @@
+.spg-dashboard-image {
+    position: relative;
+
+    &__linkage {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 0;
+        height: 0;
+        border-width: 0 50px 50px 0;
+        border-style: solid;
+        border-color: transparent #fffa transparent transparent;
+    }
+
+    &__linkage-icon {
+        position: absolute;
+        top: 4px;
+        right: -46px;
+    }
+
+    &__image-actions {
+        display: none;
+
+        .spg-dashboard-image:hover & {
+            display: flex;
+            position: absolute;
+            bottom: 0;
+            flex-wrap: wrap;
+            padding: 6px;
+            background-color: #e0a04378;
+        }
+    }
+
+    &__image-action-btn {
+        margin-right: 6px;
+        margin-bottom: 6px;
+    }
+
+    &__img {
+        width: 100%;
+        border-radius: 6px;
+    }
+}

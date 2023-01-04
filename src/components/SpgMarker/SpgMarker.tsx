@@ -8,6 +8,7 @@ interface IProps {
     readonly hasDirection?: boolean;
     readonly isDraggable?: boolean;
     readonly isHighlighted?: boolean;
+    readonly isPointAddingMode?: boolean;
     readonly isSelected?: boolean;
     readonly onClick?: () => void;
     readonly onDragEnd?: (newPosition: LatLngLiteral) => void;
@@ -20,6 +21,7 @@ export const SpgMarker: React.FC<IProps> = ({
     hasDirection,
     isDraggable,
     isHighlighted,
+    isPointAddingMode,
     isSelected,
     onClick,
     onDragEnd,
@@ -27,11 +29,13 @@ export const SpgMarker: React.FC<IProps> = ({
     connectedImageCount,
 }): React.ReactElement => {
     const markerSize: number = 32;
+
     const customIcon: L.DivIcon = new L.DivIcon({
         html: SpgMarkerIconElement({
             isHighlighted,
             rotation: direction,
             isSelected,
+            isPointAddingMode,
             hasDirection,
             connectedImageCount,
         }),
@@ -39,7 +43,6 @@ export const SpgMarker: React.FC<IProps> = ({
         iconAnchor: new L.Point(markerSize / 2, markerSize / 2),
         className: 'spg-marker__icon',
     });
-
     function onMarkerClicked(): void {
         !!onClick && onClick();
     }

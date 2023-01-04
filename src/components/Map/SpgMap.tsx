@@ -51,6 +51,7 @@ export const SpgMap: React.FC<IProps> = ({
                                 key={point.id}
                                 position={point.position}
                                 isDraggable={isEditing}
+                                isPointAddingMode={isPointAddingMode}
                                 isHighlighted={point.isHighlighted}
                                 isSelected={point.isSelected}
                                 onClick={(): void => {

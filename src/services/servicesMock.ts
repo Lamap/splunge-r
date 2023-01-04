@@ -2,6 +2,11 @@ import { LatLngLiteral } from 'leaflet';
 import ISpgPoint, { ISpgPointWithStates } from '../interfaces/ISpgPoint';
 import { ISpgImage } from '../interfaces/ISpgImage';
 
+export interface IDeleteImageResponse {
+    readonly images: ISpgImage[];
+    readonly points: ISpgPoint[];
+}
+
 export function createPointForImageCall(position: LatLngLiteral, newImageId: string, points: ISpgPoint[]): ISpgPoint[] {
     const adjustedPoints: ISpgPoint[] = points.map((point: ISpgPoint) => {
         return {
@@ -54,4 +59,14 @@ export async function createNewImageCall(file: string): Promise<ISpgImage> {
         date: { on: new Date() },
     };
     return newImage;
+}
+export async function deleteImageCall(imageToDelete: string, images: ISpgImage[], points: ISpgPoint[]): Promise<IDeleteImageResponse> {
+    const newImageList: ISpgImage[] = images.filter(image => image.id !== imageToDelete);
+    const updatedPoints: ISpgPoint[] = points.map(point => {
+        return {
+            ...point,
+            images: point.images.filter(imageId => imageId !== imageToDelete),
+        };
+    });
+    return { images: newImageList, points: updatedPoints };
 }

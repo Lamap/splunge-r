@@ -3,6 +3,7 @@ import panorama from '../../assets/icons/panorama.svg';
 export interface ISpgMarkerElementProps {
     readonly rotation: number;
     readonly isHighlighted?: boolean;
+    readonly isPointAddingMode?: boolean;
     readonly isSelected?: boolean;
     readonly hasDirection?: boolean;
     readonly connectedImageCount?: number;
@@ -11,6 +12,7 @@ export const SpgMarkerIconElement: (props: ISpgMarkerElementProps) => string = (
     rotation = 0,
     isHighlighted = false,
     isSelected = false,
+    isPointAddingMode = false,
     hasDirection = false,
     connectedImageCount = 0,
 }): string => {
@@ -19,6 +21,7 @@ export const SpgMarkerIconElement: (props: ISpgMarkerElementProps) => string = (
     const markerIconClassNames: string[] = [
         'spg-marker-icon',
         ...(isHighlighted ? ['spg-marker-icon--highlighted'] : []),
+        ...(isPointAddingMode ? ['spg-marker-icon--point-adding-mode'] : []),
         ...(isSelected ? ['spg-marker-icon--selected'] : []),
     ];
     return `
