@@ -1,0 +1,46 @@
+.spg-map-overlay-controller {
+    display: flex;
+    &__items {
+        display: flex;
+    }
+
+    &__item {
+        display: inline-block;
+        position: relative;
+        margin-right: 24px;
+        border: 1px solid #000;
+
+        &--selected,
+        &:hover {
+            width: 250px;
+
+            .spg-map-overlay-controller__name-label {
+                display: inline-block;
+                background: #fff;
+                position: absolute;
+                bottom: 100%;
+                width: 100%;
+            }
+            .spg-map-overlay-controller__opacity-slider {
+                display: inline-block;
+            }
+        }
+    }
+
+    &__date-and-opacity {
+        display: flex;
+    }
+
+    &__date-label {
+        display: block;
+    }
+
+    &__name-label {
+        display: none;
+    }
+
+    &__opacity-slider {
+        display: none;
+    }
+
+}

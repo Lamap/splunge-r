@@ -18,6 +18,8 @@ import {
     IDeleteImageResponse,
     updatePointCall,
 } from '../services/servicesMock';
+import { MapOverlayController } from '../components/MapOverlayController/MapOverlayController';
+import { mapOverlays } from '../components/MockOverlays';
 interface IDashboardWarning {
     readonly title: string;
     readonly text?: string;
@@ -374,6 +376,7 @@ export function DashboardPage(): React.ReactElement {
                     onPointClicked={pointClicked}
                     onPointMoved={onPointPositionChanged}
                 />
+                <MapOverlayController overlays={mapOverlays} className="spg-dashboard__map-overlay-controller" />
             </div>
             <DashboardImageList
                 images={images}
