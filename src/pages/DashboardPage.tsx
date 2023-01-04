@@ -1,36 +1,49 @@
 import '../../node_modules/leaflet/dist/leaflet.css';
 import './DashboardPage.scss';
-import React, { ChangeEvent, SyntheticEvent, useState } from 'react';
+import React, { SyntheticEvent, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { SpgMap } from '../components/Map/SpgMap';
-import ISpgPoint, { ISpgPointClient } from '../interfaces/ISpgPoint';
+import ISpgPoint, { ISpgPointWithStates } from '../interfaces/ISpgPoint';
 import { LatLngLiteral } from 'leaflet';
-import { FormControlLabel, Slider, Switch } from '@mui/material';
-import { ISpgImage } from '../interfaces/ISpgImage';
+import { Button, Checkbox, FormControlLabel, Slider } from '@mui/material';
+import { ISpgImage, ISpgImageWithStates } from '../interfaces/ISpgImage';
 import { ImageListEditor } from '../components/ImageList/ImageListEditor';
-import { addImageToPointCall, createPointForImageCall, deletePointCall, detachImageFromPointCall, updatePointCall } from '../services/servicesMock';
+import {
+    addImageToPointCall,
+    createNewImageCall,
+    createPointForImageCall,
+    deletePointCall,
+    detachImageFromPointCall,
+    updatePointCall,
+} from '../services/servicesMock';
 
 export function DashboardPage(): React.ReactElement {
     const { id } = useParams();
     const [selectedPointId, setSelectedPointId] = useState<string>();
     const [selectedImageId, setSelectedImageId] = useState<string>();
-    const [higlightedImages, setHiglightedImages] = useState<string[]>([]);
     const [panTo, setPanTo] = useState<LatLngLiteral>();
-    const [points, setPoints] = useState<ISpgPointClient[]>([
+    const [points, setPoints] = useState<ISpgPointWithStates[]>([
         {
             position: { lat: 47.888, lng: 19.03 },
             id: '2134455',
             images: [],
         },
     ]);
-    const [images, setImages] = useState<ISpgImage[]>([
-        { id: 'sdfsdfdssdasdfs', url: 'sdfsdfs23wqeddfsdfsdf' },
-        { id: 'sdfsdfdsfs', url: 'sdfsdfsdfsdfsdf' },
+    const [images, setImages] = useState<ISpgImageWithStates[]>([
+        {
+            id: 'sdfsdfdssdasdfs',
+            url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Tab%C3%A1n_a_bont%C3%A1s_el%C5%91tt.jpg/280px-Tab%C3%A1n_a_bont%C3%A1s_el%C5%91tt.jpg',
+        },
+        {
+            id: 'sdfsdfdsfs',
+            url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Tab%C3%A1n_a_bont%C3%A1s_el%C5%91tt.jpg/280px-Tab%C3%A1n_a_bont%C3%A1s_el%C5%91tt.jpg',
+        },
     ]);
+    console.log(id);
     function createPointForImage(position: LatLngLiteral): void {
         clearPointHighlighting();
         if (!!selectedImageId) {
-            const extendedPoints: ISpgPointClient[] = createPointForImageCall(position, selectedImageId, points);
+            const extendedPoints: ISpgPointWithStates[] = createPointForImageCall(position, selectedImageId, points);
             setPoints(extendedPoints);
         }
         setSelectedImageId(undefined);
@@ -40,9 +53,16 @@ export function DashboardPage(): React.ReactElement {
         // if the selectedImageId is not set we set the point state to selected
         if (!selectedImageId) {
             setSelectedPointId(id);
-            const selectedPoint: ISpgPointClient | undefined = getSelectedPoint(id);
-            setHiglightedImages(selectedPoint?.images || []);
-            const adjustedPoints: ISpgPointClient[] = points.map((point: ISpgPointClient): ISpgPointClient => {
+            const selectedPoint: ISpgPointWithStates | undefined = getSelectedPoint(id);
+            setImages(
+                images.map(image => {
+                    return {
+                        ...image,
+                        isHighlighted: selectedPoint?.images.includes(image.id),
+                    };
+                }),
+            );
+            const adjustedPoints: ISpgPointWithStates[] = points.map((point: ISpgPointWithStates): ISpgPointWithStates => {
                 return {
                     ...point,
                     isSelected: point.id === id,
@@ -61,8 +81,15 @@ export function DashboardPage(): React.ReactElement {
     }
     function clearPointSelection(): void {
         setSelectedPointId(undefined);
-        setHiglightedImages([]);
-        const adjustedPoints: ISpgPointClient[] = points.map((point: ISpgPointClient): ISpgPointClient => {
+        setImages(
+            images.map(image => {
+                return {
+                    ...image,
+                    isHighlighted: false,
+                };
+            }),
+        );
+        const adjustedPoints: ISpgPointWithStates[] = points.map((point: ISpgPointWithStates): ISpgPointWithStates => {
             return {
                 ...point,
                 isSelected: false,
@@ -71,7 +98,7 @@ export function DashboardPage(): React.ReactElement {
         setPoints(adjustedPoints);
     }
     function clearPointHighlighting(): void {
-        const adjustedPoints: ISpgPointClient[] = points.map((point: ISpgPointClient): ISpgPointClient => {
+        const adjustedPoints: ISpgPointWithStates[] = points.map((point: ISpgPointWithStates): ISpgPointWithStates => {
             return {
                 ...point,
                 isHighlighted: false,
@@ -86,12 +113,12 @@ export function DashboardPage(): React.ReactElement {
         }
         updatePoint({ ...selectedPoint, direction: value as number });
     }
-    function onHasDirectionChanged(event: ChangeEvent<HTMLInputElement>): void {
+    function onHasDirectionChanged(event: React.SyntheticEvent, checked: boolean): void {
         const selectedPoint: ISpgPoint | undefined = getSelectedPoint(selectedPointId);
         if (!selectedPoint) {
             return;
         }
-        updatePoint({ ...selectedPoint, hasDirection: event.target.checked });
+        updatePoint({ ...selectedPoint, hasDirection: checked });
     }
     function onPointPositionChanged(id: string, newPosition: LatLngLiteral): void {
         console.log('m', id, newPosition);
@@ -104,7 +131,7 @@ export function DashboardPage(): React.ReactElement {
     function updatePoint(modifiedPoint: ISpgPoint): void {
         updatePointCall(modifiedPoint)
             .then((updatedPoint: ISpgPoint) => {
-                const updatedPoints: ISpgPointClient[] = points.map((point: ISpgPointClient) => {
+                const updatedPoints: ISpgPointWithStates[] = points.map((point: ISpgPointWithStates) => {
                     if (point.id === modifiedPoint.id) {
                         return { ...updatedPoint, isSelected: modifiedPoint.id === selectedPointId };
                     }
@@ -114,7 +141,7 @@ export function DashboardPage(): React.ReactElement {
             })
             .catch(err => console.error(err));
     }
-    function getSelectedPoint(selectedId: string | undefined): ISpgPointClient | undefined {
+    function getSelectedPoint(selectedId: string | undefined): ISpgPointWithStates | undefined {
         return points.find(({ id }) => id === selectedId);
     }
     function deletePoint(): void {
@@ -150,15 +177,15 @@ export function DashboardPage(): React.ReactElement {
         if (!selectedImageId) {
             return;
         }
-        const updatedPoints: ISpgPointClient[] = addImageToPointCall(pointId, selectedImageId, points);
+        const updatedPoints: ISpgPointWithStates[] = addImageToPointCall(pointId, selectedImageId, points);
         setPoints(updatedPoints);
         setSelectedImageId(undefined);
         console.log('quitting');
     }
-    function showPointOfImage(imageId: string): void {
-        const attachedPoint: ISpgPointClient | undefined = points.find(point => point.images.includes(imageId));
+    function highlightPointOfImage(imageId: string): void {
+        const attachedPoint: ISpgPointWithStates | undefined = points.find(point => point.images.includes(imageId));
         if (attachedPoint) {
-            const adjustedPoints: ISpgPointClient[] = points.map((point: ISpgPointClient): ISpgPointClient => {
+            const adjustedPoints: ISpgPointWithStates[] = points.map((point: ISpgPointWithStates): ISpgPointWithStates => {
                 return {
                     ...point,
                     isHighlighted: point.id === attachedPoint.id,
@@ -170,47 +197,82 @@ export function DashboardPage(): React.ReactElement {
         console.log(attachedPoint);
     }
 
-    function addNewImage(): void {
+    function addNewImage(file: string): void {
         console.log('add new image');
-        setImages([...images, { id: new Date().getTime().toString(), url: 'asdasda' }]);
+        createNewImageCall(file)
+            .then((newImage: ISpgImage) => {
+                setImages([...images, newImage]);
+            })
+            .catch(err => console.error(err));
     }
+
     return (
         <div className="spg-dashboard">
-            page2 {id}
-            {!!selectedPointId && (
-                <div className={'spg-dashboard__edit-point'}>
-                    {selectedPointId}
-                    {getSelectedPoint(selectedPointId)?.hasDirection && (
-                        <Slider
-                            min={0}
-                            max={360}
-                            size="small"
-                            onChangeCommitted={onDirectionChanged}
-                            defaultValue={getSelectedPoint(selectedPointId)?.direction}
-                        />
+            <div className="spg-dashboard__map-and-actions">
+                <div className={'spg-dashboard__actions'}>
+                    {!selectedPointId && !selectedImageId && (
+                        <div>
+                            <div className="spg-dashboard__editing-header">
+                                You can click on the point to edit and see the linked images either select an image to connect to a point
+                            </div>
+                            <ul>
+                                <li>You can select on an image on the right and add or reconnect to a point, either create a new point for it.</li>
+                                <li>
+                                    You can select a point by clicking then you can see its direction and will see the connected images on the right.
+                                </li>
+                                <li>You can delete the selected point that does not have images linked.</li>
+                            </ul>
+                        </div>
                     )}
-                    {`---${getSelectedPoint(selectedPointId)?.hasDirection}`}
-                    <FormControlLabel
-                        label={'Has direction'}
-                        control={
-                            <Switch
-                                onChange={onHasDirectionChanged}
-                                name={'hasdirection'}
-                                defaultChecked={getSelectedPoint(selectedPointId)?.hasDirection}
-                            />
-                        }
-                    />
-                    <button onClick={deletePoint}>Delete point</button>
-                    <button onClick={clearPointSelection}>Exit selection</button>
+                    {!!selectedPointId && (
+                        <>
+                            <div className="spg-dashboard__editing-header">You have selected a point on the map</div>
+                            <div>
+                                Now you see the linked images highlighted on the right and can set the direction or remove it if no images are
+                                attached
+                            </div>
+                            <div className="spg-dashboard__direction-group">
+                                <FormControlLabel
+                                    label={'Has direction'}
+                                    onChange={onHasDirectionChanged}
+                                    control={<Checkbox name={'hasdirection'} checked={!!getSelectedPoint(selectedPointId)?.hasDirection} />}
+                                />
+                                {getSelectedPoint(selectedPointId)?.hasDirection && (
+                                    <div className="spg-dashboard__direction-slider">
+                                        <Slider
+                                            min={0}
+                                            max={360}
+                                            size="small"
+                                            onChangeCommitted={onDirectionChanged}
+                                            defaultValue={getSelectedPoint(selectedPointId)?.direction}
+                                        />
+                                    </div>
+                                )}
+                                <span className="spg-dashboard__delete-point-btn">
+                                    <Button variant={'outlined'} color={'error'} size={'small'} onClick={deletePoint}>
+                                        Delete point
+                                    </Button>
+                                </span>
+
+                                <Button variant={'outlined'} size={'small'} onClick={clearPointSelection}>
+                                    Release selection
+                                </Button>
+                            </div>
+                        </>
+                    )}
+                    {!!selectedImageId && (
+                        <div>
+                            <div className="spg-dashboard__editing-header">You have selected an image.</div>
+                            Now you can connect the image to a point by clicking on the marker or click on the map to create a new point and link to
+                            the selected image.
+                            <div className="spg-dashboard__point-connect-actions">
+                                <Button variant={'outlined'} size={'small'} onClick={quitImageConnection}>
+                                    Quit point connection process
+                                </Button>
+                            </div>
+                        </div>
+                    )}
                 </div>
-            )}
-            {`imageConnectionId: ${selectedImageId}`}
-            {!!selectedImageId && (
-                <div>
-                    click to a point to connect the image or click to the map to add a new one <button onClick={quitImageConnection}>cancel</button>
-                </div>
-            )}
-            <div className="spg-dashboard__map-and-images">
                 <SpgMap
                     className="spg-dashboard__map"
                     isEditing={true}
@@ -221,19 +283,17 @@ export function DashboardPage(): React.ReactElement {
                     onPointClicked={pointClicked}
                     onPointMoved={onPointPositionChanged}
                 />
-
-                <ImageListEditor
-                    images={images}
-                    className="spg-dashboard__image-list"
-                    onConnectImageToPoint={startConnectImageToPointProcess}
-                    onChangePointOfImage={startConnectImageToPointProcess}
-                    onDetachImageFromPoint={detachImageFromPoint}
-                    onShowLinkedPointOfImage={showPointOfImage}
-                    onNewImageAdded={addNewImage}
-                    points={points}
-                    highlightedImages={higlightedImages}
-                />
             </div>
+            <ImageListEditor
+                images={images}
+                className="spg-dashboard__image-list"
+                onConnectImageToPoint={startConnectImageToPointProcess}
+                onChangePointOfImage={startConnectImageToPointProcess}
+                onDetachImageFromPoint={detachImageFromPoint}
+                onShowLinkedPointOfImage={highlightPointOfImage}
+                onNewImageAdded={addNewImage}
+                points={points}
+            />
         </div>
     );
 }

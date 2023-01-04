@@ -1,10 +1,51 @@
 .spg-image-list {
+    position: relative;
+    height: calc(100vh - 32px);
+    padding: 16px;
+    overflow-y: scroll;
+
+    &__header {
+        position: sticky;
+        top: 0;
+        right: 0;
+        left: 0;
+        height: 50px;
+        margin-bottom: 16px;
+        background-color: #fff;
+        z-index: 1;
+    }
+
     &__image {
-        margin-bottom: 5px;
-        border: 1px solid black;
+        position: relative;
+        margin-bottom: 12px;
+        border: 2px solid #c69d9d;
+        border-radius: 4px;
 
         &--highlighted {
-            border-color: red;
+            border-color: #c56b6b;
+            border-width: 4px;
         }
+    }
+
+    &__image-actions {
+        display: none;
+
+        .spg-image-list__image:hover & {
+            display: flex;
+            position: absolute;
+            bottom: 0;
+            flex-wrap: wrap;
+            padding: 6px;
+            background-color: #ffffffaa;
+        }
+    }
+
+    &__image-action-btn {
+        margin-right: 6px;
+        margin-bottom: 6px;
+    }
+
+    &__img {
+        width: 100%;
     }
 }

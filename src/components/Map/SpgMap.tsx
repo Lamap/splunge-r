@@ -8,14 +8,14 @@ import { SpgMarker } from '../SpgMarker/SpgMarker';
 import { LatLngLiteral, LeafletMouseEvent } from 'leaflet';
 import { MapEventConnector } from './MapEventConnector';
 import renderClusterIcon from './RenderClusterIcon';
-import { ISpgPointClient } from '../../interfaces/ISpgPoint';
+import { ISpgPointWithStates } from '../../interfaces/ISpgPoint';
 
 interface IProps {
     readonly isPointAddingMode?: boolean;
     readonly isEditing?: boolean;
     readonly className?: string;
     readonly center?: LatLngLiteral;
-    readonly points: ISpgPointClient[];
+    readonly points: ISpgPointWithStates[];
     readonly onMapClicked?: (position: LatLngLiteral) => void;
     readonly onPointMoved?: (id: string, newPosition: LatLngLiteral) => void;
     readonly onPointClicked?: (id: string) => void;
@@ -43,7 +43,7 @@ export const SpgMap: React.FC<IProps> = ({
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                 <MapEventConnector onClick={addNewPoint} panTo={panTo} />
                 <MarkerClusterGroup maxClusterRadius={36} showCoverageOnHover={false} iconCreateFunction={renderClusterIcon}>
-                    {points.map((point: ISpgPointClient): React.ReactElement => {
+                    {points.map((point: ISpgPointWithStates): React.ReactElement => {
                         return (
                             <SpgMarker
                                 direction={point.direction}

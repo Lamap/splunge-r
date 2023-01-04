@@ -1,5 +1,5 @@
 import { LatLngLiteral } from 'leaflet';
-import ISpgPoint, { ISpgPointClient } from '../interfaces/ISpgPoint';
+import ISpgPoint, { ISpgPointWithStates } from '../interfaces/ISpgPoint';
 import { ISpgImage } from '../interfaces/ISpgImage';
 
 export function createPointForImageCall(position: LatLngLiteral, newImageId: string, points: ISpgPoint[]): ISpgPoint[] {
@@ -31,7 +31,7 @@ export async function updatePointCall(point: ISpgPoint): Promise<ISpgPoint> {
     return await point;
 }
 export async function deletePointCall(pointToDeleteId: string, points: ISpgPoint[], images: ISpgImage[]): Promise<ISpgPoint[]> {
-    const pointToDelete: ISpgPointClient | undefined = points.find(point => point.id === pointToDeleteId);
+    const pointToDelete: ISpgPointWithStates | undefined = points.find(point => point.id === pointToDeleteId);
     if (!!pointToDelete?.images.length) {
         throw Error('This point has images attached, remove them before you delete');
     }
@@ -39,11 +39,19 @@ export async function deletePointCall(pointToDeleteId: string, points: ISpgPoint
 }
 
 export async function detachImageFromPointCall(imageIdToRemove: string, points: ISpgPoint[]): Promise<ISpgPoint[]> {
-    const updatedPoints: ISpgPointClient[] = points.map(point => {
+    const updatedPoints: ISpgPointWithStates[] = points.map(point => {
         return {
             ...point,
             images: point.images.filter((imageId: string) => imageId !== imageIdToRemove),
         };
     });
     return updatedPoints;
+}
+export async function createNewImageCall(file: string): Promise<ISpgImage> {
+    const newImage: ISpgImage = {
+        id: new Date().getTime().toString(),
+        url: file,
+        date: { on: new Date() },
+    };
+    return newImage;
 }

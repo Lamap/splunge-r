@@ -1,14 +1,16 @@
 import './ImageListEditor.scss';
-import { ISpgImage } from '../../interfaces/ISpgImage';
-import React from 'react';
-import { ISpgPointClient } from '../../interfaces/ISpgPoint';
+import { ISpgImageWithStates } from '../../interfaces/ISpgImage';
+import React, { useEffect, useState } from 'react';
+import { ISpgPointWithStates } from '../../interfaces/ISpgPoint';
 import { Button } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+
 interface IProps {
-    readonly images: ISpgImage[];
+    readonly images: ISpgImageWithStates[];
     readonly highlightedImages?: string[];
-    readonly points: ISpgPointClient[];
+    readonly points: ISpgPointWithStates[];
     readonly className?: string;
-    readonly onNewImageAdded?: () => void;
+    readonly onNewImageAdded?: (file: string) => void;
     readonly onConnectImageToPoint?: (imageId: string) => void;
     readonly onDetachImageFromPoint?: (imageId: string) => void;
     readonly onShowLinkedPointOfImage?: (imageId: string) => void;
@@ -26,6 +28,10 @@ export const ImageListEditor: React.FC<IProps> = ({
     highlightedImages,
 }): React.ReactElement => {
     const classNames: string[] = ['spg-image-list', ...(!!className ? [className] : [])];
+    const [sortedImages, setSortedImages] = useState<ISpgImageWithStates[]>([]);
+    useEffect(() => {
+        setSortedImages(images.sort((a, b) => (a.isHighlighted ? -1 : 1)));
+    }, [images]);
     function onConnectToImageClicked(id: string): void {
         !!onConnectImageToPoint && onConnectImageToPoint(id);
     }
@@ -45,35 +51,66 @@ export const ImageListEditor: React.FC<IProps> = ({
         !!onShowLinkedPointOfImage && onShowLinkedPointOfImage(imageId);
     }
     function addNewImage(): void {
-        !!onNewImageAdded && onNewImageAdded();
+        !!onNewImageAdded &&
+            onNewImageAdded(
+                'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Tab%C3%A1n_a_bont%C3%A1s_el%C5%91tt.jpg/280px-Tab%C3%A1n_a_bont%C3%A1s_el%C5%91tt.jpg',
+            );
     }
-    function isImageHighlighted(id: string): boolean {
-        return !!highlightedImages?.includes(id);
-    }
-    function getImageClassnames(id: string): string[] {
-        return ['spg-image-list__image', ...(isImageHighlighted(id) ? ['spg-image-list__image--highlighted'] : [''])];
+    function getImageClassnames(image: ISpgImageWithStates): string[] {
+        return ['spg-image-list__image', ...(image.isHighlighted ? ['spg-image-list__image--highlighted'] : [''])];
     }
     return (
         <div className={classNames.join(' ')}>
-            <div>
-                <Button onClick={addNewImage}>Add new image</Button>
+            <div className="spg-image-list__header">
+                <Button onClick={addNewImage} variant={'outlined'} size={'small'} endIcon={<AddIcon />}>
+                    Add new image
+                </Button>
             </div>
-            {images.map((image: ISpgImage) => (
-                <div key={image.id} className={getImageClassnames(image.id).join(' ')}>
-                    {getIsConnected(image.id) && <div>This image is connected to a point</div>}
-                    {image.id}
-                    {!!getIsConnected(image.id) && (
-                        <button onClick={(): void => changePointConnection(image.id)}>connect image to another point or create a new point</button>
-                    )}
-                    {!!getIsConnected(image.id) && <button onClick={(): void => detachPointFromImage(image.id)}>detach point from image</button>}
-                    {!!getIsConnected(image.id) && (
-                        <button onClick={(): void => highlightPointOfImage(image.id)}>Show connected point of the image</button>
-                    )}
-                    {!getIsConnected(image.id) && (
-                        <button onClick={(): void => onConnectToImageClicked(image.id)}>
-                            Create a point for the image or add to an existing one
-                        </button>
-                    )}
+            {sortedImages.map((image: ISpgImageWithStates) => (
+                <div key={image.id} className={getImageClassnames(image).join(' ')}>
+                    {getIsConnected(image.id) && <div>Connected to a point</div>}
+                    {!getIsConnected(image.id) && <div>No connection to any point</div>}
+                    <img className="spg-image-list__img" src={image.url} alt={image.url} />
+                    <div className="spg-image-list__image-actions">
+                        {!!getIsConnected(image.id) && (
+                            <span className="spg-image-list__image-action-btn">
+                                <Button size={'small'} variant={'contained'} onClick={(): void => changePointConnection(image.id)}>
+                                    Reconnect to point
+                                </Button>
+                            </span>
+                        )}
+                        {!!getIsConnected(image.id) && (
+                            <span className="spg-image-list__image-action-btn">
+                                <Button size={'small'} variant={'contained'} onClick={(): void => detachPointFromImage(image.id)}>
+                                    detach point from image
+                                </Button>
+                            </span>
+                        )}
+                        {!!getIsConnected(image.id) && (
+                            <span className="spg-image-list__image-action-btn">
+                                <Button size={'small'} variant={'contained'} onClick={(): void => highlightPointOfImage(image.id)}>
+                                    Show connected points
+                                </Button>
+                            </span>
+                        )}
+                        {!getIsConnected(image.id) && (
+                            <span className="spg-image-list__image-action-btn">
+                                <Button size={'small'} variant={'contained'} onClick={(): void => onConnectToImageClicked(image.id)}>
+                                    Connect to point
+                                </Button>
+                            </span>
+                        )}
+                        <span className="spg-image-list__image-action-btn">
+                            <Button size={'small'} variant={'contained'}>
+                                Edit
+                            </Button>
+                        </span>
+                        <span className="spg-image-list__image-action-btn">
+                            <Button size={'small'} variant={'contained'} color={'error'}>
+                                Delete
+                            </Button>
+                        </span>
+                    </div>
                 </div>
             ))}
         </div>

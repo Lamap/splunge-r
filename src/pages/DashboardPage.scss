@@ -1,19 +1,49 @@
 .spg-dashboard {
-    &__map-and-images {
-        display: flex;
+    display: flex;
+    $edit-header-height: 110px;
+    $image-list-width: 300px;
+    $actions-padding: 20px;
+
+    &__map-and-actions {
+        width: calc(100% - $image-list-width);
     }
 
     &__map {
-        width: calc(100% - 200px);
-        height: 500px;
+        height: calc(100vh - $edit-header-height - 2 * $actions-padding);
     }
 
-    &__edit-point {
-        width: 400px;
+    &__actions {
+        height: $edit-header-height;
         padding: 20px;
     }
 
-    &__image-list {
+    &__editing-header {
+        margin-bottom: 8px;
+        font-size: 18px;
+        font-weight: 500;
+    }
+
+    &__direction-group {
+        display: flex;
+        align-items: center;
+        margin-top: 12px;
+    }
+
+    &__delete-point-btn {
+        margin-right: 18px;
+        margin-left: auto;
+    }
+
+    &__direction-slider {
         width: 200px;
+    }
+
+    &__point-connect-actions {
+        margin-top: 20px;
+        text-align: right;
+    }
+
+    &__image-list {
+        width: $image-list-width;
     }
 }

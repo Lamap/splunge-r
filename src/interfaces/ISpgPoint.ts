@@ -7,7 +7,7 @@ export default interface ISpgPoint {
     readonly images: string[];
     readonly id: string;
 }
-export interface ISpgPointClient extends ISpgPoint {
+export interface ISpgPointWithStates extends ISpgPoint {
     readonly isSelected?: boolean;
     readonly isHighlighted?: boolean;
 }

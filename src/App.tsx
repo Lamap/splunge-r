@@ -7,7 +7,6 @@ import { DashboardPage } from './pages/DashboardPage';
 function App(): React.ReactElement {
     return (
         <Router>
-            <div className="App">something</div>
             <Routes>
                 <Route path="/" element={<Page1 />} />
                 <Route path="/dashboard/:id" element={<DashboardPage />} />
