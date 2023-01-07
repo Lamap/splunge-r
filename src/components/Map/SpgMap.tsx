@@ -13,15 +13,16 @@ import { mapOverlays as staticOverlays } from '../MockOverlays';
 import IMapOverlay from '../../interfaces/IMapOverlay';
 
 interface IProps {
+    readonly center?: LatLngLiteral;
+    readonly className?: string;
     readonly isPointAddingMode?: boolean;
     readonly isEditing?: boolean;
-    readonly className?: string;
-    readonly center?: LatLngLiteral;
-    readonly points: ISpgPointWithStates[];
+    readonly initialMapZoom?: number;
     readonly onMapClicked?: (position: LatLngLiteral) => void;
     readonly onPointMoved?: (id: string, newPosition: LatLngLiteral) => void;
     readonly onPointClicked?: (id: string) => void;
     readonly panTo?: LatLngLiteral;
+    readonly points: ISpgPointWithStates[];
 }
 
 export const SpgMap: React.FC<IProps> = ({
@@ -29,6 +30,7 @@ export const SpgMap: React.FC<IProps> = ({
     isEditing = false,
     center = { lat: 47.49, lng: 19.035 },
     className,
+    initialMapZoom = 15,
     onMapClicked,
     onPointClicked,
     onPointMoved,
@@ -37,6 +39,7 @@ export const SpgMap: React.FC<IProps> = ({
 }): React.ReactElement => {
     const classNames: string[] = ['spg-map', ...(isPointAddingMode ? ['spg-map--point-adding-mode'] : []), ...(!!className ? [className] : [])];
     const [overlays, setOverlays] = useState<IMapOverlay[]>(staticOverlays);
+    const [mapZoom, setMapZoom] = useState<number>(initialMapZoom);
 
     function addNewPoint(event: LeafletMouseEvent): void {
         !!onMapClicked && onMapClicked(event.latlng);
@@ -55,11 +58,19 @@ export const SpgMap: React.FC<IProps> = ({
             }),
         );
     }
+    function onMapZoomChanged(zoom: number): void {
+        console.log(zoom);
+        setMapZoom(zoom);
+    }
+    function overlayFilterFunction(overlay: IMapOverlay): boolean {
+        console.log(mapZoom, overlay.minDisplayZoom, mapZoom > overlay.minDisplayZoom);
+        return !!overlay.opacity && mapZoom > overlay.minDisplayZoom;
+    }
     return (
         <div className={classNames.join(' ')}>
-            <MapContainer center={center} zoom={15} className={'spg-map__container'}>
+            <MapContainer center={center} zoom={initialMapZoom} className={'spg-map__container'}>
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                <MapEventConnector onClick={addNewPoint} panTo={panTo} />
+                <MapEventConnector onClick={addNewPoint} panTo={panTo} onZoomChanged={onMapZoomChanged} />
                 <MarkerClusterGroup maxClusterRadius={36} showCoverageOnHover={false} iconCreateFunction={renderClusterIcon}>
                     {points.map((point: ISpgPointWithStates): React.ReactElement => {
                         return (
@@ -84,11 +95,9 @@ export const SpgMap: React.FC<IProps> = ({
                     })}
                 </MarkerClusterGroup>
 
-                {overlays
-                    .filter(overlay => !!overlay.opacity)
-                    .map(overlay => (
-                        <ImageOverlay key={overlay.id} zIndex={0} bounds={overlay.bounds} url={overlay.url} opacity={overlay.opacity} />
-                    ))}
+                {overlays.filter(overlayFilterFunction).map(overlay => (
+                    <ImageOverlay key={overlay.id} zIndex={0} bounds={overlay.bounds} url={overlay.url} opacity={overlay.opacity} />
+                ))}
             </MapContainer>
             <MapOverlayController overlays={overlays} className="spg-map__map-overlay-controller" onOpacityChanged={onOverlayOpacityChanged} />
         </div>

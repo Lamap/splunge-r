@@ -1,13 +1,15 @@
 import React, { useEffect } from 'react';
 import { useMapEvents } from 'react-leaflet';
-import { LatLngLiteral, LeafletMouseEvent } from 'leaflet';
+import { LatLngLiteral, LeafletEvent, LeafletMouseEvent } from 'leaflet';
 interface IProps {
     readonly onClick?: (event: LeafletMouseEvent) => void;
     readonly panTo?: LatLngLiteral;
+    readonly onZoomChanged?: (zoom: number) => void;
 }
-export const MapEventConnector: React.FC<IProps> = ({ onClick, panTo }): React.ReactElement | null => {
+export const MapEventConnector: React.FC<IProps> = ({ onClick, onZoomChanged, panTo }): React.ReactElement | null => {
     const map = useMapEvents({
         click: (event: LeafletMouseEvent) => !!onClick && onClick(event),
+        zoomend: (event: LeafletEvent) => !!onZoomChanged && onZoomChanged(event.target._zoom),
     });
     useEffect(() => {
         console.log(map.getZoom());
@@ -15,5 +17,6 @@ export const MapEventConnector: React.FC<IProps> = ({ onClick, panTo }): React.R
             map.setView(panTo, 20, { animate: true });
         }
     }, [panTo, map]);
+
     return null;
 };

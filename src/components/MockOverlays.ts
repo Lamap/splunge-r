@@ -9,7 +9,7 @@ export const mapOverlays: IMapOverlay[] = [
             end: 1900,
         },
         name: 'A Tabán 1875 és 1900 között',
-        minDisplayZoom: 10,
+        minDisplayZoom: 12,
         opacity: 0,
         bounds: [
             [47.488865, 19.034961],
@@ -25,7 +25,7 @@ export const mapOverlays: IMapOverlay[] = [
         },
         opacity: 0.5,
         name: 'A Tabán 1900 és 1933 között',
-        minDisplayZoom: 10,
+        minDisplayZoom: 12,
         bounds: [
             [47.488865, 19.034961],
             [47.495809, 19.04834],
