@@ -7161,6 +7161,11 @@ leaflet.markercluster@^1.5.3:
   resolved "https://registry.yarnpkg.com/leaflet.markercluster/-/leaflet.markercluster-1.5.3.tgz#9cdb52a4eab92671832e1ef9899669e80efc4056"
   integrity sha512-vPTw/Bndq7eQHjLBVlWpnGeLa3t+3zGiuM7fJwCkiMFq+nmRuG3RI3f7f4N4TDX7T4NpbAXpR2+NTRSEGfCSeA==
 
+leaflet@1.8.0:
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/leaflet/-/leaflet-1.8.0.tgz#4615db4a22a304e8e692cae9270b983b38a2055e"
+  integrity sha512-gwhMjFCQiYs3x/Sf+d49f10ERXaEFCPr+nVTryhAW8DWbMGqJqt9G4XuIaHmFW08zYvhgdzqXGr8AlW8v8dQkA==
+
 leaflet@^1.8.0:
   version "1.9.3"
   resolved "https://registry.yarnpkg.com/leaflet/-/leaflet-1.9.3.tgz#52ec436954964e2d3d39e0d433da4b2500d74414"
@@ -10095,6 +10100,13 @@ split-string@^3.0.1, split-string@^3.0.2:
   integrity sha512-NzNVhJDYpwceVVii8/Hu6DKfD2G+NrQHlS/V/qgv763EYudVwEcMQNxd2lh+0VrUByXN/oJkl5grOhYWvQUYiw==
   dependencies:
     extend-shallow "^3.0.0"
+
+splunge-common-lib@1.0.8:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/splunge-common-lib/-/splunge-common-lib-1.0.8.tgz#9c1edcfa60bc204e2248b24d75cd38ea9b3dfc5f"
+  integrity sha512-OczLuCySzKLc5e9MvOPiUeAVDGVfHigd1TgjXVhfWuCPF27tuvvsUxJdpUS06PiyxvQ+aXGmIjC2hMVVRO2hPg==
+  dependencies:
+    leaflet "1.8.0"
 
 sprintf-js@~1.0.2:
   version "1.0.3"

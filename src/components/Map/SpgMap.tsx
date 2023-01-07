@@ -7,7 +7,7 @@ import { SpgMarker } from '../SpgMarker/SpgMarker';
 import { LatLngLiteral, LeafletMouseEvent } from 'leaflet';
 import { MapEventConnector } from './MapEventConnector';
 import renderClusterIcon from './RenderClusterIcon';
-import { ISpgPointWithStates } from '../../interfaces/ISpgPoint';
+import { ISpgPointWithStates } from '../../interfaces/ISpgPointWithStates';
 import { MapOverlayController } from '../MapOverlayController/MapOverlayController';
 import { mapOverlays as staticOverlays } from '../MockOverlays';
 import IMapOverlay from '../../interfaces/IMapOverlay';

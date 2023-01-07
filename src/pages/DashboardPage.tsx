@@ -3,11 +3,13 @@ import './DashboardPage.scss';
 import React, { SyntheticEvent, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { SpgMap } from '../components/Map/SpgMap';
-import ISpgPoint, { ISpgPointWithStates } from '../interfaces/ISpgPoint';
+import { ISpgPointWithStates } from '../interfaces/ISpgPointWithStates';
 import { LatLngLiteral } from 'leaflet';
 import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, Slider, TextField } from '@mui/material';
-import { ISpgImage, ISpgImageWithStates } from '../interfaces/ISpgImage';
+import { ISpgImageWithStates } from '../interfaces/ISpgImageWithStates';
 import { DashboardImageList } from '../components/DashboardImageList/DashboardImageList';
+import { ISpgImage, ISpgPoint } from 'splunge-common-lib/src';
+
 import {
     addImageToPointCall,
     createNewImageCall,
@@ -57,11 +59,15 @@ export function DashboardPage(): React.ReactElement {
         },
     ]);
     console.log(id);
-    function createPointForImage(position: LatLngLiteral): void {
+    async function createPointForImage(position: LatLngLiteral): Promise<void> {
         clearPointHighlighting();
         if (!!selectedImageId) {
-            const extendedPoints: ISpgPointWithStates[] = createPointForImageCall(position, selectedImageId, points);
-            setPoints(extendedPoints);
+            try {
+                const extendedPoints: ISpgPointWithStates[] = await createPointForImageCall(position, selectedImageId, points);
+                setPoints(extendedPoints);
+            } catch (err) {
+                console.error(err);
+            }
         }
         setSelectedImageId(undefined);
     }

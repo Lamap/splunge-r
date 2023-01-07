@@ -1,9 +1,10 @@
 import './DashboardImage.scss';
 import React from 'react';
-import { ISpgImage, ISpgImageWithStates } from '../../interfaces/ISpgImage';
+import { ISpgImageWithStates } from '../../interfaces/ISpgImageWithStates';
 import { Button } from '@mui/material';
 import LinkIcon from '@mui/icons-material/Link';
 import LinkOffIcon from '@mui/icons-material/LinkOff';
+import { ISpgImage } from 'splunge-common-lib/src';
 
 interface IProps {
     readonly image: ISpgImageWithStates;

@@ -1,13 +1,13 @@
 import { LatLngLiteral } from 'leaflet';
-import ISpgPoint, { ISpgPointWithStates } from '../interfaces/ISpgPoint';
-import { ISpgImage } from '../interfaces/ISpgImage';
+import { ISpgPointWithStates } from '../interfaces/ISpgPointWithStates';
+import { ISpgImage, ISpgPoint } from 'splunge-common-lib/src';
 
 export interface IDeleteImageResponse {
     readonly images: ISpgImage[];
     readonly points: ISpgPoint[];
 }
 
-export function createPointForImageCall(position: LatLngLiteral, newImageId: string, points: ISpgPoint[]): ISpgPoint[] {
+export async function createPointForImageCall(position: LatLngLiteral, newImageId: string, points: ISpgPoint[]): Promise<ISpgPoint[]> {
     const adjustedPoints: ISpgPoint[] = points.map((point: ISpgPoint) => {
         return {
             ...point,

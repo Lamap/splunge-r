@@ -1,10 +1,11 @@
 import './DashboardImageList.scss';
-import { ISpgImage, ISpgImageWithStates } from '../../interfaces/ISpgImage';
+import { ISpgImageWithStates } from '../../interfaces/ISpgImageWithStates';
 import React, { useEffect, useState } from 'react';
-import { ISpgPointWithStates } from '../../interfaces/ISpgPoint';
+import { ISpgPointWithStates } from '../../interfaces/ISpgPointWithStates';
 import { Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { DashboardImage } from '../DashboardImage/DashboardImage';
+import { ISpgImage } from 'splunge-common-lib/src';
 
 interface IProps {
     readonly images: ISpgImageWithStates[];
