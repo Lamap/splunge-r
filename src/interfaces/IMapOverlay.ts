@@ -9,6 +9,7 @@ export default interface IMapOverlay {
     readonly name: string;
     readonly dateRange: IMapOverlayDateRange;
     readonly defaultZoom?: number;
+    readonly opacity: number;
     readonly minDisplayZoom: number;
     readonly bounds: LatLngBoundsExpression;
 }

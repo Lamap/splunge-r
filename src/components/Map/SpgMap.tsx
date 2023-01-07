@@ -1,14 +1,16 @@
 import './SpgMap.scss';
 import '../../../node_modules/leaflet/dist/leaflet.css';
-import React from 'react';
+import React, { useState } from 'react';
 import { MapContainer, TileLayer, ImageOverlay } from 'react-leaflet';
-import mapSample from '../../assets/maps/b1_22clr.gif';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import { SpgMarker } from '../SpgMarker/SpgMarker';
 import { LatLngLiteral, LeafletMouseEvent } from 'leaflet';
 import { MapEventConnector } from './MapEventConnector';
 import renderClusterIcon from './RenderClusterIcon';
 import { ISpgPointWithStates } from '../../interfaces/ISpgPoint';
+import { MapOverlayController } from '../MapOverlayController/MapOverlayController';
+import { mapOverlays as staticOverlays } from '../MockOverlays';
+import IMapOverlay from '../../interfaces/IMapOverlay';
 
 interface IProps {
     readonly isPointAddingMode?: boolean;
@@ -33,10 +35,26 @@ export const SpgMap: React.FC<IProps> = ({
     points = [],
     panTo,
 }): React.ReactElement => {
+    const classNames: string[] = ['spg-map', ...(isPointAddingMode ? ['spg-map--point-adding-mode'] : []), ...(!!className ? [className] : [])];
+    const [overlays, setOverlays] = useState<IMapOverlay[]>(staticOverlays);
+
     function addNewPoint(event: LeafletMouseEvent): void {
         !!onMapClicked && onMapClicked(event.latlng);
     }
-    const classNames: string[] = ['spg-map', ...(isPointAddingMode ? ['spg-map--point-adding-mode'] : []), ...(!!className ? [className] : [])];
+    function onOverlayOpacityChanged(id: string, value: number): void {
+        console.log(id, value);
+        setOverlays(
+            overlays.map((overlay: IMapOverlay): IMapOverlay => {
+                if (overlay.id === id) {
+                    return {
+                        ...overlay,
+                        opacity: value,
+                    };
+                }
+                return overlay;
+            }),
+        );
+    }
     return (
         <div className={classNames.join(' ')}>
             <MapContainer center={center} zoom={15} className={'spg-map__container'}>
@@ -66,16 +84,13 @@ export const SpgMap: React.FC<IProps> = ({
                     })}
                 </MarkerClusterGroup>
 
-                <ImageOverlay
-                    zIndex={0}
-                    bounds={[
-                        [47.488865, 19.034961],
-                        [47.495809, 19.04834],
-                    ]}
-                    url={mapSample}
-                    opacity={0.7}
-                />
+                {overlays
+                    .filter(overlay => !!overlay.opacity)
+                    .map(overlay => (
+                        <ImageOverlay key={overlay.id} zIndex={0} bounds={overlay.bounds} url={overlay.url} opacity={overlay.opacity} />
+                    ))}
             </MapContainer>
+            <MapOverlayController overlays={overlays} className="spg-map__map-overlay-controller" onOpacityChanged={onOverlayOpacityChanged} />
         </div>
     );
 };

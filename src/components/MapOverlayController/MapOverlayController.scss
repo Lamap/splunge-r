@@ -1,5 +1,15 @@
 .spg-map-overlay-controller {
     display: flex;
+    padding: 0 16px;
+    box-shadow: #0000001a 0 -7px 5px 0;
+    user-select: none;
+
+    &__main-label {
+        display: flex;
+        align-items: center;
+        margin-right: 16px;
+    }
+
     &__items {
         display: flex;
     }
@@ -7,8 +17,6 @@
     &__item {
         display: inline-block;
         position: relative;
-        margin-right: 24px;
-        border: 1px solid #000;
 
         &--selected,
         &:hover {
@@ -20,19 +28,42 @@
                 position: absolute;
                 bottom: 100%;
                 width: 100%;
+                padding: 16px;
+                border-top-left-radius: 8px;
+                border-top-right-radius: 8px;
             }
+
             .spg-map-overlay-controller__opacity-slider {
                 display: inline-block;
+            }
+
+            .spg-map-overlay-controller__date-label {
+                color: #F73F13;
             }
         }
     }
 
     &__date-and-opacity {
         display: flex;
+        align-items: center;
+        height: 100%;
     }
 
     &__date-label {
+        position: relative;
         display: block;
+        margin-left: 16px;
+        font-weight: 600;
+        color: #828282;
+    }
+
+    &__date-label-child {
+        position: relative;
+    }
+
+    &__date-label-colored {
+        left: -50%;
+        color: #F73F13;
     }
 
     &__name-label {
@@ -41,6 +72,8 @@
 
     &__opacity-slider {
         display: none;
+        width: 100%;
+        margin-left: 16px;
     }
 
 }

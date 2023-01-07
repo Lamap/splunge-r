@@ -1,12 +1,21 @@
 .spg-map {
+    $map-overlay-controller-height: 60px;
+
     &__container {
         width: 100%;
-        height: inherit;
+        height: calc(100% - $map-overlay-controller-height);
     }
 
     &--point-adding-mode {
         .spg-map__container {
             cursor: crosshair;
         }
+    }
+
+
+    &__map-overlay-controller {
+        position: relative;
+        z-index: 99999;
+        height: $map-overlay-controller-height;
     }
 }

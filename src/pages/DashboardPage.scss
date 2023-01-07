@@ -3,14 +3,13 @@
     $edit-header-height: 110px;
     $image-list-width: 300px;
     $actions-padding: 20px;
-    $map-overlay-controller-height: 100px;
 
     &__map-and-actions {
         width: calc(100% - $image-list-width);
     }
 
     &__map {
-        height: calc(100vh - $edit-header-height - 2 * $actions-padding - $map-overlay-controller-height);
+        height: calc(100vh - $edit-header-height - 2 * $actions-padding);
     }
 
     &__actions {
@@ -46,10 +45,5 @@
 
     &__image-list {
         width: $image-list-width;
-    }
-    &__map-overlay-controller {
-        position: relative;
-        z-index: 99999;
-        height: $map-overlay-controller-height;
     }
 }
