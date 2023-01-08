@@ -1,21 +1,34 @@
 import { LatLngLiteral } from 'leaflet';
 import { ISpgPointWithStates } from '../interfaces/ISpgPointWithStates';
 import { ISpgImage, ISpgPoint } from 'splunge-common-lib/src';
+import axios, { AxiosResponse } from 'axios';
 
 export interface IDeleteImageResponse {
     readonly images: ISpgImage[];
     readonly points: ISpgPoint[];
 }
 
-export async function createPointForImageCall(position: LatLngLiteral, newImageId: string, points: ISpgPoint[]): Promise<ISpgPoint[]> {
-    const adjustedPoints: ISpgPoint[] = points.map((point: ISpgPoint) => {
-        return {
-            ...point,
-            images: point.images.filter((imageId: string) => imageId !== newImageId),
-        };
-    });
-    const extendedPoints: ISpgPoint[] = [...adjustedPoints, { position, id: new Date().getTime().toString(), images: [newImageId] }];
-    return extendedPoints;
+export interface ICreatePointForImageRequest {
+    imageId: string;
+    point: Omit<ISpgPoint, 'id' | 'images'>;
+}
+export async function createPointForImageCall(position: LatLngLiteral, imageId: string): Promise<ISpgPoint[]> {
+    try {
+        const createdPointResponse: AxiosResponse<ISpgPoint[]> = await axios.post<
+            ISpgPoint[],
+            AxiosResponse<ISpgPoint[]>,
+            ICreatePointForImageRequest
+        >('http://localhost:2222/pointaaaa', {
+            point: {
+                position,
+            },
+            imageId,
+        });
+        return createdPointResponse.data;
+    } catch (err) {
+        console.log(err);
+        throw err;
+    }
 }
 export function addImageToPointCall(pointId: string, newImageId: string, points: ISpgPoint[]): ISpgPoint[] {
     const updatedPoints: ISpgPoint[] = points.map((point: ISpgPoint) => {

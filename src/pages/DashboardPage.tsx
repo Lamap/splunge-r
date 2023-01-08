@@ -63,8 +63,8 @@ export function DashboardPage(): React.ReactElement {
         clearPointHighlighting();
         if (!!selectedImageId) {
             try {
-                const extendedPoints: ISpgPointWithStates[] = await createPointForImageCall(position, selectedImageId, points);
-                setPoints(extendedPoints);
+                const updatedPointExtendedByTheNew: ISpgPoint[] = await createPointForImageCall(position, selectedImageId);
+                setPoints(updatedPointExtendedByTheNew);
             } catch (err) {
                 console.error(err);
             }
