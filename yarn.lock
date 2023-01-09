@@ -10124,10 +10124,10 @@ split-string@^3.0.1, split-string@^3.0.2:
   dependencies:
     extend-shallow "^3.0.0"
 
-splunge-common-lib@1.0.9:
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/splunge-common-lib/-/splunge-common-lib-1.0.9.tgz#0c64e02e3be23ee5544b61ca4753ae1ee7ca07f1"
-  integrity sha512-+rSa0FJZJQ/x2MqUo6qQTC9wbjQ6pjrx9PFHl6fyPGgb931rPptlDfGw5a00FcqXxSPCqXHEl+nCXes3uXbODw==
+splunge-common-lib@1.1.27:
+  version "1.1.27"
+  resolved "https://registry.yarnpkg.com/splunge-common-lib/-/splunge-common-lib-1.1.27.tgz#506bcb4c191e9d71e5a6ca19d34b66627cb85cc6"
+  integrity sha512-ofhhj2/HWX5ewVLp2hCm8QsH4uDMSmkwqBamzIVMrN30w6Kt1qtofaHsiclUbwOtvdAM470XLooFqZcuo2oGsg==
   dependencies:
     leaflet "1.8.0"
 

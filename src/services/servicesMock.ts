@@ -1,24 +1,31 @@
 import { LatLngLiteral } from 'leaflet';
 import { ISpgPointWithStates } from '../interfaces/ISpgPointWithStates';
-import { ISpgImage, ISpgPoint } from 'splunge-common-lib/src';
+import { ApiRoutes, IPointCreateRequestBody, IPointCreateResponse, IPointFetchResponse, ISpgImage, ISpgPoint } from 'splunge-common-lib';
 import axios, { AxiosResponse } from 'axios';
+import { createApiUrl } from './createApiUrl';
 
 export interface IDeleteImageResponse {
     readonly images: ISpgImage[];
     readonly points: ISpgPoint[];
 }
 
-export interface ICreatePointForImageRequest {
-    imageId: string;
-    point: Omit<ISpgPoint, 'id' | 'images'>;
+export async function requestPointsFetch(): Promise<IPointFetchResponse> {
+    try {
+        const allPointsResponse: AxiosResponse<IPointFetchResponse> = await axios.get<IPointFetchResponse>(createApiUrl(ApiRoutes.SPG_POINTS_FETCH));
+        return allPointsResponse.data;
+    } catch (err) {
+        console.log(err);
+        throw err;
+    }
 }
-export async function createPointForImageCall(position: LatLngLiteral, imageId: string): Promise<ISpgPoint[]> {
+
+export async function requestCreatePointForImage(position: LatLngLiteral, imageId: string): Promise<IPointCreateResponse> {
     try {
         const createdPointResponse: AxiosResponse<ISpgPoint[]> = await axios.post<
-            ISpgPoint[],
-            AxiosResponse<ISpgPoint[]>,
-            ICreatePointForImageRequest
-        >('http://localhost:2222/pointaaaa', {
+            IPointCreateResponse,
+            AxiosResponse<IPointCreateResponse>,
+            IPointCreateRequestBody
+        >(createApiUrl(ApiRoutes.SPG_POINT_CREATE), {
             point: {
                 position,
             },

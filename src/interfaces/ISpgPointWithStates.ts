@@ -1,4 +1,4 @@
-import { ISpgPoint } from 'splunge-common-lib/src';
+import { ISpgPoint } from 'splunge-common-lib';
 
 export interface ISpgPointWithStates extends ISpgPoint {
     readonly isSelected?: boolean;

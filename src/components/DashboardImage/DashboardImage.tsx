@@ -4,7 +4,7 @@ import { ISpgImageWithStates } from '../../interfaces/ISpgImageWithStates';
 import { Button } from '@mui/material';
 import LinkIcon from '@mui/icons-material/Link';
 import LinkOffIcon from '@mui/icons-material/LinkOff';
-import { ISpgImage } from 'splunge-common-lib/src';
+import { ISpgImage } from 'splunge-common-lib';
 
 interface IProps {
     readonly image: ISpgImageWithStates;

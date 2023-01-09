@@ -1,6 +1,6 @@
 import '../../node_modules/leaflet/dist/leaflet.css';
 import './DashboardPage.scss';
-import React, { SyntheticEvent, useState } from 'react';
+import React, { SyntheticEvent, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { SpgMap } from '../components/Map/SpgMap';
 import { ISpgPointWithStates } from '../interfaces/ISpgPointWithStates';
@@ -8,17 +8,18 @@ import { LatLngLiteral } from 'leaflet';
 import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, Slider, TextField } from '@mui/material';
 import { ISpgImageWithStates } from '../interfaces/ISpgImageWithStates';
 import { DashboardImageList } from '../components/DashboardImageList/DashboardImageList';
-import { ISpgImage, ISpgPoint } from 'splunge-common-lib/src';
+import { ISpgImage, ISpgPoint } from 'splunge-common-lib';
 
 import {
     addImageToPointCall,
     createNewImageCall,
-    createPointForImageCall,
+    requestCreatePointForImage,
     deleteImageCall,
     deletePointCall,
     detachImageFromPointCall,
     IDeleteImageResponse,
     updatePointCall,
+    requestPointsFetch,
 } from '../services/servicesMock';
 
 interface IDashboardWarning {
@@ -41,13 +42,7 @@ export function DashboardPage(): React.ReactElement {
     const [warning, setWarning] = useState<IDashboardWarning | null>(null);
     const [confirmation, setConfirmation] = useState<IDashboardConfirmation | null>(null);
     const [editedImage, setEditedImage] = useState<ISpgImage | null>();
-    const [points, setPoints] = useState<ISpgPointWithStates[]>([
-        {
-            position: { lat: 47.888, lng: 19.03 },
-            id: '2134455',
-            images: [],
-        },
-    ]);
+    const [points, setPoints] = useState<ISpgPointWithStates[]>([]);
     const [images, setImages] = useState<ISpgImageWithStates[]>([
         {
             id: 'sdfsdfdssdasdfs',
@@ -59,11 +54,16 @@ export function DashboardPage(): React.ReactElement {
         },
     ]);
     console.log(id);
+    useEffect((): void => {
+        requestPointsFetch()
+            .then(allPoints => setPoints(allPoints))
+            .catch(err => console.error(err));
+    }, []);
     async function createPointForImage(position: LatLngLiteral): Promise<void> {
         clearPointHighlighting();
         if (!!selectedImageId) {
             try {
-                const updatedPointExtendedByTheNew: ISpgPoint[] = await createPointForImageCall(position, selectedImageId);
+                const updatedPointExtendedByTheNew: ISpgPoint[] = await requestCreatePointForImage(position, selectedImageId);
                 setPoints(updatedPointExtendedByTheNew);
             } catch (err) {
                 console.error(err);

@@ -5,7 +5,7 @@ import { ISpgPointWithStates } from '../../interfaces/ISpgPointWithStates';
 import { Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { DashboardImage } from '../DashboardImage/DashboardImage';
-import { ISpgImage } from 'splunge-common-lib/src';
+import { ISpgImage } from 'splunge-common-lib';
 
 interface IProps {
     readonly images: ISpgImageWithStates[];
