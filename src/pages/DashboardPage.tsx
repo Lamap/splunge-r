@@ -20,6 +20,7 @@ import {
     IDeleteImageResponse,
     updatePointCall,
     requestPointsFetch,
+    requestImagesFetch,
 } from '../services/servicesMock';
 
 interface IDashboardWarning {
@@ -44,6 +45,7 @@ export function DashboardPage(): React.ReactElement {
     const [editedImage, setEditedImage] = useState<ISpgImage | null>();
     const [points, setPoints] = useState<ISpgPointWithStates[]>([]);
     const [images, setImages] = useState<ISpgImageWithStates[]>([
+        /*
         {
             id: 'sdfsdfdssdasdfs',
             url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Tab%C3%A1n_a_bont%C3%A1s_el%C5%91tt.jpg/280px-Tab%C3%A1n_a_bont%C3%A1s_el%C5%91tt.jpg',
@@ -52,11 +54,16 @@ export function DashboardPage(): React.ReactElement {
             id: 'sdfsdfdsfs',
             url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Tab%C3%A1n_a_bont%C3%A1s_el%C5%91tt.jpg/280px-Tab%C3%A1n_a_bont%C3%A1s_el%C5%91tt.jpg',
         },
+
+         */
     ]);
     console.log(id);
     useEffect((): void => {
         requestPointsFetch()
             .then(allPoints => setPoints(allPoints))
+            .catch(err => console.error(err));
+        requestImagesFetch()
+            .then(fetchedImages => setImages(fetchedImages))
             .catch(err => console.error(err));
     }, []);
     async function createPointForImage(position: LatLngLiteral): Promise<void> {
@@ -235,11 +242,12 @@ export function DashboardPage(): React.ReactElement {
         console.log(attachedPoint);
     }
 
-    function addNewImage(file: string): void {
-        console.log('add new image');
+    function addNewImage(file: File): void {
+        console.log('add new image', file);
+
         createNewImageCall(file)
             .then((newImage: ISpgImage) => {
-                setImages([...images, newImage]);
+                setImages([newImage, ...images]);
             })
             .catch(err => console.error(err));
     }

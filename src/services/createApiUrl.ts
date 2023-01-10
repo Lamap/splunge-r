@@ -5,5 +5,5 @@ export function createApiUrl(route: ApiRoutes): string {
 }
 export function createApiUrlWithIdParam(route: ApiRoutes, id: string): string {
     const replacedRoute: string = route.replace(`:id`, id);
-    return `${process.env.REACT_APP_API_URL}${replacedRoute}`;
+    return `${process.env.REACT_APP_API_URL}/${replacedRoute}`;
 }

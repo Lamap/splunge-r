@@ -1,6 +1,6 @@
 import './DashboardImageList.scss';
 import { ISpgImageWithStates } from '../../interfaces/ISpgImageWithStates';
-import React, { useEffect, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { ISpgPointWithStates } from '../../interfaces/ISpgPointWithStates';
 import { Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
@@ -11,7 +11,7 @@ interface IProps {
     readonly images: ISpgImageWithStates[];
     readonly points: ISpgPointWithStates[];
     readonly className?: string;
-    readonly onNewImageAdded?: (file: string) => void;
+    readonly onNewImageAdded?: (file: File) => void;
     readonly onConnectImageToPoint?: (imageId: string) => void;
     readonly onDeleteImage?: (imageId: string) => void;
     readonly onDetachImageFromPoint?: (imageId: string) => void;
@@ -70,18 +70,21 @@ export const DashboardImageList: React.FC<IProps> = ({
         return !!points.find(point => point.images?.includes(imageId));
     }
 
-    function addNewImage(): void {
-        !!onNewImageAdded &&
-            onNewImageAdded(
-                'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Tab%C3%A1n_a_bont%C3%A1s_el%C5%91tt.jpg/280px-Tab%C3%A1n_a_bont%C3%A1s_el%C5%91tt.jpg',
-            );
+    function addNewImage(event: ChangeEvent<HTMLInputElement>): void {
+        if (!event.target.files) {
+            return;
+        }
+        !!onNewImageAdded && onNewImageAdded(event.target.files[0]);
     }
     return (
         <div className={classNames.join(' ')}>
             <div className="spg-dashboard-image-list__header">
-                <Button onClick={addNewImage} variant={'outlined'} size={'small'} endIcon={<AddIcon />}>
-                    Add new image
-                </Button>
+                <input id="file-upload" type="file" onChange={addNewImage} accept="image/*" hidden />
+                <label htmlFor="file-upload">
+                    <Button variant={'outlined'} size={'small'} endIcon={<AddIcon />} component="span">
+                        Add new image
+                    </Button>
+                </label>
             </div>
 
             {!!imagesOfSelectedPoint.length && (

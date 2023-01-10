@@ -8,7 +8,15 @@ export interface IDeleteImageResponse {
     readonly images: ISpgImage[];
     readonly points: ISpgPoint[];
 }
-
+export async function requestImagesFetch(): Promise<ISpgImage[]> {
+    try {
+        const imagesResponse: AxiosResponse<ISpgImage[]> = await axios.get<ISpgImage[]>(createApiUrl(ApiRoutes.SPG_IMAGES_FETCH));
+        return imagesResponse.data;
+    } catch (err) {
+        console.log(err);
+        throw err;
+    }
+}
 export async function requestPointsFetch(): Promise<IPointFetchResponse> {
     try {
         const allPointsResponse: AxiosResponse<IPointFetchResponse> = await axios.get<IPointFetchResponse>(createApiUrl(ApiRoutes.SPG_POINTS_FETCH));
@@ -72,13 +80,16 @@ export async function detachImageFromPointCall(imageIdToRemove: string, points: 
     });
     return updatedPoints;
 }
-export async function createNewImageCall(file: string): Promise<ISpgImage> {
-    const newImage: ISpgImage = {
-        id: new Date().getTime().toString(),
-        url: file,
-        date: { on: new Date() },
-    };
-    return newImage;
+export async function createNewImageCall(file: File): Promise<ISpgImage> {
+    try {
+        const formData: FormData = new FormData();
+        formData.append('image', file);
+        const newImageResponse: AxiosResponse<ISpgImage> = await axios.post(createApiUrl(ApiRoutes.SPG_IMAGE_CREATE), formData);
+        return newImageResponse.data;
+    } catch (err) {
+        console.log(err);
+        throw err;
+    }
 }
 export async function deleteImageCall(imageToDelete: string, images: ISpgImage[], points: ISpgPoint[]): Promise<IDeleteImageResponse> {
     const newImageList: ISpgImage[] = images.filter(image => image.id !== imageToDelete);
