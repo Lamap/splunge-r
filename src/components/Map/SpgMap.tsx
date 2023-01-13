@@ -36,7 +36,7 @@ export const SpgMap: React.FC<IProps> = ({
     onPointMoved,
     points = [],
     panTo,
-}): React.ReactElement => {
+}: IProps): React.ReactElement => {
     const classNames: string[] = ['spg-map', ...(isPointAddingMode ? ['spg-map--point-adding-mode'] : []), ...(!!className ? [className] : [])];
     const [overlays, setOverlays] = useState<IMapOverlay[]>(staticOverlays);
     const [mapZoom, setMapZoom] = useState<number>(initialMapZoom);
@@ -95,7 +95,7 @@ export const SpgMap: React.FC<IProps> = ({
                     })}
                 </MarkerClusterGroup>
 
-                {overlays.filter(overlayFilterFunction).map(overlay => (
+                {overlays.filter(overlayFilterFunction).map((overlay: IMapOverlay) => (
                     <ImageOverlay key={overlay.id} zIndex={0} bounds={overlay.bounds} url={overlay.url} opacity={overlay.opacity} />
                 ))}
             </MapContainer>

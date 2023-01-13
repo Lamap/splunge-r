@@ -15,7 +15,7 @@ export const SpgMarkerIconElement: (props: ISpgMarkerElementProps) => string = (
     isPointAddingMode = false,
     hasDirection = false,
     connectedImageCount = 0,
-}): string => {
+}: ISpgMarkerElementProps): string => {
     const panoramaDiv: string = `<div class="spg-marker-icon__panorama" style="background-image: url(${panorama}); transform: rotate(${rotation}deg)"></div>`;
     const connectedImageCountSpan: string = `<span class="spg-marker-icon__count">${connectedImageCount}</span>`;
     const markerIconClassNames: string[] = [

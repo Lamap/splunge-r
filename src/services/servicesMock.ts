@@ -4,6 +4,7 @@ import {
     IImageDeleteResponse,
     IImageUpdateRequestBody,
     IImageUpdateResponse,
+    IPointAttachResponse,
     IPointCreateRequestBody,
     IPointCreateResponse,
     IPointDeleteResponse,
@@ -14,7 +15,7 @@ import {
     ISpgPoint,
 } from 'splunge-common-lib';
 import axios, { AxiosResponse } from 'axios';
-import { createApiUrl, createApiUrlWithIdParam } from './createApiUrl';
+import { createApiUrl, createApiUrlWithIdParam, createApiUrlWithParams } from './createApiUrl';
 
 export async function requestImagesFetch(): Promise<ISpgImage[]> {
     try {
@@ -53,20 +54,20 @@ export async function requestCreatePointForImage(position: LatLngLiteral, imageI
         throw err;
     }
 }
-export function requestAttachImageToPoint(pointId: string, imageId: string, points: ISpgPoint[]): ISpgPoint[] {
-    const updatedPoints: ISpgPoint[] = points.map((point: ISpgPoint) => {
-        if (point.id === pointId) {
-            return {
-                ...point,
-                images: [...point.images, ...(!point.images.includes(imageId) ? [imageId] : [])],
-            };
-        }
-        return {
-            ...point,
-            images: point.images.filter(imageId => imageId !== imageId),
-        };
-    });
-    return updatedPoints;
+
+export async function requestAttachImageToPoint(pointId: string, imageId: string): Promise<IPointAttachResponse> {
+    try {
+        const attachResponse: AxiosResponse<IPointAttachResponse> = await axios.put<IPointAttachResponse>(
+            createApiUrlWithParams(ApiRoutes.SPG_ATTACH_IMAGE_TO_POINT, {
+                pointId,
+                imageId,
+            }),
+        );
+        return attachResponse.data;
+    } catch (err) {
+        console.log(err);
+        throw err;
+    }
 }
 export async function requestUpdatePoint(point: ISpgPoint): Promise<IPointUpdateResponse> {
     try {
@@ -92,10 +93,10 @@ export async function requestDeletePoint(pointToDeleteId: string): Promise<IPoin
     }
 }
 
-export async function detachImageFromPointCall(imageIdToRemove: string): Promise<IPointDetachResponse> {
+export async function requestDetachImageFromPoint(imageIdToRemove: string): Promise<IPointDetachResponse> {
     try {
         const updatedPointResponse: AxiosResponse<IPointDetachResponse> = await axios.delete<IPointDetachResponse>(
-            createApiUrlWithIdParam(ApiRoutes.SPG_IMAGE_UPDATE_AND_DELETE, imageIdToRemove),
+            createApiUrlWithIdParam(ApiRoutes.SPG_DETACH_POINT_FROM_IMAGE, imageIdToRemove),
         );
         return updatedPointResponse.data;
     } catch (err) {
@@ -132,7 +133,7 @@ export async function requestUpdateImage(updatedImage: ISpgImage): Promise<IImag
             IImageUpdateResponse,
             AxiosResponse<IImageUpdateResponse>,
             IImageUpdateRequestBody
-        >(createApiUrlWithIdParam(ApiRoutes.SPG_DETACH_POINT_FROM_IMAGE, updatedImage.id), updatedImage);
+        >(createApiUrlWithIdParam(ApiRoutes.SPG_IMAGE_UPDATE_AND_DELETE, updatedImage.id), updatedImage);
         return updatedImageResponse.data;
     } catch (err) {
         console.log(err);

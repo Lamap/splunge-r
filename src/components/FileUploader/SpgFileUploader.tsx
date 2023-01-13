@@ -13,7 +13,7 @@ export const SpgFileUploader: React.FC<IProps> = ({
     className,
     onFileUploaded,
     accept = 'image/*',
-}): React.ReactElement => {
+}: IProps): React.ReactElement => {
     const classNamesArray: string[] = ['spg-file-uploader', ...(!!className ? [className] : [])];
     const [warning, setWarning] = useState<string>('');
 

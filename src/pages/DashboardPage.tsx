@@ -8,7 +8,7 @@ import { LatLngLiteral } from 'leaflet';
 import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, Slider, TextField } from '@mui/material';
 import { ISpgImageWithStates } from '../interfaces/ISpgImageWithStates';
 import { DashboardImageList } from '../components/DashboardImageList/DashboardImageList';
-import { IImageDeleteResponse, IPointDeleteResponse, ISpgImage, ISpgPoint } from 'splunge-common-lib';
+import { IImageDeleteResponse, IPointAttachResponse, IPointDeleteResponse, IPointDetachResponse, ISpgImage, ISpgPoint } from 'splunge-common-lib';
 
 import {
     requestAttachImageToPoint,
@@ -16,7 +16,7 @@ import {
     requestCreatePointForImage,
     requestDeleteImage,
     requestDeletePoint,
-    detachImageFromPointCall,
+    requestDetachImageFromPoint,
     requestUpdatePoint,
     requestPointsFetch,
     requestImagesFetch,
@@ -48,11 +48,11 @@ export function DashboardPage(): React.ReactElement {
     console.log(id);
     useEffect((): void => {
         requestPointsFetch()
-            .then(allPoints => setPoints(allPoints))
-            .catch(err => console.error(err));
+            .then((allPoints: ISpgPoint[]) => setPoints(allPoints))
+            .catch((err: Error) => console.error(err));
         requestImagesFetch()
-            .then(fetchedImages => setImages(fetchedImages))
-            .catch(err => console.error(err));
+            .then((fetchedImages: ISpgImage[]) => setImages(fetchedImages))
+            .catch((err: Error) => console.error(err));
     }, []);
     async function createPointForImage(position: LatLngLiteral): Promise<void> {
         clearPointHighlighting();
@@ -73,7 +73,7 @@ export function DashboardPage(): React.ReactElement {
             setSelectedPointId(id);
             const selectedPoint: ISpgPointWithStates | undefined = getSelectedPoint(id);
             setImages(
-                images.map(image => {
+                images.map((image: ISpgImageWithStates) => {
                     return {
                         ...image,
                         isHighlighted: selectedPoint?.images.includes(image.id),
@@ -105,7 +105,7 @@ export function DashboardPage(): React.ReactElement {
     function clearPointSelection(): void {
         setSelectedPointId(undefined);
         setImages(
-            images.map(image => {
+            images.map((image: ISpgImageWithStates) => {
                 return {
                     ...image,
                     isHighlighted: false,
@@ -144,8 +144,7 @@ export function DashboardPage(): React.ReactElement {
         updatePoint({ ...selectedPoint, hasDirection: checked });
     }
     async function onPointPositionChanged(id: string, newPosition: LatLngLiteral): Promise<void> {
-        console.log('m', id, newPosition);
-        const pointToUpdate: ISpgPoint | undefined = points.find(point => point.id === id);
+        const pointToUpdate: ISpgPoint | undefined = points.find((point: ISpgPointWithStates) => point.id === id);
         if (!pointToUpdate) {
             return;
         }
@@ -162,10 +161,10 @@ export function DashboardPage(): React.ReactElement {
                 });
                 setPoints(updatedPoints);
             })
-            .catch(err => console.error(err));
+            .catch((err: Error) => console.error(err));
     }
     function getSelectedPoint(selectedId: string | undefined): ISpgPointWithStates | undefined {
-        return points.find(({ id }) => id === selectedId);
+        return points.find(({ id }: ISpgPointWithStates) => id === selectedId);
     }
     function deletePoint(): void {
         console.log('delete', selectedPointId);
@@ -178,10 +177,9 @@ export function DashboardPage(): React.ReactElement {
             applyFunction: (): void => {
                 requestDeletePoint(selectedPointId)
                     .then((result: IPointDeleteResponse) => {
-                        console.log('D::::', result);
-                        setPoints(points.filter(point => point.id !== result.deletedPointId));
+                        setPoints(points.filter((point: ISpgPointWithStates) => point.id !== result.deletedPointId));
                     })
-                    .catch(err => console.error(err));
+                    .catch((err: Error) => console.error(err));
                 closeConfirmation();
             },
             title: 'Are you sure you want to delete this point?',
@@ -191,8 +189,8 @@ export function DashboardPage(): React.ReactElement {
     }
     function detachImageFromPoint(selectedImageId: string): void {
         console.log('detach', selectedImageId);
-        detachImageFromPointCall(selectedImageId)
-            .then(updatedPoint => {
+        requestDetachImageFromPoint(selectedImageId)
+            .then((updatedPoint: IPointDetachResponse) => {
                 const updatedPoints: ISpgPoint[] = points.map((point: ISpgPoint) => {
                     if (updatedPoint.id === point.id) {
                         return updatedPoint;
@@ -201,7 +199,7 @@ export function DashboardPage(): React.ReactElement {
                 });
                 setPoints(updatedPoints);
             })
-            .catch(err => console.error(err));
+            .catch((err: Error) => console.error(err));
     }
     function startConnectImageToPointProcess(id: string): void {
         console.log('startConnectImageToPointProcess', id);
@@ -218,13 +216,18 @@ export function DashboardPage(): React.ReactElement {
         if (!selectedImageId) {
             return;
         }
-        const updatedPoints: ISpgPointWithStates[] = requestAttachImageToPoint(pointId, selectedImageId, points);
-        setPoints(updatedPoints);
-        setSelectedImageId(undefined);
-        console.log('quitting');
+        requestAttachImageToPoint(pointId, selectedImageId).then((changedPoints: IPointAttachResponse) => {
+            setPoints(
+                points.map((point: ISpgPointWithStates) => {
+                    const pointToUpdate: ISpgPoint | undefined = changedPoints.find((changedPoint: ISpgPoint) => point.id === changedPoint.id);
+                    return pointToUpdate || point;
+                }),
+            );
+            setSelectedImageId(undefined);
+        });
     }
     function highlightPointOfImage(imageId: string): void {
-        const attachedPoint: ISpgPointWithStates | undefined = points.find(point => point.images.includes(imageId));
+        const attachedPoint: ISpgPointWithStates | undefined = points.find((point: ISpgPointWithStates) => point.images.includes(imageId));
         if (attachedPoint) {
             const adjustedPoints: ISpgPointWithStates[] = points.map((point: ISpgPointWithStates): ISpgPointWithStates => {
                 return {
@@ -245,7 +248,7 @@ export function DashboardPage(): React.ReactElement {
             .then((newImage: ISpgImage) => {
                 setImages([newImage, ...images]);
             })
-            .catch(err => console.error(err));
+            .catch((err: Error) => console.error(err));
     }
 
     function deleteImage(imageToDeleteId: string): void {
@@ -253,14 +256,14 @@ export function DashboardPage(): React.ReactElement {
             applyFunction: (): void => {
                 requestDeleteImage(imageToDeleteId)
                     .then((result: IImageDeleteResponse) => {
-                        setImages(images.filter(image => image.id !== imageToDeleteId));
+                        setImages(images.filter((image: ISpgImageWithStates) => image.id !== imageToDeleteId));
                         const updatedPoints: ISpgPoint[] = points.map((point: ISpgPoint): ISpgPoint => {
-                            const updatedPoint: ISpgPoint | undefined = result.updatedPoints.find(({ id }) => point.id === id);
+                            const updatedPoint: ISpgPoint | undefined = result.updatedPoints.find(({ id }: ISpgPoint) => point.id === id);
                             return updatedPoint || point;
                         });
                         setPoints(updatedPoints);
                     })
-                    .catch(err => console.error(err));
+                    .catch((err: Error) => console.error(err));
                 setConfirmation(null);
             },
             cancelLabel: 'Cancel',
@@ -288,7 +291,7 @@ export function DashboardPage(): React.ReactElement {
         try {
             requestUpdateImage(editedImage).then((result: ISpgImage): void => {
                 setImages(
-                    images.map(image => {
+                    images.map((image: ISpgImageWithStates) => {
                         if (image.id === result?.id) {
                             return result;
                         }

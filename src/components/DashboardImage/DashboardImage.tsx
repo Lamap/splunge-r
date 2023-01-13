@@ -28,7 +28,7 @@ export const DashboardImage: React.FC<IProps> = ({
     onShowLinkedPointOfImage,
     onDeleteImage,
     onEditImage,
-}): React.ReactElement => {
+}: IProps): React.ReactElement => {
     const baseClassname: string = 'spg-dashboard-image';
     const classNamesArray: string[] = [baseClassname, ...(!!className ? [className] : [])];
     function changePointConnection(): void {

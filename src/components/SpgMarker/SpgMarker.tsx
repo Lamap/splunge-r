@@ -27,7 +27,7 @@ export const SpgMarker: React.FC<IProps> = ({
     onDragEnd,
     position,
     connectedImageCount,
-}): React.ReactElement => {
+}: IProps): React.ReactElement => {
     const markerSize: number = 32;
 
     const customIcon: L.DivIcon = new L.DivIcon({

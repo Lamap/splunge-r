@@ -29,13 +29,13 @@ export const DashboardImageList: React.FC<IProps> = ({
     onEditImage,
     onShowLinkedPointOfImage,
     className,
-}): React.ReactElement => {
+}: IProps): React.ReactElement => {
     const classNames: string[] = ['spg-dashboard-image-list', ...(!!className ? [className] : [])];
     const [imagesOfSelectedPoint, setImagesOfSelectedPoint] = useState<ISpgImageWithStates[]>([]);
     const [restOfImages, setRestOfImages] = useState<ISpgImageWithStates[]>([]);
     useEffect(() => {
-        setImagesOfSelectedPoint(images.filter(image => image.isHighlighted));
-        setRestOfImages(images.filter(image => !image.isHighlighted));
+        setImagesOfSelectedPoint(images.filter((image: ISpgImageWithStates) => image.isHighlighted));
+        setRestOfImages(images.filter((image: ISpgImageWithStates) => !image.isHighlighted));
     }, [images]);
 
     function connectToPoint(id: string): void {
@@ -66,7 +66,7 @@ export const DashboardImageList: React.FC<IProps> = ({
     }
 
     function getIsConnected(imageId: string): boolean {
-        return !!points.find(point => point.images?.includes(imageId));
+        return !!points.find((point: ISpgPointWithStates) => point.images?.includes(imageId));
     }
 
     function addNewImage(file: File): void {
