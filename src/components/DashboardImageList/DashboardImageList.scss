@@ -5,14 +5,12 @@
 
     &__header {
         position: sticky;
+        z-index: 1;
         top: 0;
         right: 0;
         left: 0;
-        height: 30px;
-        margin-bottom: 16px;
-        background-color: #fff;
-        z-index: 1;
         padding: 8px;
+        background-color: #fff;
     }
 
     &__images-of-selected-point {

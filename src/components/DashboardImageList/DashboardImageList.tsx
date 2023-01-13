@@ -1,11 +1,10 @@
 import './DashboardImageList.scss';
 import { ISpgImageWithStates } from '../../interfaces/ISpgImageWithStates';
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ISpgPointWithStates } from '../../interfaces/ISpgPointWithStates';
-import { Button } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
 import { DashboardImage } from '../DashboardImage/DashboardImage';
 import { ISpgImage } from 'splunge-common-lib';
+import { SpgFileUploader } from '../FileUploader/SpgFileUploader';
 
 interface IProps {
     readonly images: ISpgImageWithStates[];
@@ -70,21 +69,13 @@ export const DashboardImageList: React.FC<IProps> = ({
         return !!points.find(point => point.images?.includes(imageId));
     }
 
-    function addNewImage(event: ChangeEvent<HTMLInputElement>): void {
-        if (!event.target.files) {
-            return;
-        }
-        !!onNewImageAdded && onNewImageAdded(event.target.files[0]);
+    function addNewImage(file: File): void {
+        !!onNewImageAdded && onNewImageAdded(file);
     }
     return (
         <div className={classNames.join(' ')}>
             <div className="spg-dashboard-image-list__header">
-                <input id="file-upload" type="file" onChange={addNewImage} accept="image/*" hidden />
-                <label htmlFor="file-upload">
-                    <Button variant={'outlined'} size={'small'} endIcon={<AddIcon />} component="span">
-                        Add new image
-                    </Button>
-                </label>
+                <SpgFileUploader maxFileSize={500 * 1024} onFileUploaded={addNewImage} />
             </div>
 
             {!!imagesOfSelectedPoint.length && (

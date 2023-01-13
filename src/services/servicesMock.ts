@@ -1,13 +1,21 @@
 import { LatLngLiteral } from 'leaflet';
-import { ISpgPointWithStates } from '../interfaces/ISpgPointWithStates';
-import { ApiRoutes, IPointCreateRequestBody, IPointCreateResponse, IPointFetchResponse, ISpgImage, ISpgPoint } from 'splunge-common-lib';
+import {
+    ApiRoutes,
+    IImageDeleteResponse,
+    IImageUpdateRequestBody,
+    IImageUpdateResponse,
+    IPointCreateRequestBody,
+    IPointCreateResponse,
+    IPointDeleteResponse,
+    IPointDetachResponse,
+    IPointFetchResponse,
+    IPointUpdateResponse,
+    ISpgImage,
+    ISpgPoint,
+} from 'splunge-common-lib';
 import axios, { AxiosResponse } from 'axios';
-import { createApiUrl } from './createApiUrl';
+import { createApiUrl, createApiUrlWithIdParam } from './createApiUrl';
 
-export interface IDeleteImageResponse {
-    readonly images: ISpgImage[];
-    readonly points: ISpgPoint[];
-}
 export async function requestImagesFetch(): Promise<ISpgImage[]> {
     try {
         const imagesResponse: AxiosResponse<ISpgImage[]> = await axios.get<ISpgImage[]>(createApiUrl(ApiRoutes.SPG_IMAGES_FETCH));
@@ -45,42 +53,57 @@ export async function requestCreatePointForImage(position: LatLngLiteral, imageI
         throw err;
     }
 }
-export function addImageToPointCall(pointId: string, newImageId: string, points: ISpgPoint[]): ISpgPoint[] {
+export function requestAttachImageToPoint(pointId: string, imageId: string, points: ISpgPoint[]): ISpgPoint[] {
     const updatedPoints: ISpgPoint[] = points.map((point: ISpgPoint) => {
         if (point.id === pointId) {
             return {
                 ...point,
-                images: [...point.images, ...(!point.images.includes(newImageId) ? [newImageId] : [])],
+                images: [...point.images, ...(!point.images.includes(imageId) ? [imageId] : [])],
             };
         }
         return {
             ...point,
-            images: point.images.filter(imageId => imageId !== newImageId),
+            images: point.images.filter(imageId => imageId !== imageId),
         };
     });
     return updatedPoints;
 }
-export async function updatePointCall(point: ISpgPoint): Promise<ISpgPoint> {
+export async function requestUpdatePoint(point: ISpgPoint): Promise<IPointUpdateResponse> {
+    try {
+        const updatePointResult: AxiosResponse<IPointUpdateResponse> = await axios.put<IPointUpdateResponse>(
+            createApiUrlWithIdParam(ApiRoutes.SPG_POINT_UPDATE_AND_DELETE, point.id),
+            point,
+        );
+        return updatePointResult.data;
+    } catch (err) {
+        console.log(err);
+    }
     return await point;
 }
-export async function deletePointCall(pointToDeleteId: string, points: ISpgPoint[], images: ISpgImage[]): Promise<ISpgPoint[]> {
-    const pointToDelete: ISpgPointWithStates | undefined = points.find(point => point.id === pointToDeleteId);
-    if (!!pointToDelete?.images.length) {
-        throw Error('This point has images attached, remove them before you delete');
+export async function requestDeletePoint(pointToDeleteId: string): Promise<IPointDeleteResponse> {
+    try {
+        const deletePointResponse: AxiosResponse<IPointDeleteResponse> = await axios.delete(
+            createApiUrlWithIdParam(ApiRoutes.SPG_POINT_UPDATE_AND_DELETE, pointToDeleteId),
+        );
+        return deletePointResponse.data;
+    } catch (err) {
+        console.log(err);
+        throw err;
     }
-    return points.filter(point => point.id !== pointToDeleteId);
 }
 
-export async function detachImageFromPointCall(imageIdToRemove: string, points: ISpgPoint[]): Promise<ISpgPoint[]> {
-    const updatedPoints: ISpgPointWithStates[] = points.map(point => {
-        return {
-            ...point,
-            images: point.images.filter((imageId: string) => imageId !== imageIdToRemove),
-        };
-    });
-    return updatedPoints;
+export async function detachImageFromPointCall(imageIdToRemove: string): Promise<IPointDetachResponse> {
+    try {
+        const updatedPointResponse: AxiosResponse<IPointDetachResponse> = await axios.delete<IPointDetachResponse>(
+            createApiUrlWithIdParam(ApiRoutes.SPG_IMAGE_UPDATE_AND_DELETE, imageIdToRemove),
+        );
+        return updatedPointResponse.data;
+    } catch (err) {
+        console.log(err);
+        throw err;
+    }
 }
-export async function createNewImageCall(file: File): Promise<ISpgImage> {
+export async function requestCreateNewImage(file: File): Promise<ISpgImage> {
     try {
         const formData: FormData = new FormData();
         formData.append('image', file);
@@ -91,13 +114,29 @@ export async function createNewImageCall(file: File): Promise<ISpgImage> {
         throw err;
     }
 }
-export async function deleteImageCall(imageToDelete: string, images: ISpgImage[], points: ISpgPoint[]): Promise<IDeleteImageResponse> {
-    const newImageList: ISpgImage[] = images.filter(image => image.id !== imageToDelete);
-    const updatedPoints: ISpgPoint[] = points.map(point => {
-        return {
-            ...point,
-            images: point.images.filter(imageId => imageId !== imageToDelete),
-        };
-    });
-    return { images: newImageList, points: updatedPoints };
+export async function requestDeleteImage(imageToDelete: string): Promise<IImageDeleteResponse> {
+    try {
+        const deleteResponse: AxiosResponse<IImageDeleteResponse> = await axios.delete<IImageDeleteResponse>(
+            createApiUrlWithIdParam(ApiRoutes.SPG_IMAGE_UPDATE_AND_DELETE, imageToDelete),
+        );
+        return deleteResponse.data;
+    } catch (err) {
+        console.log(err);
+        throw err;
+    }
+}
+
+export async function requestUpdateImage(updatedImage: ISpgImage): Promise<IImageUpdateResponse> {
+    try {
+        const updatedImageResponse: AxiosResponse<IImageUpdateResponse> = await axios.put<
+            IImageUpdateResponse,
+            AxiosResponse<IImageUpdateResponse>,
+            IImageUpdateRequestBody
+        >(createApiUrlWithIdParam(ApiRoutes.SPG_DETACH_POINT_FROM_IMAGE, updatedImage.id), updatedImage);
+        return updatedImageResponse.data;
+    } catch (err) {
+        console.log(err);
+        throw err;
+    }
+    return await updatedImage;
 }

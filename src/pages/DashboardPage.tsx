@@ -8,19 +8,19 @@ import { LatLngLiteral } from 'leaflet';
 import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, Slider, TextField } from '@mui/material';
 import { ISpgImageWithStates } from '../interfaces/ISpgImageWithStates';
 import { DashboardImageList } from '../components/DashboardImageList/DashboardImageList';
-import { ISpgImage, ISpgPoint } from 'splunge-common-lib';
+import { IImageDeleteResponse, IPointDeleteResponse, ISpgImage, ISpgPoint } from 'splunge-common-lib';
 
 import {
-    addImageToPointCall,
-    createNewImageCall,
+    requestAttachImageToPoint,
+    requestCreateNewImage,
     requestCreatePointForImage,
-    deleteImageCall,
-    deletePointCall,
+    requestDeleteImage,
+    requestDeletePoint,
     detachImageFromPointCall,
-    IDeleteImageResponse,
-    updatePointCall,
+    requestUpdatePoint,
     requestPointsFetch,
     requestImagesFetch,
+    requestUpdateImage,
 } from '../services/servicesMock';
 
 interface IDashboardWarning {
@@ -44,19 +44,7 @@ export function DashboardPage(): React.ReactElement {
     const [confirmation, setConfirmation] = useState<IDashboardConfirmation | null>(null);
     const [editedImage, setEditedImage] = useState<ISpgImage | null>();
     const [points, setPoints] = useState<ISpgPointWithStates[]>([]);
-    const [images, setImages] = useState<ISpgImageWithStates[]>([
-        /*
-        {
-            id: 'sdfsdfdssdasdfs',
-            url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Tab%C3%A1n_a_bont%C3%A1s_el%C5%91tt.jpg/280px-Tab%C3%A1n_a_bont%C3%A1s_el%C5%91tt.jpg',
-        },
-        {
-            id: 'sdfsdfdsfs',
-            url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Tab%C3%A1n_a_bont%C3%A1s_el%C5%91tt.jpg/280px-Tab%C3%A1n_a_bont%C3%A1s_el%C5%91tt.jpg',
-        },
-
-         */
-    ]);
+    const [images, setImages] = useState<ISpgImageWithStates[]>([]);
     console.log(id);
     useEffect((): void => {
         requestPointsFetch()
@@ -155,16 +143,16 @@ export function DashboardPage(): React.ReactElement {
         }
         updatePoint({ ...selectedPoint, hasDirection: checked });
     }
-    function onPointPositionChanged(id: string, newPosition: LatLngLiteral): void {
+    async function onPointPositionChanged(id: string, newPosition: LatLngLiteral): Promise<void> {
         console.log('m', id, newPosition);
         const pointToUpdate: ISpgPoint | undefined = points.find(point => point.id === id);
         if (!pointToUpdate) {
             return;
         }
-        updatePoint({ ...pointToUpdate, position: newPosition });
+        await updatePoint({ ...pointToUpdate, position: newPosition });
     }
     function updatePoint(modifiedPoint: ISpgPoint): void {
-        updatePointCall(modifiedPoint)
+        requestUpdatePoint(modifiedPoint)
             .then((updatedPoint: ISpgPoint) => {
                 const updatedPoints: ISpgPointWithStates[] = points.map((point: ISpgPointWithStates) => {
                     if (point.id === modifiedPoint.id) {
@@ -185,11 +173,13 @@ export function DashboardPage(): React.ReactElement {
         if (!selectedPointId) {
             return;
         }
+
         setConfirmation({
             applyFunction: (): void => {
-                deletePointCall(selectedPointId, points, images)
-                    .then((pointsAfterDeletion: ISpgPoint[]) => {
-                        setPoints(pointsAfterDeletion);
+                requestDeletePoint(selectedPointId)
+                    .then((result: IPointDeleteResponse) => {
+                        console.log('D::::', result);
+                        setPoints(points.filter(point => point.id !== result.deletedPointId));
                     })
                     .catch(err => console.error(err));
                 closeConfirmation();
@@ -201,8 +191,14 @@ export function DashboardPage(): React.ReactElement {
     }
     function detachImageFromPoint(selectedImageId: string): void {
         console.log('detach', selectedImageId);
-        detachImageFromPointCall(selectedImageId, points)
-            .then(updatedPoints => {
+        detachImageFromPointCall(selectedImageId)
+            .then(updatedPoint => {
+                const updatedPoints: ISpgPoint[] = points.map((point: ISpgPoint) => {
+                    if (updatedPoint.id === point.id) {
+                        return updatedPoint;
+                    }
+                    return point;
+                });
                 setPoints(updatedPoints);
             })
             .catch(err => console.error(err));
@@ -222,7 +218,7 @@ export function DashboardPage(): React.ReactElement {
         if (!selectedImageId) {
             return;
         }
-        const updatedPoints: ISpgPointWithStates[] = addImageToPointCall(pointId, selectedImageId, points);
+        const updatedPoints: ISpgPointWithStates[] = requestAttachImageToPoint(pointId, selectedImageId, points);
         setPoints(updatedPoints);
         setSelectedImageId(undefined);
         console.log('quitting');
@@ -245,20 +241,24 @@ export function DashboardPage(): React.ReactElement {
     function addNewImage(file: File): void {
         console.log('add new image', file);
 
-        createNewImageCall(file)
+        requestCreateNewImage(file)
             .then((newImage: ISpgImage) => {
                 setImages([newImage, ...images]);
             })
             .catch(err => console.error(err));
     }
 
-    function deleteImage(id: string): void {
+    function deleteImage(imageToDeleteId: string): void {
         setConfirmation({
             applyFunction: (): void => {
-                deleteImageCall(id, images, points)
-                    .then((result: IDeleteImageResponse) => {
-                        setImages(result.images);
-                        setPoints(result.points);
+                requestDeleteImage(imageToDeleteId)
+                    .then((result: IImageDeleteResponse) => {
+                        setImages(images.filter(image => image.id !== imageToDeleteId));
+                        const updatedPoints: ISpgPoint[] = points.map((point: ISpgPoint): ISpgPoint => {
+                            const updatedPoint: ISpgPoint | undefined = result.updatedPoints.find(({ id }) => point.id === id);
+                            return updatedPoint || point;
+                        });
+                        setPoints(updatedPoints);
                     })
                     .catch(err => console.error(err));
                 setConfirmation(null);
@@ -282,14 +282,24 @@ export function DashboardPage(): React.ReactElement {
     }
     function saveEditedImage(): void {
         console.log(editedImage);
-        setImages(
-            images.map(image => {
-                if (image.id === editedImage?.id) {
-                    return editedImage;
-                }
-                return image;
-            }),
-        );
+        if (!editedImage) {
+            return;
+        }
+        try {
+            requestUpdateImage(editedImage).then((result: ISpgImage): void => {
+                setImages(
+                    images.map(image => {
+                        if (image.id === result?.id) {
+                            return result;
+                        }
+                        return image;
+                    }),
+                );
+            });
+        } catch (err) {
+            console.error(err);
+        }
+
         setEditedImage(null);
     }
 
