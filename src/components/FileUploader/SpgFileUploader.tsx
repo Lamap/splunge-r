@@ -6,7 +6,7 @@ interface IProps {
     readonly maxFileSize: number;
     readonly className?: string;
     readonly accept?: string;
-    readonly onFileUploaded?: (file: File) => void;
+    readonly onFileUploaded?: (file: File, widthPerHeightRatio: number) => void;
 }
 export const SpgFileUploader: React.FC<IProps> = ({
     maxFileSize = 500 * 1024,
@@ -22,13 +22,26 @@ export const SpgFileUploader: React.FC<IProps> = ({
             return;
         }
         const file: File = event.target.files[0];
-        console.log(file.size);
-
         if (file.size > maxFileSize) {
             return setWarning('This file is bigger then then the maximum allowed 500 kb file size.');
         }
+        const reader: FileReader = new FileReader();
+        reader.onloadend = (event: ProgressEvent<FileReader>): void => {
+            if (event.target) {
+                const img = new Image();
+                img.onload = (): void => {
+                    !!onFileUploaded && onFileUploaded(file, img.width / img.height);
+                };
+                img.onerror = (): void => {
+                    setWarning('Problem with file uploading');
+                };
+                img.src = event.target.result as string;
+            }
+        };
+        reader.readAsDataURL(file);
+        console.log(file.size);
+
         setWarning('');
-        !!onFileUploaded && onFileUploaded(file);
     }
     return (
         <div className={classNamesArray.join(' ')}>

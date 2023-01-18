@@ -1,0 +1,18 @@
+.spg-image-list {
+    &__row {
+        display: flex;
+    }
+
+    &__row-item {
+        display: flex;
+        justify-content: center;
+        height: 150px;
+        margin: 4px;
+        overflow: hidden;
+        border-radius: 6px;
+    }
+
+    &__row-item-img {
+        height: 100%;
+    }
+}

@@ -1,5 +1,13 @@
 .spg-main-page {
+    display: flex;
+    $image-list-width: 520px;
+
     &__map {
+        width: calc(100% - $image-list-width);
         height: 100vh;
+    }
+
+    &__images {
+        width: $image-list-width;
     }
 }

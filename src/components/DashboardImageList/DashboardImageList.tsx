@@ -10,7 +10,7 @@ interface IProps {
     readonly images: ISpgImageWithStates[];
     readonly points: ISpgPointWithStates[];
     readonly className?: string;
-    readonly onNewImageAdded?: (file: File) => void;
+    readonly onNewImageAdded?: (file: File, widthPerHeightRatio: number) => void;
     readonly onConnectImageToPoint?: (imageId: string) => void;
     readonly onDeleteImage?: (imageId: string) => void;
     readonly onDetachImageFromPoint?: (imageId: string) => void;
@@ -69,8 +69,8 @@ export const DashboardImageList: React.FC<IProps> = ({
         return !!points.find((point: ISpgPointWithStates) => point.images?.includes(imageId));
     }
 
-    function addNewImage(file: File): void {
-        !!onNewImageAdded && onNewImageAdded(file);
+    function addNewImage(file: File, widthPerHeightRatio: number): void {
+        !!onNewImageAdded && onNewImageAdded(file, widthPerHeightRatio);
     }
     return (
         <div className={classNames.join(' ')}>

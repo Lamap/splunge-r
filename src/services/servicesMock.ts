@@ -104,11 +104,20 @@ export async function requestDetachImageFromPoint(imageIdToRemove: string): Prom
         throw err;
     }
 }
-export async function requestCreateNewImage(file: File): Promise<ISpgImage> {
+export async function requestCreateNewImage(file: File, widthPerHeightRatio: number): Promise<ISpgImage> {
     try {
         const formData: FormData = new FormData();
+        formData.append('widthPerHeightRatio', widthPerHeightRatio.toString());
         formData.append('image', file);
-        const newImageResponse: AxiosResponse<ISpgImage> = await axios.post(createApiUrl(ApiRoutes.SPG_IMAGE_CREATE), formData);
+        const newImageResponse: AxiosResponse<ISpgImage> = await axios.post<ISpgImage, AxiosResponse<ISpgImage>>(
+            createApiUrl(ApiRoutes.SPG_IMAGE_CREATE),
+            formData,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            },
+        );
         return newImageResponse.data;
     } catch (err) {
         console.log(err);

@@ -241,10 +241,10 @@ export function DashboardPage(): React.ReactElement {
         console.log(attachedPoint);
     }
 
-    function addNewImage(file: File): void {
+    function addNewImage(file: File, widthPerHeightRatio: number): void {
         console.log('add new image', file);
 
-        requestCreateNewImage(file)
+        requestCreateNewImage(file, widthPerHeightRatio)
             .then((newImage: ISpgImage) => {
                 setImages([newImage, ...images]);
             })
@@ -358,6 +358,10 @@ export function DashboardPage(): React.ReactElement {
                                             size="small"
                                             onChangeCommitted={onDirectionChanged}
                                             defaultValue={getSelectedPoint(selectedPointId)?.direction}
+                                            valueLabelDisplay="on"
+                                            valueLabelFormat={(): React.ReactElement => (
+                                                <span className={'yolo'}>{getSelectedPoint(selectedPointId)?.direction}</span>
+                                            )}
                                         />
                                     </div>
                                 )}

@@ -42,6 +42,7 @@ export const MapOverlayController: React.FC<IProps> = ({ className, onOpacityCha
                                             opacityChanged(overlay.id, value as number)
                                         }
                                         step={0.01}
+                                        valueLabelDisplay="on"
                                     />
                                 </span>
                             </div>
