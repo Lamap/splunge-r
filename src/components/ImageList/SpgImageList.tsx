@@ -1,13 +1,18 @@
 import './SpgImageList.scss';
 import React from 'react';
 import { ISpgImageWithStates } from '../../interfaces/ISpgImageWithStates';
+import LaunchIcon from '@mui/icons-material/Launch';
+
 interface IProps {
     readonly colCount?: number;
     readonly className?: string;
     readonly images: ISpgImageWithStates[];
+    readonly onTargetPointOfImage?: (imageId: string) => void;
+    readonly onLaunchImage?: (imageId: string) => void;
 }
+import LocationSearchingIcon from '@mui/icons-material/LocationSearching';
 
-export const SpgImageList: React.FC<IProps> = ({ colCount = 3, className, images }): React.ReactElement => {
+export const SpgImageList: React.FC<IProps> = ({ colCount = 3, className, images, onTargetPointOfImage, onLaunchImage }): React.ReactElement => {
     const classNamesArray: string[] = ['spg-imagelist', ...(!!className ? [className] : [])];
     const imageRows: ISpgImageWithStates[][] = images.reduce(
         (acc: ISpgImageWithStates[][], value: ISpgImageWithStates, index: number): ISpgImageWithStates[][] => {
@@ -25,7 +30,16 @@ export const SpgImageList: React.FC<IProps> = ({ colCount = 3, className, images
         const accumulatedWidthRate: number = rowItems.reduce((acc, image): number => {
             return acc + image.widthPerHeightRatio;
         }, 0);
-        return (item.widthPerHeightRatio / accumulatedWidthRate) * 100;
+        return Math.min((item.widthPerHeightRatio / accumulatedWidthRate) * 100, 50);
+    }
+
+    function targetPointOfImage(imageId: string): void {
+        console.log('target', imageId);
+        !!onTargetPointOfImage && onTargetPointOfImage(imageId);
+    }
+    function launchImage(imageId: string): void {
+        console.log('launch', imageId);
+        !!onLaunchImage && onLaunchImage(imageId);
     }
     return (
         <div className={classNamesArray.join(' ')}>
@@ -33,7 +47,17 @@ export const SpgImageList: React.FC<IProps> = ({ colCount = 3, className, images
                 <div key={index} className={'spg-image-list__row'}>
                     {row.map(image => (
                         <div key={image.id} className={'spg-image-list__row-item'} style={{ width: `${getWidthPercent(row, image)}%` }}>
-                            <img className={'spg-image-list__row-item-img'} src={image.url} alt={image.url} />
+                            <div className={'spg-image-list__row-item-img'} style={{ backgroundImage: `url(${image.url})` }}></div>
+                            <LocationSearchingIcon
+                                color={'primary'}
+                                className={'spg-image-list__row-item-locate-btn'}
+                                onClick={(): void => targetPointOfImage(image.id)}
+                            />
+                            <LaunchIcon
+                                color={'primary'}
+                                className={'spg-image-list__row-item-launch-btn'}
+                                onClick={(): void => launchImage(image.id)}
+                            />
                         </div>
                     ))}
                 </div>

@@ -6,11 +6,13 @@ import { requestImagesFetch, requestPointsFetch } from '../services/servicesMock
 import { IPointFetchResponse } from 'splunge-common-lib';
 import { SpgImageList } from '../components/ImageList/SpgImageList';
 import { ISpgImageWithStates } from '../interfaces/ISpgImageWithStates';
+import { useNavigate } from 'react-router-dom';
 
 export function MainPage(): React.ReactElement {
     const [points, setPoints] = useState<ISpgPointWithStates[]>([]);
     // const [selectedPointId, setSelectedPointId] = useState<string>();
     const [images, setImages] = useState<ISpgImageWithStates[]>([]);
+    const navigate = useNavigate();
 
     useEffect((): void => {
         requestPointsFetch()
@@ -26,10 +28,15 @@ export function MainPage(): React.ReactElement {
                 console.error(err);
             });
     }, []);
+
+    function launchImage(imageId: string): void {
+        console.log('launch', imageId);
+        navigate(`/picture/${imageId}`);
+    }
     return (
         <div className="spg-main-page">
             <SpgMap className="spg-main-page__map" isEditing={false} isPointAddingMode={false} points={points} />
-            <SpgImageList className="spg-main-page__images" images={images} />
+            <SpgImageList className="spg-main-page__images" images={images} onLaunchImage={launchImage} />
         </div>
     );
 }

@@ -4,15 +4,46 @@
     }
 
     &__row-item {
+        position: relative;
         display: flex;
         justify-content: center;
         height: 150px;
         margin: 4px;
         overflow: hidden;
         border-radius: 6px;
+
+        &:hover {
+            .spg-image-list__row-item-locate-btn,
+            .spg-image-list__row-item-launch-btn {
+                display: inline-block;
+            }
+        }
     }
 
     &__row-item-img {
-        height: 100%;
+        width: 100%;
+        background-position: center;
+        background-size: cover;
+    }
+
+    &__row-item-locate-btn {
+        display: none;
+        border-radius: 100%;
+        position: absolute;
+        top: 8px;
+        right: 46px;
+        background: #ffffffcc;
+        padding: 4px;
+        cursor: pointer;
+    }
+    &__row-item-launch-btn {
+        display: none;
+        border-radius: 100%;
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: #ffffffcc;
+        padding: 4px;
+        cursor: pointer;
     }
 }

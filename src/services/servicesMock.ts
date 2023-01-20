@@ -148,5 +148,14 @@ export async function requestUpdateImage(updatedImage: ISpgImage): Promise<IImag
         console.log(err);
         throw err;
     }
-    return await updatedImage;
+}
+
+export async function requestFetchImage(imageId: string): Promise<ISpgImage> {
+    try {
+        const imageFetchResponse: AxiosResponse<ISpgImage> = await axios.get(createApiUrlWithIdParam(ApiRoutes.SPG_IMAGE_FETCH, imageId));
+        return imageFetchResponse.data;
+    } catch (err) {
+        console.log(err);
+        throw err;
+    }
 }
