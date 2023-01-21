@@ -7,12 +7,21 @@ interface IProps {
     readonly colCount?: number;
     readonly className?: string;
     readonly images: ISpgImageWithStates[];
+    readonly points: ISpgPoint[];
     readonly onTargetPointOfImage?: (imageId: string) => void;
     readonly onLaunchImage?: (imageId: string) => void;
 }
 import LocationSearchingIcon from '@mui/icons-material/LocationSearching';
+import { ISpgPoint } from 'splunge-common-lib';
 
-export const SpgImageList: React.FC<IProps> = ({ colCount = 3, className, images, onTargetPointOfImage, onLaunchImage }): React.ReactElement => {
+export const SpgImageList: React.FC<IProps> = ({
+    colCount = 3,
+    className,
+    images,
+    onTargetPointOfImage,
+    onLaunchImage,
+    points,
+}): React.ReactElement => {
     const classNamesArray: string[] = ['spg-imagelist', ...(!!className ? [className] : [])];
     const imageRows: ISpgImageWithStates[][] = images.reduce(
         (acc: ISpgImageWithStates[][], value: ISpgImageWithStates, index: number): ISpgImageWithStates[][] => {
@@ -41,6 +50,9 @@ export const SpgImageList: React.FC<IProps> = ({ colCount = 3, className, images
         console.log('launch', imageId);
         !!onLaunchImage && onLaunchImage(imageId);
     }
+    function getPointOfImage(imageId: string): ISpgPoint | undefined {
+        return points.find(({ images }): boolean => images.includes(imageId));
+    }
     return (
         <div className={classNamesArray.join(' ')}>
             {imageRows.map((row, index) => (
@@ -48,11 +60,13 @@ export const SpgImageList: React.FC<IProps> = ({ colCount = 3, className, images
                     {row.map(image => (
                         <div key={image.id} className={'spg-image-list__row-item'} style={{ width: `${getWidthPercent(row, image)}%` }}>
                             <div className={'spg-image-list__row-item-img'} style={{ backgroundImage: `url(${image.url})` }}></div>
-                            <LocationSearchingIcon
-                                color={'primary'}
-                                className={'spg-image-list__row-item-locate-btn'}
-                                onClick={(): void => targetPointOfImage(image.id)}
-                            />
+                            {!!getPointOfImage(image.id) && (
+                                <LocationSearchingIcon
+                                    color={'primary'}
+                                    className={'spg-image-list__row-item-locate-btn'}
+                                    onClick={(): void => targetPointOfImage(image.id)}
+                                />
+                            )}
                             <LaunchIcon
                                 color={'primary'}
                                 className={'spg-image-list__row-item-launch-btn'}

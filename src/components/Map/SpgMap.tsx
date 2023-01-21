@@ -11,8 +11,10 @@ import { ISpgPointWithStates } from '../../interfaces/ISpgPointWithStates';
 import { MapOverlayController } from '../MapOverlayController/MapOverlayController';
 import { mapOverlays as staticOverlays } from '../MockOverlays';
 import IMapOverlay from '../../interfaces/IMapOverlay';
+import { ISpgLatLngBounds } from 'splunge-common-lib/lib/interfaces/ISpgLatLngBounds';
 
 interface IProps {
+    readonly boundsLoaded?: (bounds: ISpgLatLngBounds) => void;
     readonly center?: LatLngLiteral;
     readonly className?: string;
     readonly isPointAddingMode?: boolean;
@@ -26,6 +28,7 @@ interface IProps {
 }
 
 export const SpgMap: React.FC<IProps> = ({
+    boundsLoaded,
     isPointAddingMode = false,
     isEditing = false,
     center = { lat: 47.49, lng: 19.035 },
@@ -70,7 +73,14 @@ export const SpgMap: React.FC<IProps> = ({
         <div className={classNames.join(' ')}>
             <MapContainer center={center} zoom={initialMapZoom} className={'spg-map__container'}>
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                <MapEventConnector onClick={addNewPoint} panTo={panTo} onZoomChanged={onMapZoomChanged} />
+                <MapEventConnector
+                    onClick={addNewPoint}
+                    panTo={panTo}
+                    onZoomChanged={onMapZoomChanged}
+                    boundsLoaded={(bounds: ISpgLatLngBounds): void => {
+                        !!boundsLoaded && boundsLoaded(bounds);
+                    }}
+                />
                 <MarkerClusterGroup maxClusterRadius={36} showCoverageOnHover={false} iconCreateFunction={renderClusterIcon}>
                     {points.map((point: ISpgPointWithStates): React.ReactElement => {
                         return (

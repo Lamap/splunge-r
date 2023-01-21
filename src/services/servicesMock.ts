@@ -1,6 +1,7 @@
 import { LatLngLiteral } from 'leaflet';
 import {
     ApiRoutes,
+    IGetPointsByBoundsRequestBody,
     IImageDeleteResponse,
     IImageUpdateRequestBody,
     IImageUpdateResponse,
@@ -10,12 +11,15 @@ import {
     IPointDeleteResponse,
     IPointDetachResponse,
     IPointFetchResponse,
+    IPointsByBoundsResponse,
     IPointUpdateResponse,
     ISpgImage,
     ISpgPoint,
+    PointOfImageResponse,
 } from 'splunge-common-lib';
 import axios, { AxiosResponse } from 'axios';
 import { createApiUrl, createApiUrlWithIdParam, createApiUrlWithParams } from './createApiUrl';
+import { ISpgLatLngBounds } from 'splunge-common-lib/lib/interfaces/ISpgLatLngBounds';
 
 export async function requestImagesFetch(): Promise<ISpgImage[]> {
     try {
@@ -154,6 +158,31 @@ export async function requestFetchImage(imageId: string): Promise<ISpgImage> {
     try {
         const imageFetchResponse: AxiosResponse<ISpgImage> = await axios.get(createApiUrlWithIdParam(ApiRoutes.SPG_IMAGE_FETCH, imageId));
         return imageFetchResponse.data;
+    } catch (err) {
+        console.log(err);
+        throw err;
+    }
+}
+export async function requestGetPointOfImage(imageId: string): Promise<PointOfImageResponse> {
+    try {
+        const pointOfImageResponse: AxiosResponse<PointOfImageResponse> = await axios.get(
+            createApiUrlWithIdParam(ApiRoutes.SPG_POINT_OF_IMAGE, imageId),
+        );
+        return pointOfImageResponse.data;
+    } catch (err) {
+        console.log(err);
+        throw err;
+    }
+}
+
+export async function requestGetPointsByBounds(bounds: ISpgLatLngBounds): Promise<IPointsByBoundsResponse> {
+    try {
+        const pointsByBoundsResponse: AxiosResponse<IPointsByBoundsResponse> = await axios.post<
+            IPointsByBoundsResponse,
+            AxiosResponse<IPointsByBoundsResponse>,
+            IGetPointsByBoundsRequestBody
+        >(createApiUrl(ApiRoutes.SPG_POINTS_BY_BOUNDS), bounds);
+        return pointsByBoundsResponse.data;
     } catch (err) {
         console.log(err);
         throw err;
