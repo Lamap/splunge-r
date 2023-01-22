@@ -91,4 +91,16 @@ $icon-dimension: 32px;
         background: white;
         color: #282c34;
     }
+
+    &--count-on-hover {
+        .spg-marker-icon__count {
+            display: none;
+        }
+    }
+
+    &--count-on-hover:hover {
+        .spg-marker-icon__count {
+            display: flex;
+        }
+    }
 }

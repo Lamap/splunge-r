@@ -2,6 +2,7 @@ import eyeIcon from '../../assets/icons/eye-icon.svg';
 import panorama from '../../assets/icons/panorama.svg';
 export interface ISpgMarkerElementProps {
     readonly rotation: number;
+    readonly showCountOnlyOnHover?: boolean;
     readonly isHighlighted?: boolean;
     readonly isPointAddingMode?: boolean;
     readonly isSelected?: boolean;
@@ -10,6 +11,7 @@ export interface ISpgMarkerElementProps {
 }
 export const SpgMarkerIconElement: (props: ISpgMarkerElementProps) => string = ({
     rotation = 0,
+    showCountOnlyOnHover,
     isHighlighted = false,
     isSelected = false,
     isPointAddingMode = false,
@@ -23,6 +25,7 @@ export const SpgMarkerIconElement: (props: ISpgMarkerElementProps) => string = (
         ...(isHighlighted ? ['spg-marker-icon--highlighted'] : []),
         ...(isPointAddingMode ? ['spg-marker-icon--point-adding-mode'] : []),
         ...(isSelected ? ['spg-marker-icon--selected'] : []),
+        ...(showCountOnlyOnHover ? ['spg-marker-icon--count-on-hover'] : []),
     ];
     return `
         <div class="${markerIconClassNames.join(' ')}" >    

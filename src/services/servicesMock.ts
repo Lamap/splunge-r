@@ -30,9 +30,13 @@ export async function requestImagesFetch(): Promise<ISpgImage[]> {
         throw err;
     }
 }
-export async function requestPointsFetch(): Promise<IPointFetchResponse> {
+export async function requestPointsFetch(onlyLinked?: boolean): Promise<IPointFetchResponse> {
     try {
-        const allPointsResponse: AxiosResponse<IPointFetchResponse> = await axios.get<IPointFetchResponse>(createApiUrl(ApiRoutes.SPG_POINTS_FETCH));
+        const allPointsResponse: AxiosResponse<IPointFetchResponse> = await axios.get<IPointFetchResponse>(createApiUrl(ApiRoutes.SPG_POINTS_FETCH), {
+            params: {
+                onlyLinked: !!onlyLinked,
+            },
+        });
         return allPointsResponse.data;
     } catch (err) {
         console.log(err);

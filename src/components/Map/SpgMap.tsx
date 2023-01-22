@@ -1,10 +1,10 @@
 import './SpgMap.scss';
 import '../../../node_modules/leaflet/dist/leaflet.css';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, ImageOverlay } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import { SpgMarker } from '../SpgMarker/SpgMarker';
-import { LatLngLiteral, LeafletMouseEvent } from 'leaflet';
+import { LatLngLiteral, LeafletMouseEvent, Map } from 'leaflet';
 import { MapEventConnector } from './MapEventConnector';
 import renderClusterIcon from './RenderClusterIcon';
 import { ISpgPointWithStates } from '../../interfaces/ISpgPointWithStates';
@@ -17,18 +17,22 @@ interface IProps {
     readonly boundsLoaded?: (bounds: ISpgLatLngBounds) => void;
     readonly center?: LatLngLiteral;
     readonly className?: string;
+    readonly isInteractionDisabled?: boolean;
     readonly isPointAddingMode?: boolean;
     readonly isEditing?: boolean;
     readonly initialMapZoom?: number;
+    readonly onMapRefInitialised?: (map: Map) => void;
     readonly onMapClicked?: (position: LatLngLiteral) => void;
     readonly onPointMoved?: (id: string, newPosition: LatLngLiteral) => void;
     readonly onPointClicked?: (id: string) => void;
     readonly panTo?: LatLngLiteral;
     readonly points: ISpgPointWithStates[];
+    readonly markersCountShowOnlyOnHover?: boolean;
 }
 
 export const SpgMap: React.FC<IProps> = ({
     boundsLoaded,
+    isInteractionDisabled = false,
     isPointAddingMode = false,
     isEditing = false,
     center = { lat: 47.49, lng: 19.035 },
@@ -36,9 +40,11 @@ export const SpgMap: React.FC<IProps> = ({
     initialMapZoom = 15,
     onMapClicked,
     onPointClicked,
+    onMapRefInitialised,
     onPointMoved,
     points = [],
     panTo,
+    markersCountShowOnlyOnHover,
 }: IProps): React.ReactElement => {
     const classNames: string[] = ['spg-map', ...(isPointAddingMode ? ['spg-map--point-adding-mode'] : []), ...(!!className ? [className] : [])];
     const [overlays, setOverlays] = useState<IMapOverlay[]>(staticOverlays);
@@ -71,7 +77,13 @@ export const SpgMap: React.FC<IProps> = ({
     }
     return (
         <div className={classNames.join(' ')}>
-            <MapContainer center={center} zoom={initialMapZoom} className={'spg-map__container'}>
+            <MapContainer
+                center={center}
+                zoom={initialMapZoom}
+                className={'spg-map__container'}
+                zoomControl={isInteractionDisabled}
+                dragging={isInteractionDisabled}
+            >
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                 <MapEventConnector
                     onClick={addNewPoint}
@@ -80,6 +92,7 @@ export const SpgMap: React.FC<IProps> = ({
                     boundsLoaded={(bounds: ISpgLatLngBounds): void => {
                         !!boundsLoaded && boundsLoaded(bounds);
                     }}
+                    onMapInitialised={onMapRefInitialised}
                 />
                 <MarkerClusterGroup maxClusterRadius={36} showCoverageOnHover={false} iconCreateFunction={renderClusterIcon}>
                     {points.map((point: ISpgPointWithStates): React.ReactElement => {
@@ -100,6 +113,7 @@ export const SpgMap: React.FC<IProps> = ({
                                     isEditing && !!onPointMoved && onPointMoved(point.id, newPosition);
                                 }}
                                 connectedImageCount={point.images.length}
+                                showCountOnlyOnHover={markersCountShowOnlyOnHover}
                             />
                         );
                     })}
