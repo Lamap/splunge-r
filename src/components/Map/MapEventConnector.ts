@@ -8,31 +8,29 @@ interface IProps {
     readonly onZoomChanged?: (zoom: number) => void;
     readonly boundsLoaded?: (bounds: ISpgLatLngBounds) => void;
     readonly onMapInitialised?: (map: Map) => void;
+    readonly onMoveStart?: () => void;
 }
 export const MapEventConnector: React.FC<IProps> = ({
     boundsLoaded,
     onClick,
     onMapInitialised,
     onZoomChanged,
+    onMoveStart,
     panTo,
 }: IProps): React.ReactElement | null => {
     const map: Map = useMapEvents({
         click: (event: LeafletMouseEvent) => !!onClick && onClick(event),
         zoomend: (event: LeafletEvent) => !!onZoomChanged && onZoomChanged(event.target._zoom),
+        movestart: () => !!onMoveStart && onMoveStart(),
+        move: () => console.log('move'),
     });
     useEffect(() => {
-        console.log(map.getZoom());
         if (!!panTo) {
-            const cucc = map.latLngToContainerPoint(panTo);
-            console.log(cucc);
             map.setView(panTo, 20, { animate: true });
-            const cucc1 = map.latLngToContainerPoint(panTo);
-            console.log(cucc1);
         }
     }, [panTo, map]);
 
     useEffect(() => {
-        console.log(':::::::::yoloy', map);
         const bounds: LatLngBounds = map.getBounds();
         !!boundsLoaded &&
             boundsLoaded({

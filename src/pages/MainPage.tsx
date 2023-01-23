@@ -9,6 +9,8 @@ import { ISpgImageWithStates } from '../interfaces/ISpgImageWithStates';
 import { useNavigate } from 'react-router-dom';
 import { NavigateFunction } from 'react-router/dist/lib/hooks';
 import { LatLngLiteral, Map, Point } from 'leaflet';
+import { PointImageConnection } from '../components/PointImageConnection/PointImageConnection';
+import { IXYPoint } from '../interfaces/IXYPoint';
 
 export function MainPage(): React.ReactElement {
     const [points, setPoints] = useState<ISpgPointWithStates[]>([]);
@@ -17,19 +19,12 @@ export function MainPage(): React.ReactElement {
     const [images, setImages] = useState<ISpgImageWithStates[]>([]);
     const [panTo, setPanTo] = useState<LatLngLiteral>();
     const [mapRef, setMapRef] = useState<Map>();
-    const [arrowStartXY, setArrowStartXY] = useState<Point>();
-    const [arrowEndXY, setArrowEndXY] = useState<{ x: number; y: number }>();
+    const [arrowStartXY, setArrowStartXY] = useState<IXYPoint | null>();
+    const [arrowEndXY, setArrowEndXY] = useState<IXYPoint | null>();
     const imageListRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
     const mapContainerRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
     const navigate: NavigateFunction = useNavigate();
 
-    useEffect(() => {
-        console.log('::::::', imageListRef.current?.offsetLeft);
-        if (!imageListRef.current) {
-            return;
-        }
-        setArrowEndXY({ x: imageListRef.current?.offsetLeft, y: imageListRef.current?.offsetTop });
-    }, [imageListRef]);
     useEffect((): void => {
         requestPointsFetch(true)
             .then((pointsResult: IPointFetchResponse) => {
@@ -77,7 +72,8 @@ export function MainPage(): React.ReactElement {
         if (!mapContainerRef.current || !imageListRef.current) {
             return;
         }
-        setArrowStartXY(new Point(mapContainerRef.current?.clientWidth / 2, mapContainerRef.current?.clientHeight / 2));
+        console.log('mapContainerRef.current?.clientWidth, x', mapContainerRef.current?.clientWidth, x);
+        setArrowStartXY(new Point(mapContainerRef.current?.clientWidth / 2, mapContainerRef.current?.clientHeight / 2 - 30));
         setArrowEndXY({ x: mapContainerRef.current?.clientWidth + x, y });
     }
     function highLightImagesOfPoint(pointId: string): void {
@@ -103,11 +99,12 @@ export function MainPage(): React.ReactElement {
                 };
             }),
         );
-        if (!mapRef) {
+        if (!mapRef || !mapContainerRef?.current) {
             return;
         }
-        const xy: Point = mapRef.latLngToContainerPoint(selectedPoint?.position);
-        setArrowStartXY(xy);
+        const { x, y }: Point = mapRef.latLngToContainerPoint(selectedPoint?.position);
+        setArrowStartXY({ x, y });
+        setArrowEndXY({ x: mapContainerRef.current?.clientWidth, y: 75 });
     }
     return (
         <div className="spg-main-page">
@@ -122,6 +119,10 @@ export function MainPage(): React.ReactElement {
                     onMapRefInitialised={(map: Map): void => setMapRef(map)}
                     onPointClicked={highLightImagesOfPoint}
                     markersCountShowOnlyOnHover={true}
+                    onMoveStart={(): void => {
+                        setArrowEndXY(null);
+                        setArrowStartXY(null);
+                    }}
                 />
             </div>
 
@@ -135,17 +136,35 @@ export function MainPage(): React.ReactElement {
                 />
             </div>
 
-            {!!arrowStartXY && !!arrowEndXY && (
+            {!!arrowStartXY && (
                 <div
-                    className="spg-main-page__arrow"
                     style={{
-                        top: '0px',
+                        position: 'absolute',
+                        width: '10px',
+                        height: '10px',
+                        background: '#ff0000',
+                        borderRadius: '100%',
                         left: `${arrowStartXY.x}px`,
-                        width: `${arrowEndXY.x - arrowStartXY.x}px`,
-                        height: `${arrowStartXY.y}px`,
+                        top: `${arrowStartXY.y}px`,
+                        zIndex: '9999999',
                     }}
                 ></div>
             )}
+            {!!arrowEndXY && (
+                <div
+                    style={{
+                        position: 'absolute',
+                        width: '10px',
+                        height: '10px',
+                        background: '#ff0000',
+                        borderRadius: '100%',
+                        left: `${arrowEndXY.x}px`,
+                        top: `${arrowEndXY.y}px`,
+                        zIndex: '9999999',
+                    }}
+                ></div>
+            )}
+            {!!arrowStartXY && !!arrowEndXY && <PointImageConnection start={arrowStartXY} end={arrowEndXY} />}
         </div>
     );
 }

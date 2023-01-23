@@ -18,12 +18,4 @@
         width: $image-list-width;
     }
 
-    &__arrow {
-        position: absolute;
-        width: 200px;
-        height: 100px;
-        border: 1px solid red;
-        z-index: 999;
-        pointer-events: none;
-    }
 }

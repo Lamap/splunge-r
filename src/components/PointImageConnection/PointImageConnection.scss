@@ -1,0 +1,40 @@
+.spg-point-image-connection {
+    $line-start-distance: 40px;
+    display: flex;
+    position: absolute;
+    z-index: 999999;
+    align-items: center;
+    justify-content: center;
+    transform-origin: left bottom;
+
+    &__line {
+        position: absolute;
+        right: $line-start-distance;
+        left: $line-start-distance;
+        border-bottom: 4px dashed #F73F13;
+        &:after {
+            position: absolute;
+            top: -6px;
+            left: calc(100% + 8px);
+            content: '';
+            display: block;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 8px 0 8px 16px;
+            border-color: transparent transparent transparent #F73F13;
+        }
+        &:before {
+            position: absolute;
+            top: -6px;
+            left: -8px;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 8px 16px 8px 0;
+            border-color: transparent #F73F13 transparent transparent;
+            content: '';
+            display: block;
+        }
+    }
+}

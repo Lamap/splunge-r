@@ -17,7 +17,8 @@
             }
         }
 
-        &--highlighted {
+        &--highlighted,
+        &--selected {
             background: #F07C60;
         }
     }

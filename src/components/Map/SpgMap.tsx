@@ -28,6 +28,7 @@ interface IProps {
     readonly panTo?: LatLngLiteral;
     readonly points: ISpgPointWithStates[];
     readonly markersCountShowOnlyOnHover?: boolean;
+    readonly onMoveStart?: () => void;
 }
 
 export const SpgMap: React.FC<IProps> = ({
@@ -45,6 +46,7 @@ export const SpgMap: React.FC<IProps> = ({
     points = [],
     panTo,
     markersCountShowOnlyOnHover,
+    onMoveStart,
 }: IProps): React.ReactElement => {
     const classNames: string[] = ['spg-map', ...(isPointAddingMode ? ['spg-map--point-adding-mode'] : []), ...(!!className ? [className] : [])];
     const [overlays, setOverlays] = useState<IMapOverlay[]>(staticOverlays);
@@ -93,6 +95,9 @@ export const SpgMap: React.FC<IProps> = ({
                         !!boundsLoaded && boundsLoaded(bounds);
                     }}
                     onMapInitialised={onMapRefInitialised}
+                    onMoveStart={(): void => {
+                        !!onMoveStart && onMoveStart();
+                    }}
                 />
                 <MarkerClusterGroup maxClusterRadius={36} showCoverageOnHover={false} iconCreateFunction={renderClusterIcon}>
                     {points.map((point: ISpgPointWithStates): React.ReactElement => {

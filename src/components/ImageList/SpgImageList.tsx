@@ -46,12 +46,11 @@ export const SpgImageList: React.FC<IProps> = ({
     }
 
     function targetPointOfImage(imageId: string, rowIndex: number, colIndex: number): void {
-        console.log('target', imageId, rowIndex, colIndex);
         let xPosition: number = 0;
-        for (let x: number = 0; x < imageRows[rowIndex].length; x++) {
-            xPosition += getWidthPercent(imageRows[rowIndex], imageRows[rowIndex][colIndex]);
+        for (let col: number = 0; col < colIndex; col++) {
+            xPosition += getWidthPercent(imageRows[rowIndex], imageRows[rowIndex][col]);
         }
-        !!onTargetPointOfImage && onTargetPointOfImage(imageId, xPosition, rowIndex * 150 + 75);
+        !!onTargetPointOfImage && onTargetPointOfImage(imageId, (xPosition / 100) * 520, rowIndex * 150 + 75);
     }
     function launchImage(imageId: string): void {
         console.log('launch', imageId);

@@ -12,7 +12,6 @@ export const MapOverlayController: React.FC<IProps> = ({ className, onOpacityCha
     const baseClassname: string = 'spg-map-overlay-controller';
     const classnameArray: string[] = [baseClassname, ...(!!className ? [className] : [])];
     function opacityChanged(id: string, value: number): void {
-        console.log(value);
         !!onOpacityChanged && onOpacityChanged(id, value);
     }
     return (
