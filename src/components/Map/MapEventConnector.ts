@@ -9,6 +9,7 @@ interface IProps {
     readonly boundsLoaded?: (bounds: ISpgLatLngBounds) => void;
     readonly onMapInitialised?: (map: Map) => void;
     readonly onMoveStart?: () => void;
+    readonly onMove?: () => void;
 }
 export const MapEventConnector: React.FC<IProps> = ({
     boundsLoaded,
@@ -16,13 +17,14 @@ export const MapEventConnector: React.FC<IProps> = ({
     onMapInitialised,
     onZoomChanged,
     onMoveStart,
+    onMove,
     panTo,
 }: IProps): React.ReactElement | null => {
     const map: Map = useMapEvents({
         click: (event: LeafletMouseEvent) => !!onClick && onClick(event),
         zoomend: (event: LeafletEvent) => !!onZoomChanged && onZoomChanged(event.target._zoom),
         movestart: () => !!onMoveStart && onMoveStart(),
-        move: () => console.log('move'),
+        move: () => !!onMove && onMove(),
     });
     useEffect(() => {
         if (!!panTo) {
@@ -41,5 +43,6 @@ export const MapEventConnector: React.FC<IProps> = ({
             });
         !!onMapInitialised && onMapInitialised(map);
     }, [map]);
+
     return null;
 };

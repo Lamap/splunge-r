@@ -13,6 +13,7 @@ interface IProps {
 }
 import LocationSearchingIcon from '@mui/icons-material/LocationSearching';
 import { ISpgPoint } from 'splunge-common-lib';
+import { ISpgPointWithStates } from '../../interfaces/ISpgPointWithStates';
 
 export const SpgImageList: React.FC<IProps> = ({
     colCount = 3,
@@ -21,7 +22,7 @@ export const SpgImageList: React.FC<IProps> = ({
     onTargetPointOfImage,
     onLaunchImage,
     points,
-}): React.ReactElement => {
+}: IProps): React.ReactElement => {
     const classNamesArray: string[] = ['spg-imagelist', ...(!!className ? [className] : [])];
     // const [highlightedImages, setHighlightedImages] = useState<ISpgImageWithStates[]>([]);
     const imageRows: ISpgImageWithStates[][] = images
@@ -34,12 +35,11 @@ export const SpgImageList: React.FC<IProps> = ({
             }
             return acc;
         }, []);
-    console.log(imageRows);
     function sortImagesByHiglight(imageA: ISpgImageWithStates, imageB: ISpgImageWithStates): number {
-        return imageA.isHighlighted ? -1 : 1;
+        return imageA.isHighlighted && !imageB.isHighlighted ? -1 : 0;
     }
     function getWidthPercent(rowItems: ISpgImageWithStates[], item: ISpgImageWithStates): number {
-        const accumulatedWidthRate: number = rowItems.reduce((acc, image): number => {
+        const accumulatedWidthRate: number = rowItems.reduce((acc: number, image: ISpgImageWithStates): number => {
             return acc + image.widthPerHeightRatio;
         }, 0);
         return Math.min((item.widthPerHeightRatio / accumulatedWidthRate) * 100, 50);
@@ -57,7 +57,7 @@ export const SpgImageList: React.FC<IProps> = ({
         !!onLaunchImage && onLaunchImage(imageId);
     }
     function getPointOfImage(imageId: string): ISpgPoint | undefined {
-        return points.find(({ images }): boolean => images.includes(imageId));
+        return points.find(({ images }: ISpgPointWithStates): boolean => images.includes(imageId));
     }
     function getItemClassNames(image: ISpgImageWithStates): string {
         const imageClassArray: string[] = [
@@ -69,7 +69,7 @@ export const SpgImageList: React.FC<IProps> = ({
     }
     return (
         <div className={classNamesArray.join(' ')}>
-            {imageRows.map((row, rowIndex) => (
+            {imageRows.map((row: ISpgImageWithStates[], rowIndex: number) => (
                 <div key={rowIndex} className={'spg-image-list__row'}>
                     {row.map((image: ISpgImageWithStates, colIndex: number) => (
                         <div key={image.id} className={getItemClassNames(image)} style={{ width: `${getWidthPercent(row, image)}%` }}>

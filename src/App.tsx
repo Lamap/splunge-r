@@ -4,15 +4,26 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { MainPage } from './pages/MainPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { ImagePage } from './pages/ImagePage';
+import { QueryParamProvider } from 'use-query-params';
+import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
+import queryString from 'query-string';
 
 function App(): React.ReactElement {
     return (
         <Router>
-            <Routes>
-                <Route path="/" element={<MainPage />} />
-                <Route path="/dashboard/:id" element={<DashboardPage />} />
-                <Route path="/picture/:id" element={<ImagePage />} />
-            </Routes>
+            <QueryParamProvider
+                adapter={ReactRouter6Adapter}
+                options={{
+                    searchStringToObject: queryString.parse,
+                    objectToSearchString: queryString.stringify,
+                }}
+            >
+                <Routes>
+                    <Route path="/" element={<MainPage />} />
+                    <Route path="/dashboard/:id" element={<DashboardPage />} />
+                    <Route path="/picture/:id" element={<ImagePage />} />
+                </Routes>
+            </QueryParamProvider>
         </Router>
     );
 }

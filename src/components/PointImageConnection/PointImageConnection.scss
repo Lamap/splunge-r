@@ -1,5 +1,10 @@
+@use '../../vars';
+
 .spg-point-image-connection {
-    $line-start-distance: 40px;
+    $line-start-distance: 46px;
+    $arrow-color: vars.$highlight-color;
+    $arrow-size: 16px;
+
     display: flex;
     position: absolute;
     z-index: 999999;
@@ -7,34 +12,47 @@
     justify-content: center;
     transform-origin: left bottom;
 
+    &--target-to-point {
+
+        .spg-point-image-connection__line:after {
+            display: none;
+        }
+
+        .spg-point-image-connection__line:before {
+            display: block;
+        }
+
+    }
+
     &__line {
         position: absolute;
         right: $line-start-distance;
         left: $line-start-distance;
-        border-bottom: 4px dashed #F73F13;
+        border-bottom: 4px dashed $arrow-color;
+
         &:after {
+            display: block;
             position: absolute;
             top: -6px;
-            left: calc(100% + 8px);
+            left: calc(100% + $arrow-size / 2);
             content: '';
-            display: block;
             width: 0;
             height: 0;
             border-style: solid;
-            border-width: 8px 0 8px 16px;
-            border-color: transparent transparent transparent #F73F13;
+            border-width: $arrow-size / 2 0 $arrow-size / 2 $arrow-size;
+            border-color: transparent transparent transparent $arrow-color;
         }
         &:before {
             position: absolute;
             top: -6px;
-            left: -8px;
+            left: - $arrow-size;
             width: 0;
             height: 0;
             border-style: solid;
-            border-width: 8px 16px 8px 0;
-            border-color: transparent #F73F13 transparent transparent;
+            border-width: $arrow-size / 2 $arrow-size $arrow-size / 2 0;
+            border-color: transparent $arrow-color transparent transparent;
             content: '';
-            display: block;
+            display: none;
         }
     }
 }

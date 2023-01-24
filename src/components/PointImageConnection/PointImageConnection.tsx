@@ -5,13 +5,13 @@ import { IXYPoint } from '../../interfaces/IXYPoint';
 interface IProps {
     readonly start: IXYPoint;
     readonly end: IXYPoint;
-    readonly pointToStart?: boolean;
+    readonly targetToPoint?: boolean;
 }
-export const PointImageConnection: React.FC<IProps> = ({ start, end, pointToStart }): React.ReactElement => {
+export const PointImageConnection: React.FC<IProps> = ({ start, end, targetToPoint }: IProps): React.ReactElement => {
     const lineLength: number = Math.sqrt(Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2));
-    const rotation: number = 90 - (Math.atan((end.x - start.x) / Math.abs(end.y - start.y)) / Math.PI) * 180;
-    console.log('R::::', rotation, start, end, end.x - start.x, Math.abs(end.y - start.y));
-    const classNamesArray: string[] = ['spg-point-image-connection', ...(pointToStart ? ['spg-point-image-connection'] : [])];
+    const rotation: number = (Math.atan((end.x - start.x) / Math.abs(end.y - start.y)) / Math.PI) * 180;
+    const rotationInDeg: number = end.y - start.y < 0 ? 90 - rotation : rotation + 270;
+    const classNamesArray: string[] = ['spg-point-image-connection', ...(targetToPoint ? ['spg-point-image-connection--target-to-point'] : [])];
     return (
         <div
             className={classNamesArray.join(' ')}
@@ -19,7 +19,7 @@ export const PointImageConnection: React.FC<IProps> = ({ start, end, pointToStar
                 width: `${lineLength}px`,
                 top: `${start.y}px`,
                 left: `${start.x}px`,
-                transform: `rotate(${-rotation}deg)`,
+                transform: `rotate(${-rotationInDeg}deg)`,
             }}
         >
             <div className="spg-point-image-connection__line"></div>

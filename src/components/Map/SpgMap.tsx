@@ -1,6 +1,6 @@
 import './SpgMap.scss';
 import '../../../node_modules/leaflet/dist/leaflet.css';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { MapContainer, TileLayer, ImageOverlay } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import { SpgMarker } from '../SpgMarker/SpgMarker';
@@ -17,10 +17,12 @@ interface IProps {
     readonly boundsLoaded?: (bounds: ISpgLatLngBounds) => void;
     readonly center?: LatLngLiteral;
     readonly className?: string;
+    readonly hideOverlayControl?: boolean;
     readonly isInteractionDisabled?: boolean;
     readonly isPointAddingMode?: boolean;
     readonly isEditing?: boolean;
     readonly initialMapZoom?: number;
+    readonly initialOverlays?: IMapOverlay[];
     readonly onMapRefInitialised?: (map: Map) => void;
     readonly onMapClicked?: (position: LatLngLiteral) => void;
     readonly onPointMoved?: (id: string, newPosition: LatLngLiteral) => void;
@@ -29,8 +31,9 @@ interface IProps {
     readonly points: ISpgPointWithStates[];
     readonly markersCountShowOnlyOnHover?: boolean;
     readonly onMoveStart?: () => void;
+    readonly onMove?: () => void;
+    readonly onOverLaysChanged?: (overLays: IMapOverlay[]) => void;
 }
-
 export const SpgMap: React.FC<IProps> = ({
     boundsLoaded,
     isInteractionDisabled = false,
@@ -38,7 +41,9 @@ export const SpgMap: React.FC<IProps> = ({
     isEditing = false,
     center = { lat: 47.49, lng: 19.035 },
     className,
+    hideOverlayControl = false,
     initialMapZoom = 15,
+    initialOverlays = staticOverlays,
     onMapClicked,
     onPointClicked,
     onMapRefInitialised,
@@ -47,34 +52,38 @@ export const SpgMap: React.FC<IProps> = ({
     panTo,
     markersCountShowOnlyOnHover,
     onMoveStart,
+    onMove,
+    onOverLaysChanged,
 }: IProps): React.ReactElement => {
-    const classNames: string[] = ['spg-map', ...(isPointAddingMode ? ['spg-map--point-adding-mode'] : []), ...(!!className ? [className] : [])];
-    const [overlays, setOverlays] = useState<IMapOverlay[]>(staticOverlays);
+    const classNames: string[] = [
+        'spg-map',
+        ...(isPointAddingMode ? ['spg-map--point-adding-mode'] : []),
+        ...(hideOverlayControl ? ['spg-map--hide-overlay-control'] : []),
+        ...(!!className ? [className] : []),
+    ];
+    const [overlays, setOverlays] = useState<IMapOverlay[]>(initialOverlays);
     const [mapZoom, setMapZoom] = useState<number>(initialMapZoom);
-
     function addNewPoint(event: LeafletMouseEvent): void {
         !!onMapClicked && onMapClicked(event.latlng);
     }
     function onOverlayOpacityChanged(id: string, value: number): void {
-        console.log(id, value);
-        setOverlays(
-            overlays.map((overlay: IMapOverlay): IMapOverlay => {
-                if (overlay.id === id) {
-                    return {
-                        ...overlay,
-                        opacity: value,
-                    };
-                }
-                return overlay;
-            }),
-        );
+        const updatedOverlays: IMapOverlay[] = overlays.map((overlay: IMapOverlay): IMapOverlay => {
+            if (overlay.id === id) {
+                return {
+                    ...overlay,
+                    opacity: value,
+                };
+            }
+            return overlay;
+        });
+        setOverlays(updatedOverlays);
+        !!onOverLaysChanged && onOverLaysChanged(updatedOverlays);
     }
     function onMapZoomChanged(zoom: number): void {
         console.log(zoom);
         setMapZoom(zoom);
     }
     function overlayFilterFunction(overlay: IMapOverlay): boolean {
-        console.log(mapZoom, overlay.minDisplayZoom, mapZoom > overlay.minDisplayZoom);
         return !!overlay.opacity && mapZoom > overlay.minDisplayZoom;
     }
     return (
@@ -83,8 +92,9 @@ export const SpgMap: React.FC<IProps> = ({
                 center={center}
                 zoom={initialMapZoom}
                 className={'spg-map__container'}
-                zoomControl={isInteractionDisabled}
-                dragging={isInteractionDisabled}
+                zoomControl={!isInteractionDisabled}
+                dragging={!isInteractionDisabled}
+                scrollWheelZoom={!isInteractionDisabled}
             >
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                 <MapEventConnector
@@ -97,6 +107,9 @@ export const SpgMap: React.FC<IProps> = ({
                     onMapInitialised={onMapRefInitialised}
                     onMoveStart={(): void => {
                         !!onMoveStart && onMoveStart();
+                    }}
+                    onMove={(): void => {
+                        !!onMove && onMove();
                     }}
                 />
                 <MarkerClusterGroup maxClusterRadius={36} showCoverageOnHover={false} iconCreateFunction={renderClusterIcon}>
@@ -128,7 +141,9 @@ export const SpgMap: React.FC<IProps> = ({
                     <ImageOverlay key={overlay.id} zIndex={0} bounds={overlay.bounds} url={overlay.url} opacity={overlay.opacity} />
                 ))}
             </MapContainer>
-            <MapOverlayController overlays={overlays} className="spg-map__map-overlay-controller" onOpacityChanged={onOverlayOpacityChanged} />
+            {!hideOverlayControl && (
+                <MapOverlayController overlays={overlays} className="spg-map__map-overlay-controller" onOpacityChanged={onOverlayOpacityChanged} />
+            )}
         </div>
     );
 };

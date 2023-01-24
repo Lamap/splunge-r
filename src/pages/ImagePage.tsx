@@ -1,10 +1,17 @@
 import './ImagePage.scss';
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { requestFetchImage, requestGetPointOfImage, requestGetPointsByBounds } from '../services/servicesMock';
 import { ISpgImage, ISpgPoint, PointOfImageResponse } from 'splunge-common-lib';
 import { SpgMap } from '../components/Map/SpgMap';
 import { ISpgLatLngBounds } from 'splunge-common-lib/lib/interfaces/ISpgLatLngBounds';
+import LaunchIcon from '@mui/icons-material/Launch';
+import { NavigateFunction } from 'react-router/dist/lib/hooks';
+import { useQueryParams, ArrayParam, withDefault } from 'use-query-params';
+import queryString from 'query-string';
+import IMapOverlay from '../interfaces/IMapOverlay';
+import getOverlaysFromQuery from '../utils/getOverlaysFromQuery';
+import { QueryParamConfig } from 'serialize-query-params/src/types';
 
 export const ImagePage: React.FC = () => {
     const { id } = useParams();
@@ -12,6 +19,14 @@ export const ImagePage: React.FC = () => {
     const [pointOfImage, setPointOfImage] = useState<ISpgPoint | null>(null);
     const [pointsOfMap, setPointsOfMap] = useState<ISpgPoint[]>();
     const [bounds, setBounds] = useState<ISpgLatLngBounds>();
+    const navigate: NavigateFunction = useNavigate();
+    const OverlayIdParam: QueryParamConfig<(string | null)[]> = withDefault(ArrayParam, []);
+    const OverlayOpacityParam: QueryParamConfig<(string | null)[]> = withDefault(ArrayParam, []);
+    const [query, setQuery] = useQueryParams({
+        overlayIds: OverlayIdParam,
+        overlayOpacities: OverlayOpacityParam,
+    });
+    const overlaysFromQuery: IMapOverlay[] = getOverlaysFromQuery(query.overlayIds, query.overlayOpacities);
 
     useEffect((): void => {
         console.log(id);
@@ -20,13 +35,11 @@ export const ImagePage: React.FC = () => {
         }
         requestFetchImage(id)
             .then((result: ISpgImage) => {
-                console.log(result);
                 setImage(result);
             })
             .catch((err: Error) => console.error(err));
         requestGetPointOfImage(id)
             .then((result: PointOfImageResponse) => {
-                console.log(result);
                 setPointOfImage(result);
             })
             .catch((err: Error) => console.error(err));
@@ -35,26 +48,61 @@ export const ImagePage: React.FC = () => {
         if (!bounds) {
             return;
         }
-        console.log(bounds);
         requestGetPointsByBounds(bounds)
             .then((result: ISpgPoint[]): void => {
                 setPointsOfMap(result);
             })
             .catch((err: Error) => console.error(err));
     }, [bounds]);
+
+    function goToMap(): void {
+        setQuery({
+            overlayIds: ['aasssss', 'asdasdiii'],
+            overlayOpacities: ['10', '40'],
+        });
+        const query: string = queryString.stringify({
+            overlays: [
+                { id: 'bela', yolo: 'jeno' },
+                { id: 'sss', yolo: 'kkkk' },
+            ],
+        });
+        navigate(`/?${query}`);
+    }
     return (
         <div className="spg-image-page">
             <div className="spg-image-page__image-holder">{!!image && <img className="spg-image-page__img" src={image.url} alt={image.title} />}</div>
             <div className="spg-image-page__data-sidebar">
                 title {image?.title}
-                points of the map {pointsOfMap?.length}
                 {!!pointOfImage && (
-                    <SpgMap
-                        className="spg-image-page__map"
-                        boundsLoaded={(bounds: ISpgLatLngBounds): void => setBounds(bounds)}
-                        center={pointOfImage.position}
-                        points={[pointOfImage]}
-                    />
+                    <>
+                        <SpgMap
+                            className="spg-image-page__map"
+                            boundsLoaded={(bounds: ISpgLatLngBounds): void => setBounds(bounds)}
+                            center={pointOfImage.position}
+                            isInteractionDisabled={true}
+                            points={[pointOfImage]}
+                            markersCountShowOnlyOnHover={true}
+                            hideOverlayControl={true}
+                            initialOverlays={overlaysFromQuery}
+                        />
+
+                        <div className="spg-image-page__map-instructions">
+                            <button className="spg-image-page__map-link" onClick={goToMap}>
+                                Check it on the map <LaunchIcon fontSize={'small'} />
+                            </button>
+                            <div className="spg-image-page__map-info">
+                                <b>{pointsOfMap?.length}</b> markers on this view
+                            </div>
+                        </div>
+                    </>
+                )}
+                {!pointOfImage && (
+                    <div>
+                        No image connected to this point
+                        <button className="spg-image-page__map-link" onClick={goToMap}>
+                            Go to the map <LaunchIcon fontSize={'small'} />
+                        </button>
+                    </div>
                 )}
             </div>
         </div>

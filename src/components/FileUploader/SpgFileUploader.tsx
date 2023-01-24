@@ -28,7 +28,7 @@ export const SpgFileUploader: React.FC<IProps> = ({
         const reader: FileReader = new FileReader();
         reader.onloadend = (event: ProgressEvent<FileReader>): void => {
             if (event.target) {
-                const img = new Image();
+                const img: HTMLImageElement = new Image();
                 img.onload = (): void => {
                     !!onFileUploaded && onFileUploaded(file, img.width / img.height);
                 };

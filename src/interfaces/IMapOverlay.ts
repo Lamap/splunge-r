@@ -13,3 +13,5 @@ export default interface IMapOverlay {
     readonly minDisplayZoom: number;
     readonly bounds: LatLngBoundsExpression;
 }
+
+export interface IMapOverlayQueryItem extends Pick<IMapOverlay, 'id' | 'opacity'> {}

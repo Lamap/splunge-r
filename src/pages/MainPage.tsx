@@ -3,7 +3,7 @@ import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
 import { SpgMap } from '../components/Map/SpgMap';
 import { ISpgPointWithStates } from '../interfaces/ISpgPointWithStates';
 import { requestImagesFetch, requestPointsFetch } from '../services/servicesMock';
-import { IPointFetchResponse, ISpgPoint } from 'splunge-common-lib';
+import { IPointFetchResponse, ISpgImage, ISpgPoint } from 'splunge-common-lib';
 import { SpgImageList } from '../components/ImageList/SpgImageList';
 import { ISpgImageWithStates } from '../interfaces/ISpgImageWithStates';
 import { useNavigate } from 'react-router-dom';
@@ -11,16 +11,18 @@ import { NavigateFunction } from 'react-router/dist/lib/hooks';
 import { LatLngLiteral, Map, Point } from 'leaflet';
 import { PointImageConnection } from '../components/PointImageConnection/PointImageConnection';
 import { IXYPoint } from '../interfaces/IXYPoint';
+import IMapOverlay from '../interfaces/IMapOverlay';
+import queryString from 'query-string';
+import { mapOverlays as defaultOverlays } from '../components/MockOverlays';
 
 export function MainPage(): React.ReactElement {
     const [points, setPoints] = useState<ISpgPointWithStates[]>([]);
-    //const [highlightedPointId, setHighlightedPointId] = useState<string>();
-    // const [selectedPointId, setSelectedPointId] = useState<string>();
     const [images, setImages] = useState<ISpgImageWithStates[]>([]);
     const [panTo, setPanTo] = useState<LatLngLiteral>();
     const [mapRef, setMapRef] = useState<Map>();
     const [arrowStartXY, setArrowStartXY] = useState<IXYPoint | null>();
     const [arrowEndXY, setArrowEndXY] = useState<IXYPoint | null>();
+    const [mapOverLays, setMapOverlays] = useState<IMapOverlay[]>(defaultOverlays);
     const imageListRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
     const mapContainerRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
     const navigate: NavigateFunction = useNavigate();
@@ -28,21 +30,24 @@ export function MainPage(): React.ReactElement {
     useEffect((): void => {
         requestPointsFetch(true)
             .then((pointsResult: IPointFetchResponse) => {
-                setPoints(pointsResult.filter(point => !!point.images.length));
+                setPoints(pointsResult.filter((point: ISpgPoint) => !!point.images.length));
             })
             .catch((err: Error) => {
                 console.error(err);
             });
         requestImagesFetch()
-            .then(imagesResult => setImages(imagesResult))
+            .then((imagesResult: ISpgImage[]): void => setImages(imagesResult))
             .catch((err: Error) => {
                 console.error(err);
             });
     }, []);
 
     function launchImage(imageId: string): void {
-        console.log('launch', imageId);
-        navigate(`/picture/${imageId}`);
+        console.log('launch', imageId, mapOverLays);
+        const mapOverlayIds: string[] | undefined = mapOverLays?.map(({ id }: IMapOverlay): string => id);
+        const mapOverlayOpacities: string[] | undefined = mapOverLays?.map(({ opacity }: IMapOverlay): string => opacity.toString());
+        const query: string = queryString.stringify({ overlayIds: mapOverlayIds, overlayOpacities: mapOverlayOpacities });
+        navigate(`/picture/${imageId}?${query}`);
     }
     function targetPointOfImage(imageId: string, x: number, y: number): void {
         const pointOfImage: ISpgPoint | undefined = points.find((point: ISpgPoint) => point.images.includes(imageId));
@@ -60,7 +65,7 @@ export function MainPage(): React.ReactElement {
             }),
         );
         setImages(
-            images.map(image => {
+            images.map((image: ISpgImageWithStates): ISpgImageWithStates => {
                 return {
                     ...image,
                     isHighlighted: false,
@@ -72,7 +77,6 @@ export function MainPage(): React.ReactElement {
         if (!mapContainerRef.current || !imageListRef.current) {
             return;
         }
-        console.log('mapContainerRef.current?.clientWidth, x', mapContainerRef.current?.clientWidth, x);
         setArrowStartXY(new Point(mapContainerRef.current?.clientWidth / 2, mapContainerRef.current?.clientHeight / 2 - 30));
         setArrowEndXY({ x: mapContainerRef.current?.clientWidth + x, y });
     }
@@ -106,12 +110,33 @@ export function MainPage(): React.ReactElement {
         setArrowStartXY({ x, y });
         setArrowEndXY({ x: mapContainerRef.current?.clientWidth, y: 75 });
     }
+
+    function getHiglightedPoint(): ISpgPointWithStates | undefined {
+        return points.find((point: ISpgPointWithStates): boolean => !!point.isHighlighted);
+    }
+    function getSelectedPoint(): ISpgPointWithStates | undefined {
+        return points.find((point: ISpgPointWithStates): boolean => !!point.isSelected);
+    }
+
+    function onMapMoved(): void {
+        const selectedPoint: ISpgPointWithStates | undefined = getSelectedPoint();
+        const highlightedPoint: ISpgPointWithStates | undefined = getHiglightedPoint();
+        const pointToFit: ISpgPointWithStates | undefined = highlightedPoint || selectedPoint;
+        if (!mapRef || !mapContainerRef?.current || !pointToFit) {
+            return setArrowStartXY(null);
+        }
+        const { x, y }: Point = mapRef.latLngToContainerPoint(pointToFit?.position);
+        setArrowStartXY({ x, y });
+    }
+
+    function onMapOverlaysChanged(overlays: IMapOverlay[]): void {
+        setMapOverlays(overlays);
+    }
     return (
         <div className="spg-main-page">
             <div ref={mapContainerRef} className="spg-main-page__map-container">
                 <SpgMap
                     className="spg-main-page__map"
-                    isInteractionDisabled={true}
                     isEditing={false}
                     isPointAddingMode={false}
                     points={points}
@@ -119,10 +144,8 @@ export function MainPage(): React.ReactElement {
                     onMapRefInitialised={(map: Map): void => setMapRef(map)}
                     onPointClicked={highLightImagesOfPoint}
                     markersCountShowOnlyOnHover={true}
-                    onMoveStart={(): void => {
-                        setArrowEndXY(null);
-                        setArrowStartXY(null);
-                    }}
+                    onMove={onMapMoved}
+                    onOverLaysChanged={onMapOverlaysChanged}
                 />
             </div>
 
@@ -135,36 +158,7 @@ export function MainPage(): React.ReactElement {
                     onTargetPointOfImage={targetPointOfImage}
                 />
             </div>
-
-            {!!arrowStartXY && (
-                <div
-                    style={{
-                        position: 'absolute',
-                        width: '10px',
-                        height: '10px',
-                        background: '#ff0000',
-                        borderRadius: '100%',
-                        left: `${arrowStartXY.x}px`,
-                        top: `${arrowStartXY.y}px`,
-                        zIndex: '9999999',
-                    }}
-                ></div>
-            )}
-            {!!arrowEndXY && (
-                <div
-                    style={{
-                        position: 'absolute',
-                        width: '10px',
-                        height: '10px',
-                        background: '#ff0000',
-                        borderRadius: '100%',
-                        left: `${arrowEndXY.x}px`,
-                        top: `${arrowEndXY.y}px`,
-                        zIndex: '9999999',
-                    }}
-                ></div>
-            )}
-            {!!arrowStartXY && !!arrowEndXY && <PointImageConnection start={arrowStartXY} end={arrowEndXY} />}
+            {!!arrowStartXY && !!arrowEndXY && <PointImageConnection start={arrowStartXY} end={arrowEndXY} targetToPoint={!!getHiglightedPoint()} />}
         </div>
     );
 }

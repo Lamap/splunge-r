@@ -1,3 +1,5 @@
+@use '../../vars';
+
 .spg-image-list {
     &__row {
         display: flex;
@@ -19,7 +21,7 @@
 
         &--highlighted,
         &--selected {
-            background: #F07C60;
+            background: vars.$highlight-color;
         }
     }
 

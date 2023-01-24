@@ -238,7 +238,6 @@ export function DashboardPage(): React.ReactElement {
             setPoints(adjustedPoints);
             setPanTo(attachedPoint.position);
         }
-        console.log(attachedPoint);
     }
 
     function addNewImage(file: File, widthPerHeightRatio: number): void {
@@ -284,7 +283,6 @@ export function DashboardPage(): React.ReactElement {
         setEditedImage(image);
     }
     function saveEditedImage(): void {
-        console.log(editedImage);
         if (!editedImage) {
             return;
         }
@@ -310,7 +308,6 @@ export function DashboardPage(): React.ReactElement {
         if (!editedImage) {
             return;
         }
-        console.log(target, value);
         setEditedImage({
             ...editedImage,
             [target]: value,

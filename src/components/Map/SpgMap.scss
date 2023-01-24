@@ -1,6 +1,12 @@
 .spg-map {
     $map-overlay-controller-height: 60px;
 
+    &--hide-overlay-control {
+        .spg-map__container {
+            height: 100%;
+        }
+    }
+
     &__container {
         width: 100%;
         height: calc(100% - $map-overlay-controller-height);
