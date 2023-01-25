@@ -1,3 +1,5 @@
+@use '../vars';
+
 .spg-dashboard {
     display: flex;
     $edit-header-height: 110px;
@@ -9,7 +11,7 @@
     }
 
     &__map {
-        height: calc(100vh - $edit-header-height - 2 * $actions-padding);
+        height: calc(100vh - #{$edit-header-height} - #{2 * $actions-padding} - #{vars.$header-height});
     }
 
     &__actions {

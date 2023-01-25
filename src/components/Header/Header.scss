@@ -1,0 +1,17 @@
+@use '../../vars';
+
+.spg-header {
+    display: flex;
+    align-items: center;
+    height: vars.$header-height;
+    padding: 0 16px;
+    border-bottom: 1px solid #ddd;
+
+    &__logo {
+        font-weight: bold;
+    }
+
+    &__menu {
+        margin-left: auto;
+    }
+}

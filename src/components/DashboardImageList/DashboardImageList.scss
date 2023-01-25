@@ -2,7 +2,7 @@
 
 .spg-dashboard-image-list {
     position: relative;
-    height: calc(100vh - 32px);
+    height: calc(100vh - 32px - #{vars.$header-height});
     overflow-y: scroll;
 
     &__header {

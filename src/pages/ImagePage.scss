@@ -2,7 +2,7 @@
 
 .spg-image-page {
     display: flex;
-    height: 100vh;
+    height: calc(100vh - #{vars.$header-height});
     $sidebar-width: 500px;
 
     &__data-sidebar {

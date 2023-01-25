@@ -1,3 +1,5 @@
+@use '../vars';
+
 .spg-main-page {
     display: flex;
     position: relative;
@@ -6,7 +8,7 @@
     &__map-container {
         position: relative;
         width: calc(100% - $image-list-width);
-        height: 100vh;
+        height: calc(100vh - #{vars.$header-height});
     }
 
     &__map {

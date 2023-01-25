@@ -7,10 +7,12 @@ import { ImagePage } from './pages/ImagePage';
 import { QueryParamProvider } from 'use-query-params';
 import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
 import queryString from 'query-string';
+import { SpgHeader } from './components/Header/Header';
 
 function App(): React.ReactElement {
     return (
         <Router>
+            <SpgHeader />
             <QueryParamProvider
                 adapter={ReactRouter6Adapter}
                 options={{
