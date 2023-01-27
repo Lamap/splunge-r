@@ -8,6 +8,7 @@ import { QueryParamProvider } from 'use-query-params';
 import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
 import queryString from 'query-string';
 import { SpgHeader } from './components/Header/Header';
+import { LoginPage } from './pages/LoginPage';
 
 function App(): React.ReactElement {
     return (
@@ -24,6 +25,7 @@ function App(): React.ReactElement {
                     <Route path="/" element={<MainPage />} />
                     <Route path="/dashboard/:id" element={<DashboardPage />} />
                     <Route path="/picture/:id" element={<ImagePage />} />
+                    <Route path="/login" element={<LoginPage />} />
                 </Routes>
             </QueryParamProvider>
         </Router>
