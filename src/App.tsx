@@ -31,6 +31,7 @@ function App(): React.ReactElement {
                     <Route path="/dashboard/:id" element={!!user ? <DashboardPage /> : <div>403</div>} />
                     <Route path="/picture/:id" element={<ImagePage />} />
                     <Route path="/login" element={<LoginPage />} />
+                    <Route path="/403" element={<div>403</div>} />
                     <Route path="/*" element={<div>404</div>} />
                 </Routes>
             </QueryParamProvider>
