@@ -10153,10 +10153,10 @@ split-string@^3.0.1, split-string@^3.0.2:
   dependencies:
     extend-shallow "^3.0.0"
 
-splunge-common-lib@1.1.55:
-  version "1.1.55"
-  resolved "https://registry.yarnpkg.com/splunge-common-lib/-/splunge-common-lib-1.1.55.tgz#269e8f4818ea1dc27cf0f39aec1c14b374fd65fe"
-  integrity sha512-uaSGySMC1SlaWBxecOGjzBcT/4wvtZU5Ttug2W2KjeDu9dOygFCyGYEv5NOIEw8/ukMtlswJXtEYtRV2bZsk6g==
+splunge-common-lib@1.1.56:
+  version "1.1.56"
+  resolved "https://registry.yarnpkg.com/splunge-common-lib/-/splunge-common-lib-1.1.56.tgz#e57d23551889aee4a7fb2206e5496b2d13d57d85"
+  integrity sha512-+6l4kSEVH/P/DLNZ/wNYjv+N2MiQEC/YCfyj4eccMNIK+Xf4cKEnzJ/VDF18Z4O5/EThNM2N7R1a43oyFV7Okg==
   dependencies:
     leaflet "1.8.0"
 
@@ -11160,6 +11160,11 @@ url-parse@^1.5.3:
   dependencies:
     querystringify "^2.1.1"
     requires-port "^1.0.0"
+
+use-local-storage-state@^18.1.2:
+  version "18.1.2"
+  resolved "https://registry.yarnpkg.com/use-local-storage-state/-/use-local-storage-state-18.1.2.tgz#f131c0aa3803742ca261c547cdfd9d61e848581d"
+  integrity sha512-V+kYQNC5R0N/JDpsg6b4ED5UaItKJcSvbne68DwJDZWHxGMQBiF41ATktFIOyet3PIq30d2qtzVp/2aB6hQ8Bg==
 
 use-query-params@^2.1.2:
   version "2.1.2"

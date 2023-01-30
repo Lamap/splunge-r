@@ -9,8 +9,13 @@ import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
 import queryString from 'query-string';
 import { SpgHeader } from './components/Header/Header';
 import { LoginPage } from './pages/LoginPage';
+import useLocalStorageState from 'use-local-storage-state';
+import { IUserBase } from 'splunge-common-lib/lib/interfaces/IUserBase';
 
 function App(): React.ReactElement {
+    const [user] = useLocalStorageState<IUserBase | undefined>('user');
+
+    console.log('user', user);
     return (
         <Router>
             <SpgHeader />
@@ -23,9 +28,10 @@ function App(): React.ReactElement {
             >
                 <Routes>
                     <Route path="/" element={<MainPage />} />
-                    <Route path="/dashboard/:id" element={<DashboardPage />} />
+                    <Route path="/dashboard/:id" element={!!user ? <DashboardPage /> : <div>403</div>} />
                     <Route path="/picture/:id" element={<ImagePage />} />
                     <Route path="/login" element={<LoginPage />} />
+                    <Route path="/*" element={<div>404</div>} />
                 </Routes>
             </QueryParamProvider>
         </Router>

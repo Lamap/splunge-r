@@ -11,9 +11,15 @@ export const SpgHeader: React.FC = (): React.ReactElement => {
         navigate('/login');
     }
 
+    function onLogoClicked(): void {
+        navigate('/');
+    }
+
     return (
         <div className="spg-header">
-            <span className="spg-header__logo">Splunge</span>
+            <button className="spg-header__logo" onClick={onLogoClicked}>
+                Splunge
+            </button>
             <AccountCircleIcon className="spg-header__menu" onClick={onLoginClicked} />
         </div>
     );

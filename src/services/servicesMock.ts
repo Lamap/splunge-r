@@ -16,11 +16,13 @@ import {
     IPointUpdateResponse,
     ISpgImage,
     ISpgPoint,
+    IUser,
     PointOfImageResponse,
 } from 'splunge-common-lib';
 import axios, { AxiosResponse } from 'axios';
 import { createApiUrl, createApiUrlWithIdParam, createApiUrlWithParams } from './createApiUrl';
 import { ISpgLatLngBounds } from 'splunge-common-lib/lib/interfaces/ISpgLatLngBounds';
+import { IUserBase } from 'splunge-common-lib/lib/interfaces/IUserBase';
 
 axios.defaults.withCredentials = true;
 
@@ -127,6 +129,7 @@ export async function requestCreateNewImage(file: File, widthPerHeightRatio: num
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
+                withCredentials: true,
             },
         );
         return newImageResponse.data;
@@ -196,16 +199,26 @@ export async function requestGetPointsByBounds(bounds: ISpgLatLngBounds): Promis
     }
 }
 
-export async function requestLogin(email: string, password: string): Promise<void> {
+export async function requestLogin(email: string, password: string): Promise<IUserBase> {
     try {
-        const loginResponse: AxiosResponse<string> = await axios.post<string, AxiosResponse<string>, ILoginUserRequestBody>(
+        const loginResponse: AxiosResponse<IUserBase> = await axios.post<IUser, AxiosResponse<IUserBase>, ILoginUserRequestBody>(
             createApiUrl(ApiRoutes.SPG_LOG_USER_IN),
             {
                 email,
                 password,
             },
         );
-        console.log(loginResponse.data, loginResponse.headers);
+        return loginResponse.data;
+    } catch (err) {
+        console.log(err);
+        throw err;
+    }
+}
+
+export async function requestLogout(): Promise<void> {
+    try {
+        const logoutResponse: AxiosResponse = await axios.post(createApiUrl(ApiRoutes.SPG_LOG_USER_OUT));
+        console.log(logoutResponse.data);
     } catch (err) {
         console.log(err);
         throw err;
