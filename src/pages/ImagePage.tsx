@@ -1,7 +1,7 @@
 import './ImagePage.scss';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { requestFetchImage, requestGetPointOfImage, requestGetPointsByBounds } from '../services/servicesMock';
+import { requestFetchImage, requestGetPointOfImage, requestGetPointsByBounds } from '../services/services';
 import { ISpgImage, ISpgPoint, PointOfImageResponse } from 'splunge-common-lib';
 import { SpgMap } from '../components/Map/SpgMap';
 import { ISpgLatLngBounds } from 'splunge-common-lib/lib/interfaces/ISpgLatLngBounds';

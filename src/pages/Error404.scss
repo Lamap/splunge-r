@@ -1,0 +1,17 @@
+@use '../vars';
+
+.spg-404-page {
+    text-align: center;
+
+    &__header {
+        margin-top: 46px;
+        color: vars.$interactive-color;
+        font-size: 32px;
+        font-weight: bold;
+    }
+
+    &__text {
+        margin-top: 42px;
+        color: #333333;
+    }
+}

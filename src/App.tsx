@@ -11,6 +11,10 @@ import { SpgHeader } from './components/Header/Header';
 import { LoginPage } from './pages/LoginPage';
 import useLocalStorageState from 'use-local-storage-state';
 import { IUserBase } from 'splunge-common-lib/lib/interfaces/IUserBase';
+import { AxiosSettings } from './utils/AxiosSettings';
+import { AppRoute } from './enums/AppRoute';
+import { Error404 } from './pages/Error404';
+import { Error403 } from './pages/Error403';
 
 function App(): React.ReactElement {
     const [user] = useLocalStorageState<IUserBase | undefined>('user');
@@ -18,6 +22,7 @@ function App(): React.ReactElement {
     console.log('user', user);
     return (
         <Router>
+            <AxiosSettings />
             <SpgHeader />
             <QueryParamProvider
                 adapter={ReactRouter6Adapter}
@@ -27,12 +32,12 @@ function App(): React.ReactElement {
                 }}
             >
                 <Routes>
-                    <Route path="/" element={<MainPage />} />
-                    <Route path="/dashboard/:id" element={!!user ? <DashboardPage /> : <div>403</div>} />
-                    <Route path="/picture/:id" element={<ImagePage />} />
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/403" element={<div>403</div>} />
-                    <Route path="/*" element={<div>404</div>} />
+                    <Route path={AppRoute.MAIN} element={<MainPage />} />
+                    <Route path={AppRoute.DASHBOARD} element={!!user ? <DashboardPage /> : <Error403 />} />
+                    <Route path={AppRoute.IMAGE_END_POINT} element={<ImagePage />} />
+                    <Route path={AppRoute.LOGIN_LOGOUT} element={<LoginPage />} />
+                    <Route path={AppRoute.ERROR_403} element={<Error403 />} />
+                    <Route path="/*" element={<Error404 />} />
                 </Routes>
             </QueryParamProvider>
         </Router>

@@ -1,11 +1,13 @@
 import './LoginPage.scss';
 import React, { ChangeEvent, useState } from 'react';
 import { Button, TextField } from '@mui/material';
-import { requestLogin, requestLogout } from '../services/servicesMock';
+import { requestLogin, requestLogout } from '../services/services';
 import useLocalStorageState from 'use-local-storage-state';
 import { IUserBase } from 'splunge-common-lib/lib/interfaces/IUserBase';
 import { NavigateFunction } from 'react-router/dist/lib/hooks';
 import { useNavigate } from 'react-router-dom';
+import { AppRoute } from '../enums/AppRoute';
+import { IUserLoginResponse } from 'splunge-common-lib';
 
 export const LoginPage: React.FC = (): React.ReactElement => {
     const [email, setEmail] = useState<string>();
@@ -18,7 +20,7 @@ export const LoginPage: React.FC = (): React.ReactElement => {
         if (!email || !password) {
             return;
         }
-        requestLogin(email, password).then(result => setUser(result));
+        requestLogin(email, password).then((result: IUserLoginResponse): void => setUser(result));
     }
     function onEmailChange(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void {
         setEmail(event.target.value);
@@ -26,13 +28,12 @@ export const LoginPage: React.FC = (): React.ReactElement => {
     function onPasswordChange(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void {
         setPassword(event.target.value);
     }
-    function logOut(): void {
+    async function logOut(): Promise<void> {
+        await requestLogout();
         setUser(undefined);
-        document.cookie = 'jwt-token=;expires=' + new Date(0).toUTCString();
-        requestLogout();
     }
     function goToDashboard(): void {
-        navigate('/dashboard/yolo');
+        navigate(AppRoute.DASHBOARD);
     }
     return (
         <div className="spg-login-page">
@@ -65,7 +66,7 @@ export const LoginPage: React.FC = (): React.ReactElement => {
                             </span>
 
                             <Button onClick={goToDashboard} variant={'contained'}>
-                                Go to dashboard
+                                Go to the dashboard
                             </Button>
                         </div>
                     </div>

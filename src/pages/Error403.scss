@@ -1,0 +1,22 @@
+@use '../vars';
+
+.spg-403-page {
+    text-align: center;
+
+    &__header {
+        margin-top: 46px;
+        color: vars.$interactive-color;
+        font-size: 32px;
+        font-weight: bold;
+    }
+
+    &__text {
+        margin: 42px 0 32px 0;
+        color: #333333;
+        font-size: 18px;
+    }
+
+    &__instruction {
+        color: #555;
+    }
+}

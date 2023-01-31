@@ -1,7 +1,6 @@
 import '../../node_modules/leaflet/dist/leaflet.css';
 import './DashboardPage.scss';
 import React, { SyntheticEvent, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import { SpgMap } from '../components/Map/SpgMap';
 import { ISpgPointWithStates } from '../interfaces/ISpgPointWithStates';
 import { LatLngLiteral } from 'leaflet';
@@ -21,7 +20,7 @@ import {
     requestPointsFetch,
     requestImagesFetch,
     requestUpdateImage,
-} from '../services/servicesMock';
+} from '../services/services';
 
 interface IDashboardWarning {
     readonly title: string;
@@ -36,7 +35,6 @@ interface IDashboardConfirmation {
     readonly applyFunction: () => void;
 }
 export function DashboardPage(): React.ReactElement {
-    const { id } = useParams();
     const [selectedPointId, setSelectedPointId] = useState<string>();
     const [selectedImageId, setSelectedImageId] = useState<string>();
     const [panTo, setPanTo] = useState<LatLngLiteral>();
@@ -45,7 +43,6 @@ export function DashboardPage(): React.ReactElement {
     const [editedImage, setEditedImage] = useState<ISpgImage | null>();
     const [points, setPoints] = useState<ISpgPointWithStates[]>([]);
     const [images, setImages] = useState<ISpgImageWithStates[]>([]);
-    console.log(id);
     useEffect((): void => {
         requestPointsFetch()
             .then((allPoints: ISpgPoint[]) => setPoints(allPoints))

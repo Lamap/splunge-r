@@ -2,7 +2,7 @@ import './MainPage.scss';
 import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
 import { SpgMap } from '../components/Map/SpgMap';
 import { ISpgPointWithStates } from '../interfaces/ISpgPointWithStates';
-import { requestImagesFetch, requestPointsFetch } from '../services/servicesMock';
+import { requestImagesFetch, requestPointsFetch } from '../services/services';
 import { IPointFetchResponse, ISpgImage, ISpgPoint } from 'splunge-common-lib';
 import { SpgImageList } from '../components/ImageList/SpgImageList';
 import { ISpgImageWithStates } from '../interfaces/ISpgImageWithStates';
