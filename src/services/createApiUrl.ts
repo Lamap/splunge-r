@@ -1,5 +1,5 @@
 import { ApiRoutes } from 'splunge-common-lib';
-
+console.log('process.env.REACT_APP_API_URL', process.env.REACT_APP_API_URL);
 export function createApiUrl(route: ApiRoutes): string {
     return `${process.env.REACT_APP_API_URL}${route}`;
 }
