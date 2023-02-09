@@ -3,7 +3,7 @@ import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
 import { SpgMap } from '../components/Map/SpgMap';
 import { ISpgPointWithStates } from '../interfaces/ISpgPointWithStates';
 import { requestImagesFetch, requestPointsFetch } from '../services/services';
-import { IPointFetchResponse, ISpgImage, ISpgPoint } from 'splunge-common-lib';
+import { ISpgPoint } from 'splunge-common-lib';
 import { SpgImageList } from '../components/ImageList/SpgImageList';
 import { ISpgImageWithStates } from '../interfaces/ISpgImageWithStates';
 import { useNavigate } from 'react-router-dom';
@@ -14,6 +14,9 @@ import { IXYPoint } from '../interfaces/IXYPoint';
 import IMapOverlay from '../interfaces/IMapOverlay';
 import queryString from 'query-string';
 import { mapOverlays as defaultOverlays } from '../components/MockOverlays';
+import { ServerSleepNotification } from '../components/ServerSleepNotification/ServerSleepNotification';
+import { AxiosError } from 'axios/index';
+import { SpgPage } from '../components/SpgPage/SpgPage';
 
 export function MainPage(): React.ReactElement {
     const [points, setPoints] = useState<ISpgPointWithStates[]>([]);
@@ -26,19 +29,24 @@ export function MainPage(): React.ReactElement {
     const imageListRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
     const mapContainerRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
     const navigate: NavigateFunction = useNavigate();
+    const [pageError, setPageError] = useState<AxiosError | undefined>();
+    const [pageIsLoading, setPageisLoading] = useState<boolean>(false);
+    const [showServerSleepNotification, setShowServerSleepNotification] = useState<boolean>(false);
+    const serverDelayTolerance: number = Number(process.env.REACT_API_DELAY_TOLERANCE) || 4000;
 
     useEffect((): void => {
-        requestPointsFetch(true)
-            .then((pointsResult: IPointFetchResponse) => {
-                setPoints(pointsResult.filter((point: ISpgPoint) => !!point.images.length));
+        const delayCheckTimer: number = window.setTimeout((): void => setShowServerSleepNotification(true), serverDelayTolerance);
+        setPageisLoading(true);
+        Promise.all([requestImagesFetch(), requestPointsFetch()])
+            .then(([fetchedImages, allPoints]) => {
+                setImages(fetchedImages);
+                setPoints(allPoints);
             })
-            .catch((err: Error) => {
-                console.error(err);
-            });
-        requestImagesFetch()
-            .then((imagesResult: ISpgImage[]): void => setImages(imagesResult))
-            .catch((err: Error) => {
-                console.error(err);
+            .catch((err: AxiosError) => setPageError(err))
+            .finally((): void => {
+                window.clearTimeout(delayCheckTimer);
+                setPageisLoading(false);
+                setShowServerSleepNotification(false);
             });
     }, []);
 
@@ -133,32 +141,37 @@ export function MainPage(): React.ReactElement {
         setMapOverlays(overlays);
     }
     return (
-        <div className="spg-main-page">
-            <div ref={mapContainerRef} className="spg-main-page__map-container">
-                <SpgMap
-                    className="spg-main-page__map"
-                    isEditing={false}
-                    isPointAddingMode={false}
-                    points={points}
-                    panTo={panTo}
-                    onMapRefInitialised={(map: Map): void => setMapRef(map)}
-                    onPointClicked={highLightImagesOfPoint}
-                    markersCountShowOnlyOnHover={true}
-                    onMove={onMapMoved}
-                    onOverLaysChanged={onMapOverlaysChanged}
-                />
-            </div>
+        <SpgPage isLoading={pageIsLoading} error={pageError}>
+            <div className="spg-main-page">
+                <ServerSleepNotification isOpen={showServerSleepNotification} onClose={(): void => setShowServerSleepNotification(false)} />
+                <div ref={mapContainerRef} className="spg-main-page__map-container">
+                    <SpgMap
+                        className="spg-main-page__map"
+                        isEditing={false}
+                        isPointAddingMode={false}
+                        points={points}
+                        panTo={panTo}
+                        onMapRefInitialised={(map: Map): void => setMapRef(map)}
+                        onPointClicked={highLightImagesOfPoint}
+                        markersCountShowOnlyOnHover={true}
+                        onMove={onMapMoved}
+                        onOverLaysChanged={onMapOverlaysChanged}
+                    />
+                </div>
 
-            <div ref={imageListRef}>
-                <SpgImageList
-                    className="spg-main-page__images"
-                    images={images}
-                    onLaunchImage={launchImage}
-                    points={points}
-                    onTargetPointOfImage={targetPointOfImage}
-                />
+                <div ref={imageListRef}>
+                    <SpgImageList
+                        className="spg-main-page__images"
+                        images={images}
+                        onLaunchImage={launchImage}
+                        points={points}
+                        onTargetPointOfImage={targetPointOfImage}
+                    />
+                </div>
+                {!!arrowStartXY && !!arrowEndXY && (
+                    <PointImageConnection start={arrowStartXY} end={arrowEndXY} targetToPoint={!!getHiglightedPoint()} />
+                )}
             </div>
-            {!!arrowStartXY && !!arrowEndXY && <PointImageConnection start={arrowStartXY} end={arrowEndXY} targetToPoint={!!getHiglightedPoint()} />}
-        </div>
+        </SpgPage>
     );
 }

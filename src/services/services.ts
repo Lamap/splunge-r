@@ -27,10 +27,10 @@ import { ISpgLatLngBounds } from 'splunge-common-lib/lib/interfaces/ISpgLatLngBo
 // TODO: split into more files
 export async function requestImagesFetch(): Promise<ISpgImage[]> {
     try {
-        const imagesResponse: AxiosResponse<ISpgImage[]> = await axios.get<ISpgImage[]>(createApiUrl(ApiRoutes.SPG_IMAGES_FETCH), {});
+        const imagesResponse: AxiosResponse<ISpgImage[]> = await axios.get<ISpgImage[]>(createApiUrl(ApiRoutes.SPG_IMAGES_FETCH) + '', {});
         return imagesResponse.data;
     } catch (err) {
-        console.log(err);
+        console.error(err);
         throw err;
     }
 }
@@ -43,7 +43,7 @@ export async function requestPointsFetch(onlyLinked?: boolean): Promise<IPointFe
         });
         return allPointsResponse.data;
     } catch (err) {
-        console.log(err);
+        console.error(err);
         throw err;
     }
 }
@@ -62,7 +62,7 @@ export async function requestCreatePointForImage(position: LatLngLiteral, imageI
         });
         return createdPointResponse.data;
     } catch (err) {
-        console.log(err);
+        console.error(err);
         throw err;
     }
 }
@@ -77,7 +77,7 @@ export async function requestAttachImageToPoint(pointId: string, imageId: string
         );
         return attachResponse.data;
     } catch (err) {
-        console.log(err);
+        console.error(err);
         throw err;
     }
 }
@@ -89,7 +89,7 @@ export async function requestUpdatePoint(point: ISpgPoint): Promise<IPointUpdate
         );
         return updatePointResult.data;
     } catch (err) {
-        console.log(err);
+        console.error(err);
     }
     return await point;
 }
@@ -100,7 +100,7 @@ export async function requestDeletePoint(pointToDeleteId: string): Promise<IPoin
         );
         return deletePointResponse.data;
     } catch (err) {
-        console.log(err);
+        console.error(err);
         throw err;
     }
 }
@@ -112,7 +112,7 @@ export async function requestDetachImageFromPoint(imageIdToRemove: string): Prom
         );
         return updatedPointResponse.data;
     } catch (err) {
-        console.log(err);
+        console.error(err);
         throw err;
     }
 }
@@ -133,7 +133,7 @@ export async function requestCreateNewImage(file: File, widthPerHeightRatio: num
         );
         return newImageResponse.data;
     } catch (err) {
-        console.log(err);
+        console.error(err);
         throw err;
     }
 }
@@ -144,7 +144,7 @@ export async function requestDeleteImage(imageToDelete: string): Promise<IImageD
         );
         return deleteResponse.data;
     } catch (err) {
-        console.log(err);
+        console.error(err);
         throw err;
     }
 }
@@ -158,7 +158,7 @@ export async function requestUpdateImage(updatedImage: ISpgImage): Promise<IImag
         >(createApiUrlWithIdParam(ApiRoutes.SPG_IMAGE_UPDATE_AND_DELETE, updatedImage.id), updatedImage);
         return updatedImageResponse.data;
     } catch (err) {
-        console.log(err);
+        console.error(err);
         throw err;
     }
 }
@@ -168,7 +168,7 @@ export async function requestFetchImage(imageId: string): Promise<ISpgImage> {
         const imageFetchResponse: AxiosResponse<ISpgImage> = await axios.get(createApiUrlWithIdParam(ApiRoutes.SPG_IMAGE_FETCH, imageId));
         return imageFetchResponse.data;
     } catch (err) {
-        console.log(err);
+        console.error(err);
         throw err;
     }
 }
@@ -179,7 +179,7 @@ export async function requestGetPointOfImage(imageId: string): Promise<PointOfIm
         );
         return pointOfImageResponse.data;
     } catch (err) {
-        console.log(err);
+        console.error(err);
         throw err;
     }
 }
@@ -193,7 +193,7 @@ export async function requestGetPointsByBounds(bounds: ISpgLatLngBounds): Promis
         >(createApiUrl(ApiRoutes.SPG_POINTS_BY_BOUNDS), bounds);
         return pointsByBoundsResponse.data;
     } catch (err) {
-        console.log(err);
+        console.error(err);
         throw err;
     }
 }
@@ -209,7 +209,7 @@ export async function requestLogin(email: string, password: string): Promise<IUs
         );
         return loginResponse.data;
     } catch (err) {
-        console.log(err);
+        console.error(err);
         throw err;
     }
 }
@@ -219,7 +219,7 @@ export async function requestLogout(): Promise<void> {
         await axios.post(createApiUrl(ApiRoutes.SPG_LOG_USER_OUT));
         localStorage.removeItem('user');
     } catch (err) {
-        console.log(err);
+        console.error(err);
         throw err;
     }
 }

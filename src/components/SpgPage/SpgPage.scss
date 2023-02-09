@@ -1,0 +1,31 @@
+@use '../../vars';
+
+.spg-page {
+    &__loading-overlay {
+        display: flex;
+        position: absolute;
+        z-index: 999;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        align-items: center;
+        justify-content: center;
+        background: #8775754a;
+    }
+
+    &__error {
+        padding: 48px 200px;
+    }
+
+    &__error-code {
+        margin-top: 46px;
+        color: vars.$interactive-color;
+        font-size: 32px;
+        font-weight: bold;
+    }
+
+    &__error-message {
+        color: #555;
+    }
+}

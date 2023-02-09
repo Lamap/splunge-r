@@ -21,6 +21,9 @@ import {
     requestImagesFetch,
     requestUpdateImage,
 } from '../services/services';
+import { SpgPage } from '../components/SpgPage/SpgPage';
+import { AxiosError } from 'axios';
+import { ServerSleepNotification } from '../components/ServerSleepNotification/ServerSleepNotification';
 
 interface IDashboardWarning {
     readonly title: string;
@@ -43,22 +46,39 @@ export function DashboardPage(): React.ReactElement {
     const [editedImage, setEditedImage] = useState<ISpgImage | null>();
     const [points, setPoints] = useState<ISpgPointWithStates[]>([]);
     const [images, setImages] = useState<ISpgImageWithStates[]>([]);
+    const [pageError, setPageError] = useState<AxiosError | undefined>();
+    const [pageIsLoading, setPageisLoading] = useState<boolean>(false);
+    const [showServerSleepNotification, setShowServerSleepNotification] = useState<boolean>(false);
+    const serverDelayTolerance: number = Number(process.env.REACT_API_DELAY_TOLERANCE) || 4000;
+    const [errorToast, setErrorToast] = useState<string>();
+
     useEffect((): void => {
-        requestPointsFetch()
-            .then((allPoints: ISpgPoint[]) => setPoints(allPoints))
-            .catch((err: Error) => console.error(err));
-        requestImagesFetch()
-            .then((fetchedImages: ISpgImage[]) => setImages(fetchedImages))
-            .catch((err: Error) => console.error(err));
+        const delayCheckTimer: number = window.setTimeout((): void => setShowServerSleepNotification(true), serverDelayTolerance);
+        setPageisLoading(true);
+        Promise.all([requestImagesFetch(), requestPointsFetch()])
+            .then(([fetchedImages, allPoints]) => {
+                setImages(fetchedImages);
+                setPoints(allPoints);
+            })
+            .catch((err: AxiosError) => setPageError(err))
+            .finally((): void => {
+                window.clearTimeout(delayCheckTimer);
+                setPageisLoading(false);
+                setShowServerSleepNotification(false);
+            });
     }, []);
+
     async function createPointForImage(position: LatLngLiteral): Promise<void> {
         clearPointHighlighting();
         if (!!selectedImageId) {
             try {
+                setPageisLoading(true);
                 const updatedPointExtendedByTheNew: ISpgPoint[] = await requestCreatePointForImage(position, selectedImageId);
+                setPageisLoading(false);
                 setPoints(updatedPointExtendedByTheNew);
             } catch (err) {
                 console.error(err);
+                setErrorToast('Could not create point.');
             }
         }
         setSelectedImageId(undefined);
@@ -312,148 +332,159 @@ export function DashboardPage(): React.ReactElement {
     }
 
     return (
-        <div className="spg-dashboard">
-            <div className="spg-dashboard__map-and-actions">
-                <div className={'spg-dashboard__actions'}>
-                    {!selectedPointId && !selectedImageId && (
-                        <div>
-                            <div className="spg-dashboard__editing-header">
-                                You can click on the point to edit and see the linked images either select an image to connect to a point
-                            </div>
-                            <ul>
-                                <li>You can select on an image on the right and add or reconnect to a point, either create a new point for it.</li>
-                                <li>
-                                    You can select a point by clicking then you can see its direction and will see the connected images on the right.
-                                </li>
-                                <li>You can delete the selected point that does not have images linked.</li>
-                            </ul>
-                        </div>
-                    )}
-                    {!!selectedPointId && (
-                        <>
-                            <div className="spg-dashboard__editing-header">
-                                {`You have selected a point on the map that has ${getSelectedPoint(selectedPointId)?.images.length} linked image(s)`}
-                            </div>
+        <SpgPage isLoading={pageIsLoading} error={pageError}>
+            <div className="spg-dashboard">
+                {!!errorToast && <div>{errorToast}</div>}
+                <ServerSleepNotification isOpen={showServerSleepNotification} onClose={(): void => setShowServerSleepNotification(false)} />
+                <div className="spg-dashboard__map-and-actions">
+                    <div className={'spg-dashboard__actions'}>
+                        {!selectedPointId && !selectedImageId && (
                             <div>
-                                Now you see the linked images highlighted on the right and can set the direction or remove it if no images are
-                                attached
+                                <div className="spg-dashboard__editing-header">
+                                    You can click on the point to edit and see the linked images either select an image to connect to a point
+                                </div>
+                                <ul>
+                                    <li>
+                                        You can select on an image on the right and add or reconnect to a point, either create a new point for it.
+                                    </li>
+                                    <li>
+                                        You can select a point by clicking then you can see its direction and will see the connected images on the
+                                        right.
+                                    </li>
+                                    <li>You can delete the selected point that does not have images linked.</li>
+                                </ul>
                             </div>
-                            <div className="spg-dashboard__direction-group">
-                                <FormControlLabel
-                                    label={'Has direction'}
-                                    onChange={onHasDirectionChanged}
-                                    control={<Checkbox name={'hasdirection'} checked={!!getSelectedPoint(selectedPointId)?.hasDirection} />}
-                                />
-                                {getSelectedPoint(selectedPointId)?.hasDirection && (
-                                    <div className="spg-dashboard__direction-slider">
-                                        <Slider
-                                            min={0}
-                                            max={360}
-                                            size="small"
-                                            onChangeCommitted={onDirectionChanged}
-                                            defaultValue={getSelectedPoint(selectedPointId)?.direction}
-                                            valueLabelDisplay="on"
-                                            valueLabelFormat={(): React.ReactElement => (
-                                                <span className={'yolo'}>{getSelectedPoint(selectedPointId)?.direction}</span>
-                                            )}
-                                        />
-                                    </div>
-                                )}
-                                <span className="spg-dashboard__delete-point-btn">
-                                    <Button
-                                        variant={'outlined'}
-                                        color={'error'}
-                                        size={'small'}
-                                        onClick={deletePoint}
-                                        disabled={!!getSelectedPoint(selectedPointId)?.images.length}
-                                    >
-                                        Delete point
-                                    </Button>
-                                </span>
+                        )}
+                        {!!selectedPointId && (
+                            <>
+                                <div className="spg-dashboard__editing-header">
+                                    {`You have selected a point on the map that has ${
+                                        getSelectedPoint(selectedPointId)?.images.length
+                                    } linked image(s)`}
+                                </div>
+                                <div>
+                                    Now you see the linked images highlighted on the right and can set the direction or remove it if no images are
+                                    attached
+                                </div>
+                                <div className="spg-dashboard__direction-group">
+                                    <FormControlLabel
+                                        label={'Has direction'}
+                                        onChange={onHasDirectionChanged}
+                                        control={<Checkbox name={'hasdirection'} checked={!!getSelectedPoint(selectedPointId)?.hasDirection} />}
+                                    />
+                                    {getSelectedPoint(selectedPointId)?.hasDirection && (
+                                        <div className="spg-dashboard__direction-slider">
+                                            <Slider
+                                                min={0}
+                                                max={360}
+                                                size="small"
+                                                onChangeCommitted={onDirectionChanged}
+                                                defaultValue={getSelectedPoint(selectedPointId)?.direction}
+                                                valueLabelDisplay="on"
+                                                valueLabelFormat={(): React.ReactElement => (
+                                                    <span className={'yolo'}>{getSelectedPoint(selectedPointId)?.direction}</span>
+                                                )}
+                                            />
+                                        </div>
+                                    )}
+                                    <span className="spg-dashboard__delete-point-btn">
+                                        <Button
+                                            variant={'outlined'}
+                                            color={'error'}
+                                            size={'small'}
+                                            onClick={deletePoint}
+                                            disabled={!!getSelectedPoint(selectedPointId)?.images.length}
+                                        >
+                                            Delete point
+                                        </Button>
+                                    </span>
 
-                                <Button variant={'outlined'} size={'small'} onClick={clearPointSelection}>
-                                    Release selection
-                                </Button>
+                                    <Button variant={'outlined'} size={'small'} onClick={clearPointSelection}>
+                                        Release selection
+                                    </Button>
+                                </div>
+                            </>
+                        )}
+                        {!!selectedImageId && (
+                            <div>
+                                <div className="spg-dashboard__editing-header">You have selected an image.</div>
+                                Now you can connect the image to a point by clicking on the marker or click on the map to create a new point and link
+                                to the selected image.
+                                <div className="spg-dashboard__point-connect-actions">
+                                    <Button variant={'outlined'} size={'small'} onClick={quitImageConnection}>
+                                        Quit point connection process
+                                    </Button>
+                                </div>
                             </div>
-                        </>
-                    )}
-                    {!!selectedImageId && (
-                        <div>
-                            <div className="spg-dashboard__editing-header">You have selected an image.</div>
-                            Now you can connect the image to a point by clicking on the marker or click on the map to create a new point and link to
-                            the selected image.
-                            <div className="spg-dashboard__point-connect-actions">
-                                <Button variant={'outlined'} size={'small'} onClick={quitImageConnection}>
-                                    Quit point connection process
-                                </Button>
-                            </div>
-                        </div>
-                    )}
-                </div>
-                <SpgMap
-                    className="spg-dashboard__map"
-                    isEditing={true}
-                    isPointAddingMode={!!selectedImageId}
-                    panTo={panTo}
-                    points={points}
-                    onMapClicked={createPointForImage}
-                    onPointClicked={pointClicked}
-                    onPointMoved={onPointPositionChanged}
-                />
-            </div>
-            <DashboardImageList
-                images={images}
-                className="spg-dashboard__image-list"
-                onConnectImageToPoint={startConnectImageToPointProcess}
-                onChangePointOfImage={startConnectImageToPointProcess}
-                onDeleteImage={deleteImage}
-                onDetachImageFromPoint={detachImageFromPoint}
-                onEditImage={editImage}
-                onShowLinkedPointOfImage={highlightPointOfImage}
-                onNewImageAdded={addNewImage}
-                points={points}
-            />
-            <Dialog open={!!warning} onClose={closeWarningDialog}>
-                <DialogTitle>{warning?.title}</DialogTitle>
-                <DialogContent>{warning?.text}</DialogContent>
-                <DialogActions>
-                    <Button onClick={closeWarningDialog}>{warning?.acknowledgeLabel}</Button>
-                </DialogActions>
-            </Dialog>
-            <Dialog open={!!confirmation} onClose={closeConfirmation}>
-                <DialogTitle>{confirmation?.title}</DialogTitle>
-                <DialogContent>{confirmation?.text}</DialogContent>
-                <DialogActions>
-                    <Button onClick={confirmation?.applyFunction} color={'warning'}>
-                        {confirmation?.applyLabel}
-                    </Button>
-                    <Button onClick={closeConfirmation}>{confirmation?.cancelLabel}</Button>
-                </DialogActions>
-            </Dialog>
-            <Dialog open={!!editedImage} onClose={closeEditImage}>
-                <DialogTitle>Edit the selected image</DialogTitle>
-                <DialogContent>
-                    <img src={editedImage?.url} alt={editedImage?.url} />
-                    <div>
-                        <FormControlLabel
-                            label={'Title'}
-                            labelPlacement={'bottom'}
-                            control={
-                                <TextField
-                                    size={'small'}
-                                    variant={'standard'}
-                                    onChange={(event: React.ChangeEvent<HTMLInputElement>): void => updateEditedImage('title', event.target.value)}
-                                    defaultValue={editedImage?.title}
-                                />
-                            }
-                        />
+                        )}
                     </div>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={saveEditedImage}>Save</Button>
-                    <Button onClick={closeEditImage}>Cancel</Button>
-                </DialogActions>
-            </Dialog>
-        </div>
+                    <SpgMap
+                        className="spg-dashboard__map"
+                        isEditing={true}
+                        isPointAddingMode={!!selectedImageId}
+                        panTo={panTo}
+                        points={points}
+                        onMapClicked={createPointForImage}
+                        onPointClicked={pointClicked}
+                        onPointMoved={onPointPositionChanged}
+                    />
+                </div>
+                <DashboardImageList
+                    images={images}
+                    className="spg-dashboard__image-list"
+                    onConnectImageToPoint={startConnectImageToPointProcess}
+                    onChangePointOfImage={startConnectImageToPointProcess}
+                    onDeleteImage={deleteImage}
+                    onDetachImageFromPoint={detachImageFromPoint}
+                    onEditImage={editImage}
+                    onShowLinkedPointOfImage={highlightPointOfImage}
+                    onNewImageAdded={addNewImage}
+                    points={points}
+                />
+                <Dialog open={!!warning} onClose={closeWarningDialog}>
+                    <DialogTitle>{warning?.title}</DialogTitle>
+                    <DialogContent>{warning?.text}</DialogContent>
+                    <DialogActions>
+                        <Button onClick={closeWarningDialog}>{warning?.acknowledgeLabel}</Button>
+                    </DialogActions>
+                </Dialog>
+                <Dialog open={!!confirmation} onClose={closeConfirmation}>
+                    <DialogTitle>{confirmation?.title}</DialogTitle>
+                    <DialogContent>{confirmation?.text}</DialogContent>
+                    <DialogActions>
+                        <Button onClick={confirmation?.applyFunction} color={'warning'}>
+                            {confirmation?.applyLabel}
+                        </Button>
+                        <Button onClick={closeConfirmation}>{confirmation?.cancelLabel}</Button>
+                    </DialogActions>
+                </Dialog>
+                <Dialog open={!!editedImage} onClose={closeEditImage}>
+                    <DialogTitle>Edit the selected image</DialogTitle>
+                    <DialogContent>
+                        <img src={editedImage?.url} alt={editedImage?.url} />
+                        <div>
+                            <FormControlLabel
+                                label={'Title'}
+                                labelPlacement={'bottom'}
+                                control={
+                                    <TextField
+                                        size={'small'}
+                                        variant={'standard'}
+                                        onChange={(event: React.ChangeEvent<HTMLInputElement>): void =>
+                                            updateEditedImage('title', event.target.value)
+                                        }
+                                        defaultValue={editedImage?.title}
+                                    />
+                                }
+                            />
+                        </div>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={saveEditedImage}>Save</Button>
+                        <Button onClick={closeEditImage}>Cancel</Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+        </SpgPage>
     );
 }

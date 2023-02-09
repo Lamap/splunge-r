@@ -6,7 +6,6 @@ import { AppRoute } from '../enums/AppRoute';
 
 export const AxiosSettings: React.FC = (): React.ReactElement => {
     const navigate: NavigateFunction = useNavigate();
-
     axios.defaults.withCredentials = true;
     axios.interceptors.response.use(
         (value: AxiosResponse) => {
@@ -17,6 +16,7 @@ export const AxiosSettings: React.FC = (): React.ReactElement => {
                 navigate(AppRoute.ERROR_403);
                 localStorage.removeItem('user');
             }
+            return Promise.reject(error);
         },
     );
     return <></>;
