@@ -12,6 +12,9 @@ import queryString from 'query-string';
 import IMapOverlay from '../interfaces/IMapOverlay';
 import getOverlaysFromQuery from '../utils/getOverlaysFromQuery';
 import { QueryParamConfig } from 'serialize-query-params/src/types';
+import { SpgPage } from '../components/SpgPage/SpgPage';
+import { AxiosError } from 'axios/index';
+import { ToastMessage } from '../components/ToastMessage/ToastMessage';
 
 export const ImagePage: React.FC = () => {
     const { id } = useParams();
@@ -27,22 +30,33 @@ export const ImagePage: React.FC = () => {
         overlayOpacities: OverlayOpacityParam,
     });
     const overlaysFromQuery: IMapOverlay[] = getOverlaysFromQuery(query.overlayIds, query.overlayOpacities);
+    const [isPageLoading, setIsPageLoading] = useState<boolean>(false);
+    const [pageError, setPageError] = useState<AxiosError | undefined>();
+    const [errorToast, setErrorToast] = useState<string>();
 
     useEffect((): void => {
         console.log(id);
         if (!id) {
             return;
         }
+        setIsPageLoading(true);
         requestFetchImage(id)
             .then((result: ISpgImage) => {
                 setImage(result);
             })
-            .catch((err: Error) => console.error(err));
+            .catch((err: AxiosError): void => {
+                setPageError(err);
+            })
+            .finally((): void => {
+                setIsPageLoading(false);
+            });
         requestGetPointOfImage(id)
             .then((result: PointOfImageResponse) => {
                 setPointOfImage(result);
             })
-            .catch((err: Error) => console.error(err));
+            .catch((err: Error): void => {
+                setErrorToast('Could not load points of the image');
+            });
     }, [id]);
     useEffect(() => {
         if (!bounds) {
@@ -69,42 +83,47 @@ export const ImagePage: React.FC = () => {
         navigate(`/?${query}`);
     }
     return (
-        <div className="spg-image-page">
-            <div className="spg-image-page__image-holder">{!!image && <img className="spg-image-page__img" src={image.url} alt={image.title} />}</div>
-            <div className="spg-image-page__data-sidebar">
-                title {image?.title}
-                {!!pointOfImage && (
-                    <>
-                        <SpgMap
-                            className="spg-image-page__map"
-                            boundsLoaded={(bounds: ISpgLatLngBounds): void => setBounds(bounds)}
-                            center={pointOfImage.position}
-                            isInteractionDisabled={true}
-                            points={[pointOfImage]}
-                            markersCountShowOnlyOnHover={true}
-                            hideOverlayControl={true}
-                            initialOverlays={overlaysFromQuery}
-                        />
+        <SpgPage isLoading={isPageLoading} error={pageError}>
+            <div className="spg-image-page">
+                {!!errorToast && <ToastMessage severity={'error'} message={errorToast} onClose={(): void => setErrorToast(undefined)} />}
+                <div className="spg-image-page__image-holder">
+                    {!!image && <img className="spg-image-page__img" src={image.url} alt={image.title} />}
+                </div>
+                <div className="spg-image-page__data-sidebar">
+                    title {image?.title}
+                    {!!pointOfImage && (
+                        <>
+                            <SpgMap
+                                className="spg-image-page__map"
+                                boundsLoaded={(bounds: ISpgLatLngBounds): void => setBounds(bounds)}
+                                center={pointOfImage.position}
+                                isInteractionDisabled={true}
+                                points={[pointOfImage]}
+                                markersCountShowOnlyOnHover={true}
+                                hideOverlayControl={true}
+                                initialOverlays={overlaysFromQuery}
+                            />
 
-                        <div className="spg-image-page__map-instructions">
-                            <button className="spg-image-page__map-link" onClick={goToMap}>
-                                Check it on the map <LaunchIcon fontSize={'small'} />
-                            </button>
-                            <div className="spg-image-page__map-info">
-                                <b>{pointsOfMap?.length}</b> markers on this view
+                            <div className="spg-image-page__map-instructions">
+                                <button className="spg-image-page__map-link" onClick={goToMap}>
+                                    Check it on the map <LaunchIcon fontSize={'small'} />
+                                </button>
+                                <div className="spg-image-page__map-info">
+                                    <b>{pointsOfMap?.length}</b> markers on this view
+                                </div>
                             </div>
+                        </>
+                    )}
+                    {!pointOfImage && (
+                        <div>
+                            No image connected to this point
+                            <button className="spg-image-page__map-link" onClick={goToMap}>
+                                Go to the map <LaunchIcon fontSize={'small'} />
+                            </button>
                         </div>
-                    </>
-                )}
-                {!pointOfImage && (
-                    <div>
-                        No image connected to this point
-                        <button className="spg-image-page__map-link" onClick={goToMap}>
-                            Go to the map <LaunchIcon fontSize={'small'} />
-                        </button>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
-        </div>
+        </SpgPage>
     );
 };

@@ -1,6 +1,6 @@
 import './DashboardImageList.scss';
 import { ISpgImageWithStates } from '../../interfaces/ISpgImageWithStates';
-import React, { useEffect, useState } from 'react';
+import React, { RefObject, useEffect, useRef, useState } from 'react';
 import { ISpgPointWithStates } from '../../interfaces/ISpgPointWithStates';
 import { DashboardImage } from '../DashboardImage/DashboardImage';
 import { ISpgImage } from 'splunge-common-lib';
@@ -33,9 +33,13 @@ export const DashboardImageList: React.FC<IProps> = ({
     const classNames: string[] = ['spg-dashboard-image-list', ...(!!className ? [className] : [])];
     const [imagesOfSelectedPoint, setImagesOfSelectedPoint] = useState<ISpgImageWithStates[]>([]);
     const [restOfImages, setRestOfImages] = useState<ISpgImageWithStates[]>([]);
+    const listRef: RefObject<HTMLDivElement> = useRef<HTMLDivElement>(null);
     useEffect(() => {
         setImagesOfSelectedPoint(images.filter((image: ISpgImageWithStates) => image.isHighlighted));
         setRestOfImages(images.filter((image: ISpgImageWithStates) => !image.isHighlighted));
+        if (listRef.current) {
+            listRef.current.scrollTop = 0;
+        }
     }, [images]);
 
     function connectToPoint(id: string): void {
@@ -73,7 +77,7 @@ export const DashboardImageList: React.FC<IProps> = ({
         !!onNewImageAdded && onNewImageAdded(file, widthPerHeightRatio);
     }
     return (
-        <div className={classNames.join(' ')}>
+        <div className={classNames.join(' ')} ref={listRef}>
             <div className="spg-dashboard-image-list__header">
                 <SpgFileUploader maxFileSize={500 * 1024} onFileUploaded={addNewImage} />
             </div>

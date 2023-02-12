@@ -1,9 +1,8 @@
 import IMapOverlay from '../interfaces/IMapOverlay';
-import mapSample from '../assets/maps/b1_22clr.gif';
 export const mapOverlays: IMapOverlay[] = [
     {
         id: '1',
-        url: mapSample,
+        url: 'https://drive.google.com/uc?id=13pTEiKnFtdQHE12MyOAq7sgLgn-w7DoK',
         dateRange: {
             start: 1875,
             end: 1900,
@@ -18,7 +17,7 @@ export const mapOverlays: IMapOverlay[] = [
     },
     {
         id: '2',
-        url: mapSample,
+        url: 'https://drive.google.com/uc?id=13PGRysannlwu8B49QlYlnC4lhekCdBRh',
         dateRange: {
             start: 1900,
             end: 1933,

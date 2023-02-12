@@ -1,6 +1,9 @@
 @use '../../vars';
 
 .spg-image-list {
+    height: calc(100vh - #{vars.$header-height});
+    overflow-y: scroll;
+
     &__row {
         display: flex;
     }

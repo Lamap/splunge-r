@@ -1,5 +1,5 @@
 import './SpgImageList.scss';
-import React from 'react';
+import React, { RefObject, useEffect, useRef } from 'react';
 import { ISpgImageWithStates } from '../../interfaces/ISpgImageWithStates';
 import LaunchIcon from '@mui/icons-material/Launch';
 
@@ -23,7 +23,9 @@ export const SpgImageList: React.FC<IProps> = ({
     onLaunchImage,
     points,
 }: IProps): React.ReactElement => {
-    const classNamesArray: string[] = ['spg-imagelist', ...(!!className ? [className] : [])];
+    const classNamesArray: string[] = ['spg-image-list', ...(!!className ? [className] : [])];
+    const listRef: RefObject<HTMLDivElement> = useRef<HTMLDivElement>(null);
+
     // const [highlightedImages, setHighlightedImages] = useState<ISpgImageWithStates[]>([]);
     const imageRows: ISpgImageWithStates[][] = images
         .sort(sortImagesByHiglight)
@@ -35,6 +37,12 @@ export const SpgImageList: React.FC<IProps> = ({
             }
             return acc;
         }, []);
+
+    useEffect((): void => {
+        if (listRef.current) {
+            listRef.current.scrollTop = 0;
+        }
+    }, [images]);
     function sortImagesByHiglight(imageA: ISpgImageWithStates, imageB: ISpgImageWithStates): number {
         return imageA.isHighlighted && !imageB.isHighlighted ? -1 : 0;
     }
@@ -68,7 +76,7 @@ export const SpgImageList: React.FC<IProps> = ({
         return imageClassArray.join(' ');
     }
     return (
-        <div className={classNamesArray.join(' ')}>
+        <div className={classNamesArray.join(' ')} ref={listRef}>
             {imageRows.map((row: ISpgImageWithStates[], rowIndex: number) => (
                 <div key={rowIndex} className={'spg-image-list__row'}>
                     {row.map((image: ISpgImageWithStates, colIndex: number) => (

@@ -1,0 +1,18 @@
+.spg-image-editor {
+    &__content {
+        display: flex;
+    }
+
+    &__image {
+        max-width: calc(100% - 500px);
+    }
+
+    &__form {
+        width: 500px;
+        padding: 24px;
+    }
+
+    &__title {
+        width: 100%;
+    }
+}

@@ -4,7 +4,7 @@ import React, { SyntheticEvent, useEffect, useState } from 'react';
 import { SpgMap } from '../components/Map/SpgMap';
 import { ISpgPointWithStates } from '../interfaces/ISpgPointWithStates';
 import { LatLngLiteral } from 'leaflet';
-import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, Slider, TextField } from '@mui/material';
+import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, Slider } from '@mui/material';
 import { ISpgImageWithStates } from '../interfaces/ISpgImageWithStates';
 import { DashboardImageList } from '../components/DashboardImageList/DashboardImageList';
 import { IImageDeleteResponse, IPointAttachResponse, IPointDeleteResponse, IPointDetachResponse, ISpgImage, ISpgPoint } from 'splunge-common-lib';
@@ -24,6 +24,8 @@ import {
 import { SpgPage } from '../components/SpgPage/SpgPage';
 import { AxiosError } from 'axios';
 import { ServerSleepNotification } from '../components/ServerSleepNotification/ServerSleepNotification';
+import { ToastMessage } from '../components/ToastMessage/ToastMessage';
+import { DashboardImageEditor } from '../components/DashboarImageEditor/DashboardImageEditor';
 
 interface IDashboardWarning {
     readonly title: string;
@@ -43,7 +45,7 @@ export function DashboardPage(): React.ReactElement {
     const [panTo, setPanTo] = useState<LatLngLiteral>();
     const [warning, setWarning] = useState<IDashboardWarning | null>(null);
     const [confirmation, setConfirmation] = useState<IDashboardConfirmation | null>(null);
-    const [editedImage, setEditedImage] = useState<ISpgImage | null>();
+    const [editedImage, setEditedImage] = useState<ISpgImage>();
     const [points, setPoints] = useState<ISpgPointWithStates[]>([]);
     const [images, setImages] = useState<ISpgImageWithStates[]>([]);
     const [pageError, setPageError] = useState<AxiosError | undefined>();
@@ -84,7 +86,7 @@ export function DashboardPage(): React.ReactElement {
         setSelectedImageId(undefined);
     }
 
-    function pointClicked(id: string): void {
+    async function pointClicked(id: string): Promise<void> {
         // if the selectedImageId is not set we set the point state to selected
         if (!selectedImageId) {
             setSelectedPointId(id);
@@ -117,7 +119,7 @@ export function DashboardPage(): React.ReactElement {
             });
             return console.warn('This point has been already connected to the selected image.');
         }
-        return addImageToPoint(id);
+        return await addImageToPoint(id);
     }
     function clearPointSelection(): void {
         setSelectedPointId(undefined);
@@ -168,6 +170,7 @@ export function DashboardPage(): React.ReactElement {
         await updatePoint({ ...pointToUpdate, position: newPosition });
     }
     function updatePoint(modifiedPoint: ISpgPoint): void {
+        setPageisLoading(true);
         requestUpdatePoint(modifiedPoint)
             .then((updatedPoint: ISpgPoint) => {
                 const updatedPoints: ISpgPointWithStates[] = points.map((point: ISpgPointWithStates) => {
@@ -177,26 +180,33 @@ export function DashboardPage(): React.ReactElement {
                     return point;
                 });
                 setPoints(updatedPoints);
+                setPageisLoading(false);
             })
-            .catch((err: Error) => console.error(err));
+            .catch((err: Error): void => {
+                setPageisLoading(false);
+                setErrorToast('Could not update point.');
+            });
     }
     function getSelectedPoint(selectedId: string | undefined): ISpgPointWithStates | undefined {
         return points.find(({ id }: ISpgPointWithStates) => id === selectedId);
     }
     function deletePoint(): void {
-        console.log('delete', selectedPointId);
-
         if (!selectedPointId) {
             return;
         }
 
         setConfirmation({
             applyFunction: (): void => {
+                setPageisLoading(true);
                 requestDeletePoint(selectedPointId)
                     .then((result: IPointDeleteResponse) => {
                         setPoints(points.filter((point: ISpgPointWithStates) => point.id !== result.deletedPointId));
+                        setPageisLoading(false);
                     })
-                    .catch((err: Error) => console.error(err));
+                    .catch((err: Error): void => {
+                        setPageisLoading(false);
+                        setErrorToast('Could not delete point');
+                    });
                 closeConfirmation();
             },
             title: 'Are you sure you want to delete this point?',
@@ -206,6 +216,7 @@ export function DashboardPage(): React.ReactElement {
     }
     function detachImageFromPoint(selectedImageId: string): void {
         console.log('detach', selectedImageId);
+        setPageisLoading(true);
         requestDetachImageFromPoint(selectedImageId)
             .then((updatedPoint: IPointDetachResponse) => {
                 const updatedPoints: ISpgPoint[] = points.map((point: ISpgPoint) => {
@@ -215,8 +226,12 @@ export function DashboardPage(): React.ReactElement {
                     return point;
                 });
                 setPoints(updatedPoints);
+                setPageisLoading(false);
             })
-            .catch((err: Error) => console.error(err));
+            .catch((err: Error): void => {
+                setPageisLoading(false);
+                setErrorToast('Could not remove image');
+            });
     }
     function startConnectImageToPointProcess(id: string): void {
         console.log('startConnectImageToPointProcess', id);
@@ -228,12 +243,16 @@ export function DashboardPage(): React.ReactElement {
         setSelectedImageId(undefined);
         clearPointSelection();
     }
-    function addImageToPoint(pointId: string): void {
+    async function addImageToPoint(pointId: string): Promise<void> {
         console.log('addImage to point');
         if (!selectedImageId) {
             return;
         }
-        requestAttachImageToPoint(pointId, selectedImageId).then((changedPoints: IPointAttachResponse) => {
+        setPageisLoading(true);
+        try {
+            const changedPoints: IPointAttachResponse = await requestAttachImageToPoint(pointId, selectedImageId);
+            setPageisLoading(false);
+
             setPoints(
                 points.map((point: ISpgPointWithStates) => {
                     const pointToUpdate: ISpgPoint | undefined = changedPoints.find((changedPoint: ISpgPoint) => point.id === changedPoint.id);
@@ -241,7 +260,10 @@ export function DashboardPage(): React.ReactElement {
                 }),
             );
             setSelectedImageId(undefined);
-        });
+        } catch (err) {
+            setPageisLoading(false);
+            setErrorToast('Failed to add image to point.');
+        }
     }
     function highlightPointOfImage(imageId: string): void {
         const attachedPoint: ISpgPointWithStates | undefined = points.find((point: ISpgPointWithStates) => point.images.includes(imageId));
@@ -259,17 +281,22 @@ export function DashboardPage(): React.ReactElement {
 
     function addNewImage(file: File, widthPerHeightRatio: number): void {
         console.log('add new image', file);
-
+        setPageisLoading(true);
         requestCreateNewImage(file, widthPerHeightRatio)
             .then((newImage: ISpgImage) => {
                 setImages([newImage, ...images]);
+                setPageisLoading(false);
             })
-            .catch((err: Error) => console.error(err));
+            .catch((err: Error): void => {
+                setPageisLoading(false);
+                setErrorToast('Could not create image.');
+            });
     }
 
     function deleteImage(imageToDeleteId: string): void {
         setConfirmation({
             applyFunction: (): void => {
+                setPageisLoading(true);
                 requestDeleteImage(imageToDeleteId)
                     .then((result: IImageDeleteResponse) => {
                         setImages(images.filter((image: ISpgImageWithStates) => image.id !== imageToDeleteId));
@@ -278,8 +305,12 @@ export function DashboardPage(): React.ReactElement {
                             return updatedPoint || point;
                         });
                         setPoints(updatedPoints);
+                        setPageisLoading(false);
                     })
-                    .catch((err: Error) => console.error(err));
+                    .catch((err: Error): void => {
+                        setPageisLoading(false);
+                        setErrorToast('Could not delete image.');
+                    });
                 setConfirmation(null);
             },
             cancelLabel: 'Cancel',
@@ -293,18 +324,17 @@ export function DashboardPage(): React.ReactElement {
     function closeConfirmation(): void {
         setConfirmation(null);
     }
-    function closeEditImage(): void {
-        setEditedImage(null);
-    }
+
     function editImage(image: ISpgImage): void {
         setEditedImage(image);
     }
-    function saveEditedImage(): void {
-        if (!editedImage) {
+    function saveEditedImage(updatedImage: ISpgImage): void {
+        if (!updatedImage) {
             return;
         }
         try {
-            requestUpdateImage(editedImage).then((result: ISpgImage): void => {
+            setPageisLoading(true);
+            requestUpdateImage(updatedImage).then((result: ISpgImage): void => {
                 setImages(
                     images.map((image: ISpgImageWithStates) => {
                         if (image.id === result?.id) {
@@ -313,28 +343,21 @@ export function DashboardPage(): React.ReactElement {
                         return image;
                     }),
                 );
+                setPageisLoading(false);
             });
         } catch (err) {
+            setPageisLoading(false);
+            setErrorToast('Could not save image data');
             console.error(err);
         }
 
-        setEditedImage(null);
-    }
-
-    function updateEditedImage(target: string, value: string): void {
-        if (!editedImage) {
-            return;
-        }
-        setEditedImage({
-            ...editedImage,
-            [target]: value,
-        });
+        setEditedImage(undefined);
     }
 
     return (
         <SpgPage isLoading={pageIsLoading} error={pageError}>
             <div className="spg-dashboard">
-                {!!errorToast && <div>{errorToast}</div>}
+                {!!errorToast && <ToastMessage severity={'error'} message={errorToast} onClose={(): void => setErrorToast(undefined)} />}
                 <ServerSleepNotification isOpen={showServerSleepNotification} onClose={(): void => setShowServerSleepNotification(false)} />
                 <div className="spg-dashboard__map-and-actions">
                     <div className={'spg-dashboard__actions'}>
@@ -458,32 +481,7 @@ export function DashboardPage(): React.ReactElement {
                         <Button onClick={closeConfirmation}>{confirmation?.cancelLabel}</Button>
                     </DialogActions>
                 </Dialog>
-                <Dialog open={!!editedImage} onClose={closeEditImage}>
-                    <DialogTitle>Edit the selected image</DialogTitle>
-                    <DialogContent>
-                        <img src={editedImage?.url} alt={editedImage?.url} />
-                        <div>
-                            <FormControlLabel
-                                label={'Title'}
-                                labelPlacement={'bottom'}
-                                control={
-                                    <TextField
-                                        size={'small'}
-                                        variant={'standard'}
-                                        onChange={(event: React.ChangeEvent<HTMLInputElement>): void =>
-                                            updateEditedImage('title', event.target.value)
-                                        }
-                                        defaultValue={editedImage?.title}
-                                    />
-                                }
-                            />
-                        </div>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={saveEditedImage}>Save</Button>
-                        <Button onClick={closeEditImage}>Cancel</Button>
-                    </DialogActions>
-                </Dialog>
+                <DashboardImageEditor image={editedImage} saveImage={saveEditedImage} />
             </div>
         </SpgPage>
     );
