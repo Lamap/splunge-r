@@ -21,6 +21,8 @@ interface IProps {
     readonly saveImage: (updatedImage: ISpgImage) => void;
 }
 export const DashboardImageEditor: React.FC<IProps> = ({ image, saveImage }: IProps): React.ReactElement => {
+    // TODO: introduce formik? handle savings, error handling invalid texts
+    // TODO: use date picker
     const [editedImage, setEditedImage] = useState<ISpgImage | undefined>();
     const [dateType, setDateType] = useState<ImageDateType>(ImageDateType.EXACT);
     useEffect((): void => {
@@ -57,29 +59,38 @@ export const DashboardImageEditor: React.FC<IProps> = ({ image, saveImage }: IPr
                     <div className="spg-image-editor__content">
                         <img className="spg-image-editor__image" src={image?.url} alt={image?.url} />
                         <div className="spg-image-editor__form">
-                            <TextField
-                                className={'spg-image-editor__title'}
-                                label={'Title'}
-                                size={'small'}
-                                variant={'standard'}
-                                onChange={(event: React.ChangeEvent<HTMLInputElement>): void => updateEditedImage('title', event.target.value)}
-                                defaultValue={image?.title}
-                            />
+                            <div className={'spg-image-editor__title'}>
+                                <TextField
+                                    className={'spg-image-editor__title-field'}
+                                    label={'Title'}
+                                    size={'small'}
+                                    variant={'standard'}
+                                    onChange={(event: React.ChangeEvent<HTMLInputElement>): void => updateEditedImage('title', event.target.value)}
+                                    defaultValue={image?.title}
+                                />
+                            </div>
+
                             <FormControl onChange={onDateTypeChanged}>
                                 <FormLabel id="date-type-group-label">Date type</FormLabel>
-                                <RadioGroup row name={'date-type'}>
+                                <RadioGroup row name={'date-type'} defaultValue={ImageDateType.EXACT}>
                                     <FormControlLabel value={ImageDateType.EXACT} control={<Radio />} label="Exact" />
                                     <FormControlLabel value={ImageDateType.RANGE} control={<Radio />} label="Range" />
                                 </RadioGroup>
                             </FormControl>
-                            <div>start date</div>
-                            {dateType === ImageDateType.RANGE && <div>end date</div>}
-                            <textarea />
+                            <div>
+                                <span className={'spg-image-editor__start-date-field'}>
+                                    <TextField label={dateType !== ImageDateType.RANGE ? 'Date' : 'Start date'} variant={'standard'} size={'small'} />
+                                </span>
+
+                                {dateType === ImageDateType.RANGE && <TextField label={'End date'} variant={'standard'} size={'small'} />}
+                            </div>
                         </div>
                     </div>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={saveEditedImage}>Save</Button>
+                    <Button onClick={saveEditedImage} variant={'contained'}>
+                        Save
+                    </Button>
                     <Button onClick={closeEditImage}>Cancel</Button>
                 </DialogActions>
             </Dialog>

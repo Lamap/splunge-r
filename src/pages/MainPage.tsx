@@ -111,7 +111,9 @@ export function MainPage(): React.ReactElement {
                 };
             }),
         );
-        if (!mapRef || !mapContainerRef?.current) {
+        if (!mapRef || !mapContainerRef?.current || !selectedPoint.images.length) {
+            setArrowStartXY(null);
+            setArrowEndXY(null);
             return;
         }
         const { x, y }: Point = mapRef.latLngToContainerPoint(selectedPoint?.position);
