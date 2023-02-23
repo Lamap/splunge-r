@@ -1,0 +1,13 @@
+{
+  "header": {
+    "logo": "Splunge"
+  },
+  "loginPage": {
+    "logoutLabel": "Log out",
+    "gotoDashboardLabel": "Go to dashboard",
+    "status": "You are logged in as <b>{{user}}</b>",
+    "loginLabel": "log in",
+    "emailLabel": "Email",
+    "passwordLabel": "Password"
+  }
+}

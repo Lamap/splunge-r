@@ -8,12 +8,14 @@ import { NavigateFunction } from 'react-router/dist/lib/hooks';
 import { useNavigate } from 'react-router-dom';
 import { AppRoute } from '../enums/AppRoute';
 import { IUserLoginResponse } from 'splunge-common-lib';
+import { useTranslation } from 'react-i18next';
 
 export const LoginPage: React.FC = (): React.ReactElement => {
     const [email, setEmail] = useState<string>();
     const [password, setPassword] = useState<string>();
     const [user, setUser] = useLocalStorageState<IUserBase | undefined>('user');
     const navigate: NavigateFunction = useNavigate();
+    const { t } = useTranslation('common');
 
     function logIn(): void {
         console.log(email, password);
@@ -41,32 +43,39 @@ export const LoginPage: React.FC = (): React.ReactElement => {
                 {!user && (
                     <>
                         <div className="spg-login-page__input-field">
-                            <TextField size="small" label="Email" className="spg-login-page__input" onChange={onEmailChange} />
+                            <TextField size="small" label={t('loginPage.emailLabel')} className="spg-login-page__input" onChange={onEmailChange} />
                         </div>
                         <div className="spg-login-page__input-field">
-                            <TextField size="small" label="Password" type="password" className="spg-login-page__input" onChange={onPasswordChange} />
+                            <TextField
+                                size="small"
+                                label={t('loginPage.passwordLabel')}
+                                type="password"
+                                className="spg-login-page__input"
+                                onChange={onPasswordChange}
+                            />
                         </div>
                         <div className="spg-login-page__action">
                             <Button onClick={logIn} variant={'contained'}>
-                                Login
+                                {t('loginPage.loginLabel')}
                             </Button>
                         </div>
                     </>
                 )}
                 {!!user && (
                     <div>
-                        <div className="spg-login-page__user-logged-in-info">
-                            You are logged in as <b>{user.email} </b>
-                        </div>
+                        <div
+                            className="spg-login-page__user-logged-in-info"
+                            dangerouslySetInnerHTML={{ __html: t('loginPage.status', { user: user.email }) }}
+                        ></div>
                         <div className="spg-login-page__logout-actions">
                             <span className="spg-login-page__go-to-dashboard">
                                 <Button onClick={logOut} variant={'outlined'}>
-                                    Log out
+                                    {t('loginPage.logoutLabel')}
                                 </Button>
                             </span>
 
                             <Button onClick={goToDashboard} variant={'contained'}>
-                                Go to the dashboard
+                                {t('loginPage.gotoDashboardLabel')}
                             </Button>
                         </div>
                     </div>

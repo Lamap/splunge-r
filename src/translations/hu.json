@@ -1,0 +1,13 @@
+{
+  "header": {
+    "logo": "Splunge"
+  },
+  "loginPage": {
+    "logoutLabel": "Kijelentkezés",
+    "gotoDashboardLabel": "Admin oldal",
+    "status": "Bejelentkezve, mint <b>{{user}}</b>",
+    "loginLabel": "Bejelentkezés",
+    "emailLabel": "Email",
+    "passwordLabel": "Jelszó"
+  }
+}
