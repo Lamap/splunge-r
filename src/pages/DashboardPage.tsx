@@ -26,6 +26,7 @@ import { AxiosError } from 'axios';
 import { ServerSleepNotification } from '../components/ServerSleepNotification/ServerSleepNotification';
 import { ToastMessage } from '../components/ToastMessage/ToastMessage';
 import { DashboardImageEditor } from '../components/DashboarImageEditor/DashboardImageEditor';
+import { useTranslation } from 'react-i18next';
 
 interface IDashboardWarning {
     readonly title: string;
@@ -53,6 +54,7 @@ export function DashboardPage(): React.ReactElement {
     const [showServerSleepNotification, setShowServerSleepNotification] = useState<boolean>(false);
     const serverDelayTolerance: number = Number(process.env.REACT_API_DELAY_TOLERANCE) || 4000;
     const [errorToast, setErrorToast] = useState<string>();
+    const { t } = useTranslation('common');
 
     useEffect((): void => {
         const delayCheckTimer: number = window.setTimeout((): void => setShowServerSleepNotification(true), serverDelayTolerance);
@@ -80,7 +82,7 @@ export function DashboardPage(): React.ReactElement {
                 setPoints(updatedPointExtendedByTheNew);
             } catch (err) {
                 console.error(err);
-                setErrorToast('Could not create point.');
+                setErrorToast(t('dashboardErrors.couldNotCreatePoint') || '');
             }
         }
         setSelectedImageId(undefined);
@@ -113,9 +115,9 @@ export function DashboardPage(): React.ReactElement {
         // if selectedImageId is set we add the image to the point
         if (getSelectedPoint(id)?.images.includes(selectedImageId)) {
             setWarning({
-                acknowledgeLabel: 'I got it',
-                title: 'This image has already linked to this point',
-                text: 'You can not double-connect the image to the same point, choose another one or click on the map to create a new point.',
+                acknowledgeLabel: t('dashboard.warnings.imageAlreadyLinkedAcknowledgeLabel'),
+                title: t('dashboard.warnings.imageAlreadyLinkedTitle'),
+                text: t('dashboard.warnings.imageAlreadyLinkedExplanation') || '',
             });
             return console.warn('This point has been already connected to the selected image.');
         }
@@ -184,7 +186,7 @@ export function DashboardPage(): React.ReactElement {
             })
             .catch((err: Error): void => {
                 setPageisLoading(false);
-                setErrorToast('Could not update point.');
+                setErrorToast(t('dashboard.couldNotUpdatePoint') || '');
             });
     }
     function getSelectedPoint(selectedId: string | undefined): ISpgPointWithStates | undefined {
@@ -205,13 +207,13 @@ export function DashboardPage(): React.ReactElement {
                     })
                     .catch((err: Error): void => {
                         setPageisLoading(false);
-                        setErrorToast('Could not delete point');
+                        setErrorToast(t('dashboard.couldNotDeletePoint') || '');
                     });
                 closeConfirmation();
             },
-            title: 'Are you sure you want to delete this point?',
-            applyLabel: 'Yes, delete it',
-            cancelLabel: 'Cancel',
+            title: t('dashboard.deletePointConfirmation.title'),
+            applyLabel: t('dashboard.deletePointConfirmation.apply'),
+            cancelLabel: t('general.cancel'),
         });
     }
     function detachImageFromPoint(selectedImageId: string): void {
@@ -230,7 +232,7 @@ export function DashboardPage(): React.ReactElement {
             })
             .catch((err: Error): void => {
                 setPageisLoading(false);
-                setErrorToast('Could not remove image');
+                setErrorToast(t('dashboard.couldNotRemoveImage') || '');
             });
     }
     function startConnectImageToPointProcess(id: string): void {
@@ -262,7 +264,7 @@ export function DashboardPage(): React.ReactElement {
             setSelectedImageId(undefined);
         } catch (err) {
             setPageisLoading(false);
-            setErrorToast('Failed to add image to point.');
+            setErrorToast(t('dashboard.failedToAddImageToPoint') || '');
         }
     }
     function highlightPointOfImage(imageId: string): void {
@@ -289,7 +291,7 @@ export function DashboardPage(): React.ReactElement {
             })
             .catch((err: Error): void => {
                 setPageisLoading(false);
-                setErrorToast('Could not create image.');
+                setErrorToast(t('dashboard.errors.couldNotCreateImage') || '');
             });
     }
 
@@ -309,13 +311,13 @@ export function DashboardPage(): React.ReactElement {
                     })
                     .catch((err: Error): void => {
                         setPageisLoading(false);
-                        setErrorToast('Could not delete image.');
+                        setErrorToast(t('dashboard.errors.couldNotDeleteImage') || '');
                     });
                 setConfirmation(null);
             },
-            cancelLabel: 'Cancel',
-            applyLabel: 'Yes, delete image',
-            title: 'Are you sure you want to delete this image?',
+            cancelLabel: t('general.cancel'),
+            applyLabel: t('dashboard.deleteImageConfirmation.apply'),
+            title: t('dashboard.deleteImageConfirmation.title'),
         });
     }
     function closeWarningDialog(): void {
@@ -347,7 +349,7 @@ export function DashboardPage(): React.ReactElement {
             });
         } catch (err) {
             setPageisLoading(false);
-            setErrorToast('Could not save image data');
+            setErrorToast(t('dashboard.errors.couldNotSaveImageData') || '');
             console.error(err);
         }
 
@@ -363,35 +365,23 @@ export function DashboardPage(): React.ReactElement {
                     <div className={'spg-dashboard__actions'}>
                         {!selectedPointId && !selectedImageId && (
                             <div>
-                                <div className="spg-dashboard__editing-header">
-                                    You can click on the point to edit and see the linked images either select an image to connect to a point
-                                </div>
+                                <div className="spg-dashboard__editing-header">{t('dashboard.instructions.header')}</div>
                                 <ul>
-                                    <li>
-                                        You can select on an image on the right and add or reconnect to a point, either create a new point for it.
-                                    </li>
-                                    <li>
-                                        You can select a point by clicking then you can see its direction and will see the connected images on the
-                                        right.
-                                    </li>
-                                    <li>You can delete the selected point that does not have images linked.</li>
+                                    <li>{t('dashboard.instructions.point1')}</li>
+                                    <li>{t('dashboard.instructions.point2')}</li>
+                                    <li>{t('dashboard.instructions.point3')}</li>
                                 </ul>
                             </div>
                         )}
                         {!!selectedPointId && (
                             <>
                                 <div className="spg-dashboard__editing-header">
-                                    {`You have selected a point on the map that has ${
-                                        getSelectedPoint(selectedPointId)?.images.length
-                                    } linked image(s)`}
+                                    {t('dashboard.pointSelectionState', { count: getSelectedPoint(selectedPointId)?.images.length })}
                                 </div>
-                                <div>
-                                    Now you see the linked images highlighted on the right and can set the direction or remove it if no images are
-                                    attached
-                                </div>
+                                <div>{t('dashboard.pointSelectionInstruction')}</div>
                                 <div className="spg-dashboard__direction-group">
                                     <FormControlLabel
-                                        label={'Has direction'}
+                                        label={t('dashboard.hasDirectionLabel')}
                                         onChange={onHasDirectionChanged}
                                         control={<Checkbox name={'hasdirection'} checked={!!getSelectedPoint(selectedPointId)?.hasDirection} />}
                                     />
@@ -418,12 +408,12 @@ export function DashboardPage(): React.ReactElement {
                                             onClick={deletePoint}
                                             disabled={!!getSelectedPoint(selectedPointId)?.images.length}
                                         >
-                                            Delete point
+                                            {t('dashboard.deletePointLabel')}
                                         </Button>
                                     </span>
 
                                     <Button variant={'outlined'} size={'small'} onClick={clearPointSelection}>
-                                        Release selection
+                                        {t('dashboard.releasePointLabel')}
                                     </Button>
                                 </div>
                             </>
@@ -435,7 +425,7 @@ export function DashboardPage(): React.ReactElement {
                                 to the selected image.
                                 <div className="spg-dashboard__point-connect-actions">
                                     <Button variant={'outlined'} size={'small'} onClick={quitImageConnection}>
-                                        Quit point connection process
+                                        {t('dashboard.quitPointConnection')}
                                     </Button>
                                 </div>
                             </div>

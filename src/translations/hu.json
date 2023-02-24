@@ -9,5 +9,15 @@
     "loginLabel": "Bejelentkezés",
     "emailLabel": "Email",
     "passwordLabel": "Jelszó"
+  },
+  "general": {
+    "cancel": "mégse",
+    "save": "mentés"
+  },
+  "mapOverlayController": {
+    "mapsCaption": "Történelmi térképrétegek"
+  },
+  "dashboardErrors": {
+    "couldNotCreatePoint": "Sikertelen a jel létrehozása"
   }
 }

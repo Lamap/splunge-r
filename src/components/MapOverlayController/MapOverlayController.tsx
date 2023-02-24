@@ -2,6 +2,7 @@ import './MapOverlayController.scss';
 import React, { SyntheticEvent } from 'react';
 import IMapOverlay from '../../interfaces/IMapOverlay';
 import { Slider } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 interface IProps {
     readonly className?: string;
@@ -11,12 +12,14 @@ interface IProps {
 export const MapOverlayController: React.FC<IProps> = ({ className, onOpacityChanged, overlays }: IProps) => {
     const baseClassname: string = 'spg-map-overlay-controller';
     const classnameArray: string[] = [baseClassname, ...(!!className ? [className] : [])];
+    const { t } = useTranslation('common');
+
     function opacityChanged(id: string, value: number): void {
         !!onOpacityChanged && onOpacityChanged(id, value);
     }
     return (
         <div className={classnameArray.join(' ')}>
-            <span className={`${baseClassname}__main-label`}>Maps of the past</span>
+            <span className={`${baseClassname}__main-label`}>{t('mapOverlayController.mapsCaption')}</span>
             <div className={`${baseClassname}__items`}>
                 {overlays.map(
                     (overlay: IMapOverlay): React.ReactElement => (
