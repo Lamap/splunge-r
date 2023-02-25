@@ -2,6 +2,7 @@ import './SpgFileUploader.scss';
 import React, { ChangeEvent, useState } from 'react';
 import { Alert, Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import { useTranslation } from 'react-i18next';
 interface IProps {
     readonly maxFileSize: number;
     readonly className?: string;
@@ -16,6 +17,7 @@ export const SpgFileUploader: React.FC<IProps> = ({
 }: IProps): React.ReactElement => {
     const classNamesArray: string[] = ['spg-file-uploader', ...(!!className ? [className] : [])];
     const [warning, setWarning] = useState<string>('');
+    const { t } = useTranslation('common');
 
     function fileUploaded(event: ChangeEvent<HTMLInputElement>): void {
         if (!event.target.files) {
@@ -23,7 +25,7 @@ export const SpgFileUploader: React.FC<IProps> = ({
         }
         const file: File = event.target.files[0];
         if (file.size > maxFileSize) {
-            return setWarning('This file is bigger then then the maximum allowed 500 kb file size.');
+            return setWarning(t('fileUploader.maxSizeWarning', { size: maxFileSize / 1024 }) || '');
         }
         const reader: FileReader = new FileReader();
         reader.onloadend = (event: ProgressEvent<FileReader>): void => {
@@ -33,7 +35,7 @@ export const SpgFileUploader: React.FC<IProps> = ({
                     !!onFileUploaded && onFileUploaded(file, img.width / img.height);
                 };
                 img.onerror = (): void => {
-                    setWarning('Problem with file uploading');
+                    setWarning(t('fileUploader.uploadGeneralError') || '');
                 };
                 img.src = event.target.result as string;
             }
@@ -48,7 +50,7 @@ export const SpgFileUploader: React.FC<IProps> = ({
             <input id="file-upload" type="file" onChange={fileUploaded} accept={accept} hidden />
             <label htmlFor="file-upload">
                 <Button variant={'outlined'} size={'small'} endIcon={<AddIcon />} component="span">
-                    Add new image
+                    {t('fileUploader.addNewImageLabel')}
                 </Button>
             </label>
             {!!warning && (

@@ -15,6 +15,7 @@ import {
     TextField,
 } from '@mui/material';
 import { ImageDateType } from '../../enums/ImageDateType';
+import { useTranslation } from 'react-i18next';
 
 interface IProps {
     readonly image?: ISpgImage;
@@ -25,6 +26,8 @@ export const DashboardImageEditor: React.FC<IProps> = ({ image, saveImage }: IPr
     // TODO: use date picker
     const [editedImage, setEditedImage] = useState<ISpgImage | undefined>();
     const [dateType, setDateType] = useState<ImageDateType>(ImageDateType.EXACT);
+    const { t } = useTranslation('common');
+
     useEffect((): void => {
         setEditedImage(image);
     }, [image]);
@@ -54,7 +57,7 @@ export const DashboardImageEditor: React.FC<IProps> = ({ image, saveImage }: IPr
     return (
         <div className="spg-image-editor">
             <Dialog open={!!editedImage} onClose={closeEditImage} maxWidth={'xl'}>
-                <DialogTitle>Edit the selected image</DialogTitle>
+                <DialogTitle>{t('dashboardImageEditor.header')}</DialogTitle>
                 <DialogContent>
                     <div className="spg-image-editor__content">
                         <img className="spg-image-editor__image" src={image?.url} alt={image?.url} />
@@ -62,7 +65,7 @@ export const DashboardImageEditor: React.FC<IProps> = ({ image, saveImage }: IPr
                             <div className={'spg-image-editor__title'}>
                                 <TextField
                                     className={'spg-image-editor__title-field'}
-                                    label={'Title'}
+                                    label={t('dashboardImageEditor.titleLabel')}
                                     size={'small'}
                                     variant={'standard'}
                                     onChange={(event: React.ChangeEvent<HTMLInputElement>): void => updateEditedImage('title', event.target.value)}
@@ -71,27 +74,45 @@ export const DashboardImageEditor: React.FC<IProps> = ({ image, saveImage }: IPr
                             </div>
 
                             <FormControl onChange={onDateTypeChanged}>
-                                <FormLabel id="date-type-group-label">Date type</FormLabel>
+                                <FormLabel id="date-type-group-label">{t('dashboardImageEditor.dateTypeLabel')}</FormLabel>
                                 <RadioGroup row name={'date-type'} defaultValue={ImageDateType.EXACT}>
-                                    <FormControlLabel value={ImageDateType.EXACT} control={<Radio />} label="Exact" />
-                                    <FormControlLabel value={ImageDateType.RANGE} control={<Radio />} label="Range" />
+                                    <FormControlLabel
+                                        value={ImageDateType.EXACT}
+                                        control={<Radio />}
+                                        label={t('dashboardImageEditor.dateTypeExact')}
+                                    />
+                                    <FormControlLabel
+                                        value={ImageDateType.RANGE}
+                                        control={<Radio />}
+                                        label={t('dashboardImageEditor.dateTypeRange')}
+                                    />
                                 </RadioGroup>
                             </FormControl>
                             <div>
                                 <span className={'spg-image-editor__start-date-field'}>
-                                    <TextField label={dateType !== ImageDateType.RANGE ? 'Date' : 'Start date'} variant={'standard'} size={'small'} />
+                                    <TextField
+                                        label={
+                                            dateType !== ImageDateType.RANGE
+                                                ? t('dashboardImageEditor.dateLabel')
+                                                : t('dashboardImageEditor.startDateLabel')
+                                        }
+                                        variant={'standard'}
+                                        size={'small'}
+                                    />
                                 </span>
 
-                                {dateType === ImageDateType.RANGE && <TextField label={'End date'} variant={'standard'} size={'small'} />}
+                                {dateType === ImageDateType.RANGE && (
+                                    <TextField label={t('dashboardImageEditor.endDateLabel')} variant={'standard'} size={'small'} />
+                                )}
                             </div>
                         </div>
                     </div>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={saveEditedImage} variant={'contained'}>
-                        Save
+                        {t('general.save')}
                     </Button>
-                    <Button onClick={closeEditImage}>Cancel</Button>
+                    <Button onClick={closeEditImage}>{t('general.cancel')}</Button>
                 </DialogActions>
             </Dialog>
         </div>

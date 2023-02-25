@@ -12,12 +12,78 @@
   },
   "general": {
     "cancel": "mégse",
-    "save": "mentés"
+    "save": "mentés",
+    "edit": "Szerkesztés",
+    "delete": "Törlés"
   },
   "mapOverlayController": {
     "mapsCaption": "Történelmi térképrétegek"
   },
   "dashboardErrors": {
-    "couldNotCreatePoint": "Sikertelen a jel létrehozása"
+    "couldNotCreatePoint": "Nem sikerült a jel létrehozása",
+    "couldNotCreateImage": "Nem sikerült a kép létrehozása",
+    "couldNotDeletePoint": "Nem sikerült a jel törlése",
+    "couldNotDeleteImage": "Nem sikerült a kép törlése",
+    "couldNotUpdatePoint": "Nem sikerült a jel mentése",
+    "failedToAddImageToPoint": "Nem sikerült a képet a jelhez kapcsolni",
+    "couldNotRemoveImage": "Nem sikerült a kép eltávolítása a jelről",
+    "couldNotSaveImageData": "Nem sikerült a kép mentése"
+  },
+  "dashboard": {
+    "warnings": {
+      "imageAlreadyLinkedTitle": "Ez a kép már hozzá van kapcsolva ehhez a jelhez",
+      "imageAlreadyLinkedAcknowledgeLabel": "Rendben, értem",
+      "imageAlreadyLinkedExplanation": "Nem lehetséges ugyanazt a képet többször hozzárendelni egy adott jelhez. Válassz egy másik jelet, vagy kattints a térképre egy új jel létrehozásához."
+    },
+    "instructions": {
+      "header": "A jelre kattintva láthatóvá válik, hogy mely képek tartoznak hozzá, illetve a kiválasztott kép jelhez rendelhető.",
+      "point1": "A jobb oldali listából a képek kattintással kiválaszthatóak, hozzákapcsolható egy létező jelhez, vagy a térépre kattintással új jelet hozhatunk létre hozzá.",
+      "point2": "A térképen lévő jelek kattintással kiválaszthatóak, állítható az irányuk, láthatóvá válnak a hozzárendelt képek.",
+      "point3": "Törölheted a kiválasztott jelet, ha nincs képe hozzárendelve."
+    },
+    "hasDirectionLabel": "Mutassuk az irányultságot",
+    "deletePointLabel": "Jel törlése",
+    "releasePointLabel": "Ne legyen jel kiválasztva",
+    "pointSelectionState": "A kiválasztott jelhez {{count}} kép van hozzákapcsolva.",
+    "pointSelectionInstruction": "Most láthatóak a jelhez kapcsolt képek a jobboldali listában, a jel törölhető, ha nem tartozik hozzá kép, illetve beállítható az iránya.",
+    "deletePointConfirmation": {
+      "title": "Biztos, hogy törölni akarod a jelet?",
+      "apply": "Igen, törlöm a jelet"
+    },
+    "deleteImageConfirmation": {
+      "title": "Biztos, hogy törölni akarod a képet?",
+      "apply": "Igen, törlöm a képet"
+    },
+    "quitPointConnection": "Kilépés a jel-kép összekapcsolásból"
+  },
+  "fileUploader": {
+    "addNewImageLabel": "Kép feltöltése",
+    "uploadGeneralError": "A kép feltöltése sikertelen",
+    "maxSizeWarning": "A kiválasztott kép mérete nagyobb a megengedett maximális {{size}} kb-nál."
+  },
+  "dashboardImageList": {
+    "reconnectToPoint": "Jel átkötése",
+    "detachPointFromImage": "Jel eltávolítása a képről",
+    "showConnectedPoints": "A kapcsolt pontok mutatása",
+    "connectToPoint": "Jelhez kapcsolás"
+  },
+  "dashboardImageEditor": {
+    "header": "Kiválaszott kép adatainak szerkesztése",
+    "titleLabel": "Cím",
+    "dateTypeLabel": "Dátum jellege",
+    "dateTypeExact": "Pontos évszám",
+    "dateTypeRange": "Időintervallum",
+    "dateLabel": "Dátum",
+    "startDateLabel": "Lehetséges legkorábbi év",
+    "endDateLabel": "Lehetséges legkésőbbi év"
+  },
+  "page403": {
+    "title": "Nincs jogosultságod az oldal megtekintéséhez, vagy a végrehajtani próbált művelethez.",
+    "body1": "Maybe you just lost your session, please Elképzelhető, hogy csak a bejelentkezés évült el.",
+    "body2": ", és próbáld újra.",
+    "bodyLink": " Jelentkezz be ismét "
+  },
+  "page404": {
+    "body": "Ez az url nem létezik: <b>{{url}}</b>."
   }
 }

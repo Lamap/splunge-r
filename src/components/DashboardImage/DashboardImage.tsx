@@ -5,6 +5,7 @@ import { Button } from '@mui/material';
 import LinkIcon from '@mui/icons-material/Link';
 import LinkOffIcon from '@mui/icons-material/LinkOff';
 import { ISpgImage } from 'splunge-common-lib';
+import { useTranslation } from 'react-i18next';
 
 interface IProps {
     readonly image: ISpgImageWithStates;
@@ -31,6 +32,8 @@ export const DashboardImage: React.FC<IProps> = ({
 }: IProps): React.ReactElement => {
     const baseClassname: string = 'spg-dashboard-image';
     const classNamesArray: string[] = [baseClassname, ...(!!className ? [className] : [])];
+    const { t } = useTranslation('common');
+
     function changePointConnection(): void {
         !!onChangePointOfImage && onChangePointOfImage(image.id);
     }
@@ -66,39 +69,39 @@ export const DashboardImage: React.FC<IProps> = ({
                 {!!isConnected && (
                     <span className={`${baseClassname}__image-action-btn`}>
                         <Button size={'small'} variant={'contained'} onClick={changePointConnection}>
-                            Reconnect to point
+                            {t('dashboardImageList.reconnectToPoint')}
                         </Button>
                     </span>
                 )}
                 {!!isConnected && (
                     <span className={`${baseClassname}__image-action-btn`}>
                         <Button size={'small'} variant={'contained'} onClick={detachPointFromImage}>
-                            detach point from image
+                            {t('dashboardImageList.detachPointFromImage')}
                         </Button>
                     </span>
                 )}
                 {!!isConnected && (
                     <span className={`${baseClassname}__image-action-btn`}>
                         <Button size={'small'} variant={'contained'} onClick={highlightPointOfImage}>
-                            Show connected points
+                            {t('dashboardImageList.showConnectedPoints')}
                         </Button>
                     </span>
                 )}
                 {!isConnected && (
                     <span className={`${baseClassname}__image-action-btn`}>
                         <Button size={'small'} variant={'contained'} onClick={connectToImage}>
-                            Connect to point
+                            {t('dashboardImageList.connectToPoint')}
                         </Button>
                     </span>
                 )}
                 <span className={`${baseClassname}__image-action-btn`}>
                     <Button size={'small'} variant={'contained'} onClick={editImage}>
-                        Edit
+                        {t('general.edit')}
                     </Button>
                 </span>
                 <span className={`${baseClassname}__image-action-btn`}>
                     <Button size={'small'} variant={'contained'} color={'error'} onClick={deleteImage}>
-                        Delete
+                        {t('general.delete')}
                     </Button>
                 </span>
             </div>

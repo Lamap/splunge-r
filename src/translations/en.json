@@ -12,7 +12,9 @@
   },
   "general": {
     "cancel": "cancel",
-    "save": "save"
+    "save": "save",
+    "edit": "Edit",
+    "delete": "Delete"
   },
   "mapOverlayController": {
     "mapsCaption": "Maps of the past"
@@ -53,5 +55,35 @@
       "apply": "Yes, delete image"
     },
     "quitPointConnection": "Quit point connection process"
+  },
+  "fileUploader": {
+    "addNewImageLabel": "Add new image",
+    "uploadGeneralError": "Problem with file uploading",
+    "maxSizeWarning": "This file is bigger then then the maximum allowed {{size}} kb file size."
+  },
+  "dashboardImageList": {
+    "reconnectToPoint": "Reconnect to point",
+    "detachPointFromImage": "Detach point from image",
+    "showConnectedPoints": "Show connected points",
+    "connectToPoint": "Connect to point"
+  },
+  "dashboardImageEditor": {
+    "header": "Edit the selected image",
+    "titleLabel": "Title",
+    "dateTypeLabel": "Date type",
+    "dateTypeExact": "Exact",
+    "dateTypeRange": "Range",
+    "dateLabel": "Date",
+    "startDateLabel": "Start date",
+    "endDateLabel": "End date"
+  },
+  "page403": {
+    "title": "You have no privilege to access this page either perform the action you tried.",
+    "body1": "Maybe you just lost your session, please",
+    "body2": "and try again.",
+    "bodyLink": " log in "
+  },
+  "page404": {
+    "body": "This url does not exist: <b>{{url}}</b>."
   }
 }
