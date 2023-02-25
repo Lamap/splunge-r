@@ -1,6 +1,6 @@
+import './index.scss';
 import React from 'react';
 import ReactDOM, { Root } from 'react-dom/client';
-import './index.scss';
 import App from './App';
 import { I18nextProvider } from 'react-i18next';
 import i18next from 'i18next';

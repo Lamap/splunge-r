@@ -1,3 +1,5 @@
+@use '../../vars';
+
 .spg-map-overlay-controller {
     display: flex;
     padding: 0 16px;
@@ -5,6 +7,8 @@
     user-select: none;
 
     &__main-label {
+        @include vars.condensed;
+
         display: flex;
         align-items: center;
         margin-right: 16px;
@@ -38,6 +42,7 @@
             }
 
             .spg-map-overlay-controller__date-label {
+                font-weight: bold;
                 color: #F73F13;
             }
         }

@@ -1,4 +1,16 @@
+@import '@fontsource/roboto';
+@import '@fontsource/roboto-condensed';
+
 $highlight-color: #F07C60;
 $interactive-color: #F73F13;
 
 $header-height: 60px;
+
+@mixin condensed-semi-bold {
+    font-family: 'roboto condensed', sans-serif;
+    font-weight: bolder;
+}
+
+@mixin condensed {
+    font-family: 'roboto condensed', sans-serif;
+}

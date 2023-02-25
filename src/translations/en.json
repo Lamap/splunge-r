@@ -85,5 +85,6 @@
   },
   "page404": {
     "body": "This url does not exist: <b>{{url}}</b>."
-  }
+  },
+  "serverSleepNotification": "Slow response time. Most probably the server was sleeping and this is the first ping for a while so it is just waking up right now. Please wait for few more seconds or even 1 minute, or try refreshing the page."
 }

@@ -85,5 +85,6 @@
   },
   "page404": {
     "body": "Ez az url nem létezik: <b>{{url}}</b>."
-  }
+  },
+  "serverSleepNotification": "A szerver nem válaszol. Mivel egy átmeneti ingyenes erőforrás biztosítja az elérést, inaktivitás esetén a szerver elalszik, az első hívás után lassan ébred, akár percekig tart, amíg 'felébred'."
 }
