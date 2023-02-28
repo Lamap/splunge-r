@@ -12,6 +12,7 @@ import {
     FormLabel,
     Radio,
     RadioGroup,
+    TextareaAutosize,
     TextField,
 } from '@mui/material';
 import { ImageDateType } from '../../enums/ImageDateType';
@@ -71,6 +72,9 @@ export const DashboardImageEditor: React.FC<IProps> = ({ image, saveImage }: IPr
                                     onChange={(event: React.ChangeEvent<HTMLInputElement>): void => updateEditedImage('title', event.target.value)}
                                     defaultValue={image?.title}
                                 />
+                            </div>
+                            <div className={'spg-image-editor__description'}>
+                                <TextareaAutosize></TextareaAutosize>
                             </div>
 
                             <FormControl onChange={onDateTypeChanged}>

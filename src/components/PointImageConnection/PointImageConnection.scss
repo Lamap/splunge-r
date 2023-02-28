@@ -1,8 +1,8 @@
 @use '../../vars';
 
 .spg-point-image-connection {
-    $line-start-distance: 46px;
-    $arrow-color: vars.$highlight-color;
+    $line-start-distance: 66px;
+    $arrow-color: vars.$interactive-color;
     $arrow-size: 16px;
 
     display: flex;

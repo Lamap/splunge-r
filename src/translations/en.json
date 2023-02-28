@@ -64,7 +64,7 @@
   "dashboardImageList": {
     "reconnectToPoint": "Reconnect to point",
     "detachPointFromImage": "Detach point from image",
-    "showConnectedPoints": "Show connected points",
+    "showConnectedPoints": "Show connected point",
     "connectToPoint": "Connect to point"
   },
   "dashboardImageEditor": {

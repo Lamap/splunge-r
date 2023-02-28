@@ -30,7 +30,7 @@ export const SpgMarker: React.FC<IProps> = ({
     showCountOnlyOnHover,
     connectedImageCount,
 }: IProps): React.ReactElement => {
-    const markerSize: number = 32;
+    const markerSize: number = 42;
 
     const customIcon: L.DivIcon = new L.DivIcon({
         html: SpgMarkerIconElement({

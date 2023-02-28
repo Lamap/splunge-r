@@ -1,10 +1,13 @@
-$icon-dimension: 32px;
+@use '../../vars';
+
+$icon-dimension: 42px;
 @mixin highlight-circle {
     content: '';
     position: absolute;
     border-radius: 100%;
     pointer-events: none;
 }
+
 .spg-marker-icon {
     position: relative;
     width: $icon-dimension;
@@ -38,38 +41,33 @@ $icon-dimension: 32px;
         }
     }
 
-    &--highlighted::after {
-        @include highlight-circle;
-
-        top: -11px;
-        left: -11px;
-        width: 50px;
-        height: 50px;
-        animation: spin 8s linear infinite;
-        border: 2px dashed #F07C60;
-
+    &--highlighted,
+    &--selected {
+        #eye-fill-part {
+            fill: vars.$interactive-color;
+        }
     }
+
+    &--highlighted::after {
+        content: "";
+        top: -179px;
+        left: -179px;
+        width: 400px;
+        height: 400px;
+        position: absolute;
+        pointer-events: none;
+        background: radial-gradient(#00000000 34px, #00000050 34px, #00000000 220px, transparent);
+    }
+
     &--highlighted::before {
         @include highlight-circle;
 
-        top: -12px;
-        left: -12px;
-        width: 48px;
-        height: 48px;
-        border: 4px solid #ffffffa1;
+        top: -13px;
+        left: -13px;
+        width: 62px;
+        height: 62px;
+        border: 3px dashed vars.$interactive-color;
         border-radius: 100%;
-    }
-
-    &--selected::before {
-        content: '';
-        position: absolute;
-        z-index: 1;
-        top: 12px;
-        left: 12px;
-        width: 8px;
-        height: 8px;
-        border-radius: 100%;
-        background: #ff0000;
     }
 
     &__panorama {
@@ -85,22 +83,25 @@ $icon-dimension: 32px;
 
     &__eye {
         position: absolute;
+        z-index: 0 !important;
         top: 0;
         left: 0;
-        width: 32px;
-        height: 32px;
+        width: $icon-dimension;
+        height: $icon-dimension;
     }
 
     &__count {
+        @include vars.condensed-semi-bold;
+
         display: flex;
         position: absolute;
-        top: -3px;
+        bottom: -3px;
         left: 20px;
         align-items: center;
         justify-content: center;
         width: 18px;
         height: 18px;
-        border: 1px solid red;
+        border: 2px solid red;
         border-radius: 100%;
         background: white;
         color: #282c34;

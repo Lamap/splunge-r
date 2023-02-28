@@ -7,7 +7,7 @@
     user-select: none;
 
     &__main-label {
-        @include vars.condensed;
+        @include vars.condensed-semi-bold;
 
         display: flex;
         align-items: center;
@@ -27,6 +27,8 @@
             width: 250px;
 
             .spg-map-overlay-controller__name-label {
+                @include vars.condensed-semi-bold;
+
                 display: inline-block;
                 background: #fff;
                 position: absolute;

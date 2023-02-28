@@ -1,4 +1,5 @@
 @use '../../vars';
+$image-spacing: 6px;
 
 .spg-image-list {
     height: calc(100vh - #{vars.$header-height});
@@ -6,6 +7,7 @@
 
     &__row {
         display: flex;
+        margin: 0 $image-spacing;
     }
 
     &__row-item {
@@ -13,7 +15,7 @@
         position: relative;
         justify-content: center;
         height: 150px;
-        padding: 6px;
+        padding: $image-spacing;
         overflow: hidden;
 
         &:hover {
@@ -24,7 +26,7 @@
 
         &--highlighted,
         &--selected {
-            background: vars.$highlight-color;
+            background: vars.$interactive-color;
         }
     }
 

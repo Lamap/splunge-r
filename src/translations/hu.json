@@ -64,7 +64,7 @@
   "dashboardImageList": {
     "reconnectToPoint": "Jel átkötése",
     "detachPointFromImage": "Jel eltávolítása a képről",
-    "showConnectedPoints": "A kapcsolt pontok mutatása",
+    "showConnectedPoints": "A kapcsolt pont mutatása",
     "connectToPoint": "Jelhez kapcsolás"
   },
   "dashboardImageEditor": {
