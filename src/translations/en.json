@@ -75,7 +75,8 @@
     "dateTypeRange": "Range",
     "dateLabel": "Date",
     "startDateLabel": "Start date",
-    "endDateLabel": "End date"
+    "endDateLabel": "End date",
+    "descriptionLabel": "Description"
   },
   "page403": {
     "title": "You have no privilege to access this page either perform the action you tried.",

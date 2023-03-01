@@ -1,0 +1,39 @@
+@use '../../../vars';
+
+.spg-textarea {
+    position: relative;
+
+    &__input {
+        @include vars.roboto;
+
+        width: 100%;
+        border: none;
+        border-bottom: 1px solid #333333;
+        font-size: 1rem;
+
+        &:focus,
+        &:focus-visible {
+            outline: none;
+        }
+    }
+
+    &--has-value .spg-textarea__label {
+        top: -14px;
+        font-size: 12px;
+    }
+
+    &__label {
+        position: absolute;
+        top: 14px;
+        left: 0;
+        transition: top 0.4s;
+        color: #666;
+    }
+
+    &__input:focus + .spg-textarea__label {
+        top: -14px;
+        color: dodgerblue;
+        font-size: 12px;
+    }
+
+}

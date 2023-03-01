@@ -328,7 +328,7 @@ export function DashboardPage(): React.ReactElement {
     }
 
     function editImage(image: ISpgImage): void {
-        setEditedImage(image);
+        setEditedImage({ ...image });
     }
     function saveEditedImage(updatedImage: ISpgImage): void {
         if (!updatedImage) {

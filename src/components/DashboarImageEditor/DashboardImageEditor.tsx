@@ -12,11 +12,11 @@ import {
     FormLabel,
     Radio,
     RadioGroup,
-    TextareaAutosize,
     TextField,
 } from '@mui/material';
 import { ImageDateType } from '../../enums/ImageDateType';
 import { useTranslation } from 'react-i18next';
+import { TextArea } from '../General/TextArea/TextArea';
 
 interface IProps {
     readonly image?: ISpgImage;
@@ -45,7 +45,6 @@ export const DashboardImageEditor: React.FC<IProps> = ({ image, saveImage }: IPr
         });
     }
     function onDateTypeChanged(event: ChangeEvent<HTMLInputElement>): void {
-        console.log((event.target as HTMLInputElement).value);
         setDateType(event.target.value as ImageDateType);
     }
     function saveEditedImage(): void {
@@ -74,7 +73,11 @@ export const DashboardImageEditor: React.FC<IProps> = ({ image, saveImage }: IPr
                                 />
                             </div>
                             <div className={'spg-image-editor__description'}>
-                                <TextareaAutosize></TextareaAutosize>
+                                <TextArea
+                                    label={t('dashboardImageEditor.descriptionLabel')}
+                                    onChange={(value: string): void => updateEditedImage('description', value)}
+                                    value={image?.description}
+                                ></TextArea>
                             </div>
 
                             <FormControl onChange={onDateTypeChanged}>

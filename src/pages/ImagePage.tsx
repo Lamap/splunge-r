@@ -82,6 +82,13 @@ export const ImagePage: React.FC = () => {
         });
         navigate(`/?${query}`);
     }
+
+    function getKeyWords(): string {
+        if (!image?.tags?.length) {
+            return 'No keywords';
+        }
+        return image?.tags?.join(', ');
+    }
     return (
         <SpgPage isLoading={isPageLoading} error={pageError}>
             <div className="spg-image-page">
@@ -90,7 +97,15 @@ export const ImagePage: React.FC = () => {
                     {!!image && <img className="spg-image-page__img" src={image.url} alt={image.title} />}
                 </div>
                 <div className="spg-image-page__data-sidebar">
-                    title {image?.title}
+                    <div className="spg-image-page__description-label">Leírás</div>
+                    <div className="spg-image-page__value">{image?.title}</div>
+                    <div className="spg-image-page__description">{image?.description}</div>
+                    <div className="spg-image-page__description-label">Év</div>
+                    <div className="spg-image-page__value">1923</div>
+                    <div className="spg-image-page__description-label">Kulcsszavak</div>
+                    <div className="spg-image-page__value">{getKeyWords()}</div>
+
+                    <div className="spg-image-page__description-label spg-image-page__localization">Localization</div>
                     {!!pointOfImage && (
                         <>
                             <SpgMap

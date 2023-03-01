@@ -75,7 +75,8 @@
     "dateTypeRange": "Időintervallum",
     "dateLabel": "Dátum",
     "startDateLabel": "Lehetséges legkorábbi év",
-    "endDateLabel": "Lehetséges legkésőbbi év"
+    "endDateLabel": "Lehetséges legkésőbbi év",
+    "descriptionLabel": "Leírás"
   },
   "page403": {
     "title": "Nincs jogosultságod az oldal megtekintéséhez, vagy a végrehajtani próbált művelethez.",
