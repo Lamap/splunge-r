@@ -3,6 +3,7 @@ import React, { SyntheticEvent } from 'react';
 import IMapOverlay from '../../interfaces/IMapOverlay';
 import { Slider } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { CustomSliderOverwrite } from '../General/CustomSliderOverwrites/CustomSliderOverwrite';
 
 interface IProps {
     readonly className?: string;
@@ -15,8 +16,9 @@ export const MapOverlayController: React.FC<IProps> = ({ className, onOpacityCha
     const { t } = useTranslation('common');
 
     function opacityChanged(id: string, value: number): void {
-        !!onOpacityChanged && onOpacityChanged(id, value);
+        !!onOpacityChanged && onOpacityChanged(id, value / 100);
     }
+    console.log(overlays);
     return (
         <div className={classnameArray.join(' ')}>
             <span className={`${baseClassname}__main-label`}>{t('mapOverlayController.mapsCaption')}</span>
@@ -35,16 +37,21 @@ export const MapOverlayController: React.FC<IProps> = ({ className, onOpacityCha
                                     </span>
                                 </span>
                                 <span className={`${baseClassname}__opacity-slider`}>
-                                    <Slider
-                                        size={'small'}
-                                        min={0}
-                                        max={1}
-                                        defaultValue={overlay.opacity}
-                                        onChange={(event: Event | SyntheticEvent<Element, Event>, value: number | number[]): void =>
-                                            opacityChanged(overlay.id, value as number)
+                                    <CustomSliderOverwrite
+                                        postFix={'percent'}
+                                        child={
+                                            <Slider
+                                                size={'small'}
+                                                min={0}
+                                                max={100}
+                                                defaultValue={overlay.opacity * 100}
+                                                onChange={(event: Event | SyntheticEvent<Element, Event>, value: number | number[]): void =>
+                                                    opacityChanged(overlay.id, value as number)
+                                                }
+                                                step={1}
+                                                valueLabelDisplay="on"
+                                            />
                                         }
-                                        step={0.01}
-                                        valueLabelDisplay="on"
                                     />
                                 </span>
                             </div>

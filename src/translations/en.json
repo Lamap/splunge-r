@@ -78,6 +78,16 @@
     "endDateLabel": "End date",
     "descriptionLabel": "Description"
   },
+  "imageEndPage": {
+    "noKeyWordsValue": "No keywords",
+    "pointOfImageLoadError": "Could not load points of the image",
+    "descriptionLabel": "Description",
+    "dateLabel": "Year",
+    "keywordsLabel": "Keywords",
+    "localizationLabel": "Localization",
+    "markersOnTheView": "markers on this view",
+    "goAndSeeOnMap": "Go and see on the map"
+  },
   "page403": {
     "title": "You have no privilege to access this page either perform the action you tried.",
     "body1": "Maybe you just lost your session, please",

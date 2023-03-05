@@ -1,0 +1,24 @@
+.spg-slider-overwrites {
+    .MuiSlider-valueLabel {
+        border-radius: 100%;
+        width: 28px;
+        height: 28px;
+        top: 24px;
+        background: #fff;
+        color: red;
+        border: red solid 1px;
+        font-family: 'Roboto Condensed';
+        font-weight: bold;
+        padding: 4px;
+
+        &:before {
+            display: none;
+        }
+    }
+
+    &--percent {
+        .MuiSlider-valueLabel::after {
+            content: '%';
+        }
+    }
+}

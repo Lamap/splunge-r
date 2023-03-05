@@ -24,7 +24,6 @@ export function MainPage(): React.ReactElement {
     const [panTo, setPanTo] = useState<LatLngLiteral>();
     const [mapRef, setMapRef] = useState<Map>();
     const [arrowStartXY, setArrowStartXY] = useState<IXYPoint | null>();
-    const [arrowEndXY, setArrowEndXY] = useState<IXYPoint | null>();
     const [mapOverLays, setMapOverlays] = useState<IMapOverlay[]>(defaultOverlays);
     const imageListRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
     const mapContainerRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
@@ -57,12 +56,12 @@ export function MainPage(): React.ReactElement {
         const query: string = queryString.stringify({ overlayIds: mapOverlayIds, overlayOpacities: mapOverlayOpacities });
         navigate(`/picture/${imageId}?${query}`);
     }
-    function targetPointOfImage(imageId: string, x: number, y: number): void {
+    function targetPointOfImage(imageId: string): void {
+        console.log('taeget P o I');
         const pointOfImage: ISpgPoint | undefined = points.find((point: ISpgPoint) => point.images.includes(imageId));
         if (!pointOfImage) {
             return;
         }
-        //setHighlightedPointId(pointOfImage.id);
         setPoints(
             points.map((point: ISpgPoint) => {
                 return {
@@ -82,11 +81,6 @@ export function MainPage(): React.ReactElement {
             }),
         );
         setPanTo(pointOfImage.position);
-        if (!mapContainerRef.current || !imageListRef.current) {
-            return;
-        }
-        setArrowStartXY(new Point(mapContainerRef.current?.clientWidth / 2, mapContainerRef.current?.clientHeight / 2 - 30));
-        setArrowEndXY({ x: mapContainerRef.current?.clientWidth + x, y });
     }
     function highLightImagesOfPoint(pointId: string): void {
         const selectedPoint: ISpgPoint | undefined = points.find((point: ISpgPointWithStates) => pointId === point.id);
@@ -113,12 +107,11 @@ export function MainPage(): React.ReactElement {
         );
         if (!mapRef || !mapContainerRef?.current || !selectedPoint.images.length) {
             setArrowStartXY(null);
-            setArrowEndXY(null);
             return;
         }
+        console.log('yolo');
         const { x, y }: Point = mapRef.latLngToContainerPoint(selectedPoint?.position);
         setArrowStartXY({ x, y });
-        setArrowEndXY({ x: mapContainerRef.current?.clientWidth, y: 75 });
     }
 
     function getHiglightedPoint(): ISpgPointWithStates | undefined {
@@ -170,8 +163,12 @@ export function MainPage(): React.ReactElement {
                         onTargetPointOfImage={targetPointOfImage}
                     />
                 </div>
-                {!!arrowStartXY && !!arrowEndXY && (
-                    <PointImageConnection start={arrowStartXY} end={arrowEndXY} targetToPoint={!!getHiglightedPoint()} />
+                {!!arrowStartXY && !!getSelectedPoint() && (
+                    <PointImageConnection
+                        start={arrowStartXY}
+                        end={{ x: mapContainerRef.current?.clientWidth || 0, y: 75 }}
+                        targetToPoint={!!getHiglightedPoint()}
+                    />
                 )}
             </div>
         </SpgPage>

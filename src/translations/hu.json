@@ -78,6 +78,16 @@
     "endDateLabel": "Lehetséges legkésőbbi év",
     "descriptionLabel": "Leírás"
   },
+  "imageEndPage": {
+    "noKeyWordsValue": "Nincsenek kulcsszavak",
+    "pointOfImageLoadError": "Nem tudtuk betölteni a képhez tartozó jelet",
+    "descriptionLabel": "Leírás",
+    "dateLabel": "Év",
+    "keywordsLabel": "Kulcsszavak",
+    "localizationLabel": "Elhelyezkedés",
+    "markersOnTheView": "jel ezen a térképkivágaton",
+    "goAndSeeOnMap": "Megnézem térképen"
+  },
   "page403": {
     "title": "Nincs jogosultságod az oldal megtekintéséhez, vagy a végrehajtani próbált művelethez.",
     "body1": "Maybe you just lost your session, please Elképzelhető, hogy csak a bejelentkezés évült el.",

@@ -15,6 +15,7 @@ import { QueryParamConfig } from 'serialize-query-params/src/types';
 import { SpgPage } from '../components/SpgPage/SpgPage';
 import { AxiosError } from 'axios/index';
 import { ToastMessage } from '../components/ToastMessage/ToastMessage';
+import { useTranslation } from 'react-i18next';
 
 export const ImagePage: React.FC = () => {
     const { id } = useParams();
@@ -33,6 +34,7 @@ export const ImagePage: React.FC = () => {
     const [isPageLoading, setIsPageLoading] = useState<boolean>(false);
     const [pageError, setPageError] = useState<AxiosError | undefined>();
     const [errorToast, setErrorToast] = useState<string>();
+    const { t } = useTranslation('common');
 
     useEffect((): void => {
         console.log(id);
@@ -55,7 +57,7 @@ export const ImagePage: React.FC = () => {
                 setPointOfImage(result);
             })
             .catch((err: Error): void => {
-                setErrorToast('Could not load points of the image');
+                setErrorToast(t('imageEndPage.pointOfImageLoadError') || '');
             });
     }, [id]);
     useEffect(() => {
@@ -85,7 +87,7 @@ export const ImagePage: React.FC = () => {
 
     function getKeyWords(): string {
         if (!image?.tags?.length) {
-            return 'No keywords';
+            return t('imageEndPage.noKeyWordsValue');
         }
         return image?.tags?.join(', ');
     }
@@ -97,15 +99,15 @@ export const ImagePage: React.FC = () => {
                     {!!image && <img className="spg-image-page__img" src={image.url} alt={image.title} />}
                 </div>
                 <div className="spg-image-page__data-sidebar">
-                    <div className="spg-image-page__description-label">Leírás</div>
+                    <div className="spg-image-page__description-label">{t('imageEndPage.descriptionLabel')}</div>
                     <div className="spg-image-page__value">{image?.title}</div>
                     <div className="spg-image-page__description">{image?.description}</div>
-                    <div className="spg-image-page__description-label">Év</div>
+                    <div className="spg-image-page__description-label">{t('imageEndPage.dateLabel')}</div>
                     <div className="spg-image-page__value">1923</div>
-                    <div className="spg-image-page__description-label">Kulcsszavak</div>
+                    <div className="spg-image-page__description-label">{t('imageEndPage.keywordsLabel')}</div>
                     <div className="spg-image-page__value">{getKeyWords()}</div>
 
-                    <div className="spg-image-page__description-label spg-image-page__localization">Localization</div>
+                    <div className="spg-image-page__description-label spg-image-page__localization">{t('imageEndPage.localizationLabel')}</div>
                     {!!pointOfImage && (
                         <>
                             <SpgMap
@@ -120,23 +122,17 @@ export const ImagePage: React.FC = () => {
                             />
 
                             <div className="spg-image-page__map-instructions">
-                                <button className="spg-image-page__map-link" onClick={goToMap}>
-                                    Check it on the map <LaunchIcon fontSize={'small'} />
-                                </button>
                                 <div className="spg-image-page__map-info">
-                                    <b>{pointsOfMap?.length}</b> markers on this view
+                                    <b>{pointsOfMap?.length}</b> {t('imageEndPage.markersOnTheView')}
                                 </div>
                             </div>
                         </>
                     )}
-                    {!pointOfImage && (
-                        <div>
-                            No image connected to this point
-                            <button className="spg-image-page__map-link" onClick={goToMap}>
-                                Go to the map <LaunchIcon fontSize={'small'} />
-                            </button>
-                        </div>
-                    )}
+                    {!pointOfImage && <div className="spg-image-page__no-point-info">No point attached to this picture</div>}
+                    <button className="spg-image-page__map-link" onClick={goToMap}>
+                        {t('imageEndPage.goAndSeeOnMap')}
+                        <LaunchIcon fontSize={'small'} />
+                    </button>
                 </div>
             </div>
         </SpgPage>

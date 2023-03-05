@@ -8,7 +8,7 @@ interface IProps {
     readonly className?: string;
     readonly images: ISpgImageWithStates[];
     readonly points: ISpgPoint[];
-    readonly onTargetPointOfImage?: (imageId: string, xOffset: number, yOffset: number) => void;
+    readonly onTargetPointOfImage?: (imageId: string) => void;
     readonly onLaunchImage?: (imageId: string) => void;
 }
 import LocationSearchingIcon from '@mui/icons-material/LocationSearching';
@@ -26,7 +26,6 @@ export const SpgImageList: React.FC<IProps> = ({
     const classNamesArray: string[] = ['spg-image-list', ...(!!className ? [className] : [])];
     const listRef: RefObject<HTMLDivElement> = useRef<HTMLDivElement>(null);
 
-    // const [highlightedImages, setHighlightedImages] = useState<ISpgImageWithStates[]>([]);
     const imageRows: ISpgImageWithStates[][] = images
         .sort(sortImagesByHiglight)
         .reduce((acc: ISpgImageWithStates[][], value: ISpgImageWithStates, index: number): ISpgImageWithStates[][] => {
@@ -54,11 +53,7 @@ export const SpgImageList: React.FC<IProps> = ({
     }
 
     function targetPointOfImage(imageId: string, rowIndex: number, colIndex: number): void {
-        let xPosition: number = 0;
-        for (let col: number = 0; col < colIndex; col++) {
-            xPosition += getWidthPercent(imageRows[rowIndex], imageRows[rowIndex][col]);
-        }
-        !!onTargetPointOfImage && onTargetPointOfImage(imageId, (xPosition / 100) * 520, rowIndex * 150 + 75);
+        !!onTargetPointOfImage && onTargetPointOfImage(imageId);
     }
     function launchImage(imageId: string): void {
         console.log('launch', imageId);
