@@ -1,6 +1,6 @@
 import './DashboardImageEditor.scss';
 import React, { ChangeEvent, useEffect, useState } from 'react';
-import { ISpgImage } from 'splunge-common-lib';
+import { DateFormat, ISpgImage } from 'splunge-common-lib';
 import {
     Button,
     Dialog,
@@ -14,7 +14,6 @@ import {
     RadioGroup,
     TextField,
 } from '@mui/material';
-import { ImageDateType } from '../../enums/ImageDateType';
 import { useTranslation } from 'react-i18next';
 import { TextArea } from '../General/TextArea/TextArea';
 
@@ -26,7 +25,6 @@ export const DashboardImageEditor: React.FC<IProps> = ({ image, saveImage }: IPr
     // TODO: introduce formik? handle savings, error handling invalid texts
     // TODO: use date picker
     const [editedImage, setEditedImage] = useState<ISpgImage | undefined>();
-    const [dateType, setDateType] = useState<ImageDateType>(ImageDateType.EXACT);
     const { t } = useTranslation('common');
 
     useEffect((): void => {
@@ -45,7 +43,42 @@ export const DashboardImageEditor: React.FC<IProps> = ({ image, saveImage }: IPr
         });
     }
     function onDateTypeChanged(event: ChangeEvent<HTMLInputElement>): void {
-        setDateType(event.target.value as ImageDateType);
+        if (!editedImage) {
+            return;
+        }
+        setEditedImage({
+            ...editedImage,
+            date: {
+                ...editedImage?.date,
+                start: editedImage?.date?.start || 0,
+                type: event.target.value as DateFormat,
+            },
+        });
+    }
+    function onDateStartChanged(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void {
+        if (!editedImage) {
+            return;
+        }
+        setEditedImage({
+            ...editedImage,
+            date: {
+                ...(editedImage.date || { type: DateFormat.EXACT }),
+                start: event.target.value as unknown as number,
+            },
+        });
+    }
+    function onDateEndChanged(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void {
+        if (!editedImage) {
+            return;
+        }
+        setEditedImage({
+            ...editedImage,
+            date: {
+                ...(editedImage.date || { type: DateFormat.EXACT }),
+                start: editedImage.date?.start || 0,
+                end: event.target.value as unknown as number,
+            },
+        });
     }
     function saveEditedImage(): void {
         if (!!editedImage) {
@@ -82,34 +115,36 @@ export const DashboardImageEditor: React.FC<IProps> = ({ image, saveImage }: IPr
 
                             <FormControl onChange={onDateTypeChanged}>
                                 <FormLabel id="date-type-group-label">{t('dashboardImageEditor.dateTypeLabel')}</FormLabel>
-                                <RadioGroup row name={'date-type'} defaultValue={ImageDateType.EXACT}>
-                                    <FormControlLabel
-                                        value={ImageDateType.EXACT}
-                                        control={<Radio />}
-                                        label={t('dashboardImageEditor.dateTypeExact')}
-                                    />
-                                    <FormControlLabel
-                                        value={ImageDateType.RANGE}
-                                        control={<Radio />}
-                                        label={t('dashboardImageEditor.dateTypeRange')}
-                                    />
+                                <RadioGroup row name={'date-type'} defaultValue={image?.date?.type || DateFormat.EXACT}>
+                                    <FormControlLabel value={DateFormat.EXACT} control={<Radio />} label={t('dashboardImageEditor.dateTypeExact')} />
+                                    <FormControlLabel value={DateFormat.RANGE} control={<Radio />} label={t('dashboardImageEditor.dateTypeRange')} />
                                 </RadioGroup>
                             </FormControl>
                             <div>
                                 <span className={'spg-image-editor__start-date-field'}>
                                     <TextField
                                         label={
-                                            dateType !== ImageDateType.RANGE
+                                            editedImage?.date?.type !== DateFormat.RANGE
                                                 ? t('dashboardImageEditor.dateLabel')
                                                 : t('dashboardImageEditor.startDateLabel')
                                         }
                                         variant={'standard'}
                                         size={'small'}
+                                        type={'number'}
+                                        defaultValue={editedImage?.date?.start}
+                                        onChange={onDateStartChanged}
                                     />
                                 </span>
 
-                                {dateType === ImageDateType.RANGE && (
-                                    <TextField label={t('dashboardImageEditor.endDateLabel')} variant={'standard'} size={'small'} />
+                                {editedImage?.date?.type === DateFormat.RANGE && (
+                                    <TextField
+                                        label={t('dashboardImageEditor.endDateLabel')}
+                                        variant={'standard'}
+                                        size={'small'}
+                                        type={'number'}
+                                        defaultValue={editedImage?.date?.end}
+                                        onChange={onDateEndChanged}
+                                    />
                                 )}
                             </div>
                         </div>

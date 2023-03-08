@@ -86,7 +86,11 @@
     "keywordsLabel": "Keywords",
     "localizationLabel": "Localization",
     "markersOnTheView": "markers on this view",
-    "goAndSeeOnMap": "Go and see on the map"
+    "goAndSeeOnMap": "Go and see on the map",
+    "descriptionPlaceholder": "No description added",
+    "datePlaceholder": "No title added",
+    "titlePlaceholder": "No date added",
+    "noMarker": "No point added"
   },
   "page403": {
     "title": "You have no privilege to access this page either perform the action you tried.",

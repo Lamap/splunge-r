@@ -2,12 +2,12 @@ import './ImagePage.scss';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { requestFetchImage, requestGetPointOfImage, requestGetPointsByBounds } from '../services/services';
-import { ISpgImage, ISpgPoint, PointOfImageResponse } from 'splunge-common-lib';
+import { DateFormat, ISpgImage, ISpgPoint, PointOfImageResponse } from 'splunge-common-lib';
 import { SpgMap } from '../components/Map/SpgMap';
 import { ISpgLatLngBounds } from 'splunge-common-lib/lib/interfaces/ISpgLatLngBounds';
 import LaunchIcon from '@mui/icons-material/Launch';
 import { NavigateFunction } from 'react-router/dist/lib/hooks';
-import { useQueryParams, ArrayParam, withDefault } from 'use-query-params';
+import { ArrayParam, useQueryParams, withDefault } from 'use-query-params';
 import queryString from 'query-string';
 import IMapOverlay from '../interfaces/IMapOverlay';
 import getOverlaysFromQuery from '../utils/getOverlaysFromQuery';
@@ -35,6 +35,7 @@ export const ImagePage: React.FC = () => {
     const [pageError, setPageError] = useState<AxiosError | undefined>();
     const [errorToast, setErrorToast] = useState<string>();
     const { t } = useTranslation('common');
+    const date: string = [image?.date?.start, ...(image?.date?.type === DateFormat.RANGE && !!image.date.end ? [image?.date?.end] : [])].join(' - ');
 
     useEffect((): void => {
         console.log(id);
@@ -91,6 +92,7 @@ export const ImagePage: React.FC = () => {
         }
         return image?.tags?.join(', ');
     }
+
     return (
         <SpgPage isLoading={isPageLoading} error={pageError}>
             <div className="spg-image-page">
@@ -100,10 +102,10 @@ export const ImagePage: React.FC = () => {
                 </div>
                 <div className="spg-image-page__data-sidebar">
                     <div className="spg-image-page__description-label">{t('imageEndPage.descriptionLabel')}</div>
-                    <div className="spg-image-page__value">{image?.title}</div>
-                    <div className="spg-image-page__description">{image?.description}</div>
+                    <div className="spg-image-page__value">{image?.title || t('imageEndPage.titlePlaceholder')}</div>
+                    <div className="spg-image-page__description">{image?.description || t('imageEndPage.descriptionPlaceholder')}</div>
                     <div className="spg-image-page__description-label">{t('imageEndPage.dateLabel')}</div>
-                    <div className="spg-image-page__value">1923</div>
+                    <div className="spg-image-page__value">{date || t('imageEndPage.datePlaceholder')}</div>
                     <div className="spg-image-page__description-label">{t('imageEndPage.keywordsLabel')}</div>
                     <div className="spg-image-page__value">{getKeyWords()}</div>
 
@@ -128,7 +130,7 @@ export const ImagePage: React.FC = () => {
                             </div>
                         </>
                     )}
-                    {!pointOfImage && <div className="spg-image-page__no-point-info">No point attached to this picture</div>}
+                    {!pointOfImage && <div className="spg-image-page__no-point-info">{t('imageEndPage.noMarker')}</div>}
                     <button className="spg-image-page__map-link" onClick={goToMap}>
                         {t('imageEndPage.goAndSeeOnMap')}
                         <LaunchIcon fontSize={'small'} />

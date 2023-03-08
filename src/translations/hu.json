@@ -86,7 +86,11 @@
     "keywordsLabel": "Kulcsszavak",
     "localizationLabel": "Elhelyezkedés",
     "markersOnTheView": "jel ezen a térképkivágaton",
-    "goAndSeeOnMap": "Megnézem térképen"
+    "goAndSeeOnMap": "Megnézem térképen",
+    "descriptionPlaceholder": "Leírás nélkül",
+    "datePlaceholder": "Év nélkül",
+    "titlePlaceholder": "Cím nélkül",
+    "noMarker": "Nem tartozik hozzá elhelyezkedés"
   },
   "page403": {
     "title": "Nincs jogosultságod az oldal megtekintéséhez, vagy a végrehajtani próbált művelethez.",
