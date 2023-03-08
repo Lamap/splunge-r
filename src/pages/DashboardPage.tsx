@@ -27,6 +27,7 @@ import { ServerSleepNotification } from '../components/ServerSleepNotification/S
 import { ToastMessage } from '../components/ToastMessage/ToastMessage';
 import { DashboardImageEditor } from '../components/DashboarImageEditor/DashboardImageEditor';
 import { useTranslation } from 'react-i18next';
+import { CustomSliderOverwrite } from '../components/General/CustomSliderOverwrites/CustomSliderOverwrite';
 
 interface IDashboardWarning {
     readonly title: string;
@@ -387,16 +388,21 @@ export function DashboardPage(): React.ReactElement {
                                     />
                                     {getSelectedPoint(selectedPointId)?.hasDirection && (
                                         <div className="spg-dashboard__direction-slider">
-                                            <Slider
-                                                min={0}
-                                                max={360}
-                                                size="small"
-                                                onChangeCommitted={onDirectionChanged}
-                                                defaultValue={getSelectedPoint(selectedPointId)?.direction}
-                                                valueLabelDisplay="on"
-                                                valueLabelFormat={(): React.ReactElement => (
-                                                    <span className={'yolo'}>{getSelectedPoint(selectedPointId)?.direction}</span>
-                                                )}
+                                            <CustomSliderOverwrite
+                                                postFix={'degree'}
+                                                child={
+                                                    <Slider
+                                                        min={0}
+                                                        max={360}
+                                                        size="small"
+                                                        onChangeCommitted={onDirectionChanged}
+                                                        defaultValue={getSelectedPoint(selectedPointId)?.direction}
+                                                        valueLabelDisplay="on"
+                                                        valueLabelFormat={(): React.ReactElement => (
+                                                            <span className={'yolo'}>{getSelectedPoint(selectedPointId)?.direction}</span>
+                                                        )}
+                                                    />
+                                                }
                                             />
                                         </div>
                                     )}

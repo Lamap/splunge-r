@@ -21,4 +21,10 @@
             content: '%';
         }
     }
+
+    &--degree {
+        .MuiSlider-valueLabel::after {
+            content: '°';
+        }
+    }
 }

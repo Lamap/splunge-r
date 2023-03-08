@@ -1,6 +1,7 @@
 @use '../../vars';
 
 $icon-dimension: 42px;
+
 @mixin highlight-circle {
     content: '';
     position: absolute;
@@ -49,14 +50,14 @@ $icon-dimension: 42px;
     }
 
     &--highlighted::after {
-        content: "";
+        content: '';
+        position: absolute;
         top: -179px;
         left: -179px;
         width: 400px;
         height: 400px;
-        position: absolute;
-        pointer-events: none;
         background: radial-gradient(#00000000 34px, #00000050 34px, #00000000 220px, transparent);
+        pointer-events: none;
     }
 
     &--highlighted::before {
@@ -72,8 +73,8 @@ $icon-dimension: 42px;
 
     &__panorama {
         position: absolute;
-        top: -84px;
-        left: 16px;
+        top: -82px;
+        left: 20px;
         width: 200px;
         height: 200px;
         transform: rotate(50deg);
@@ -103,7 +104,7 @@ $icon-dimension: 42px;
         height: 18px;
         border: 2px solid red;
         border-radius: 100%;
-        background: white;
+        background: #ffffff;
         color: #282c34;
     }
 
