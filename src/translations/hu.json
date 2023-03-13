@@ -76,7 +76,9 @@
     "dateLabel": "Év",
     "startDateLabel": "Lehetséges legkorábbi év",
     "endDateLabel": "Lehetséges legkésőbbi év",
-    "descriptionLabel": "Leírás"
+    "descriptionLabel": "Leírás",
+    "missingEndDate": "Időintervallum esetén meg kell adni a záró évet.",
+    "invalidDateRange": "A kezdő évnek meg kell előznie a záró évet."
   },
   "imageEndPage": {
     "noKeyWordsValue": "Nincsenek kulcsszavak",

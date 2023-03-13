@@ -89,12 +89,13 @@ export const DashboardImageEditor: React.FC<IProps> = ({ image, saveImage }: IPr
         });
     }
 
+    // TODO: if we would have more fields to validate we should use Yup
     function validateDate(date?: IDateInformation): void {
         if (!!date && date.type === DateFormat.RANGE && !date.end) {
-            return setDateError('The start year must prevent the end year');
+            return setDateError(t('dashboardImageEditor.missingEndDate') || '');
         }
         if (!!date && date.type === DateFormat.RANGE && !!date.end && date.start > date.end) {
-            return setDateError('The start year must prevent the end year');
+            return setDateError(t('dashboardImageEditor.invalidDateRange') || '');
         }
         setDateError(undefined);
     }

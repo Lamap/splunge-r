@@ -76,7 +76,9 @@
     "dateLabel": "Year",
     "startDateLabel": "Start year",
     "endDateLabel": "End year",
-    "descriptionLabel": "Description"
+    "descriptionLabel": "Description",
+    "missingEndDate": "If the date is a range, end date is required.",
+    "invalidDateRange": "The start year must prevent the end year."
   },
   "imageEndPage": {
     "noKeyWordsValue": "No keywords",
