@@ -70,10 +70,10 @@
   "dashboardImageEditor": {
     "header": "Kiválaszott kép adatainak szerkesztése",
     "titleLabel": "Cím",
-    "dateTypeLabel": "Dátum jellege",
+    "dateTypeLabel": "Dátum",
     "dateTypeExact": "Pontos évszám",
     "dateTypeRange": "Időintervallum",
-    "dateLabel": "Dátum",
+    "dateLabel": "Év",
     "startDateLabel": "Lehetséges legkorábbi év",
     "endDateLabel": "Lehetséges legkésőbbi év",
     "descriptionLabel": "Leírás"

@@ -1,7 +1,8 @@
 import './DashboardImageEditor.scss';
 import React, { ChangeEvent, useEffect, useState } from 'react';
-import { DateFormat, ISpgImage } from 'splunge-common-lib';
+import { DateFormat, IDateInformation, ISpgImage } from 'splunge-common-lib';
 import {
+    Alert,
     Button,
     Dialog,
     DialogActions,
@@ -25,11 +26,18 @@ export const DashboardImageEditor: React.FC<IProps> = ({ image, saveImage }: IPr
     // TODO: introduce formik? handle savings, error handling invalid texts
     // TODO: use date picker
     const [editedImage, setEditedImage] = useState<ISpgImage | undefined>();
+    const [dateError, setDateError] = useState<string>();
+
     const { t } = useTranslation('common');
 
     useEffect((): void => {
         setEditedImage(image);
     }, [image]);
+
+    useEffect((): void => {
+        validateDate(editedImage?.date);
+    }, [editedImage?.date]);
+
     function closeEditImage(): void {
         setEditedImage(undefined);
     }
@@ -80,6 +88,16 @@ export const DashboardImageEditor: React.FC<IProps> = ({ image, saveImage }: IPr
             },
         });
     }
+
+    function validateDate(date?: IDateInformation): void {
+        if (!!date && date.type === DateFormat.RANGE && !date.end) {
+            return setDateError('The start year must prevent the end year');
+        }
+        if (!!date && date.type === DateFormat.RANGE && !!date.end && date.start > date.end) {
+            return setDateError('The start year must prevent the end year');
+        }
+        setDateError(undefined);
+    }
     function saveEditedImage(): void {
         if (!!editedImage) {
             saveImage(editedImage);
@@ -120,7 +138,7 @@ export const DashboardImageEditor: React.FC<IProps> = ({ image, saveImage }: IPr
                                     <FormControlLabel value={DateFormat.RANGE} control={<Radio />} label={t('dashboardImageEditor.dateTypeRange')} />
                                 </RadioGroup>
                             </FormControl>
-                            <div>
+                            <div className={'spg-image-editor__dates'}>
                                 <span className={'spg-image-editor__start-date-field'}>
                                     <TextField
                                         label={
@@ -147,11 +165,12 @@ export const DashboardImageEditor: React.FC<IProps> = ({ image, saveImage }: IPr
                                     />
                                 )}
                             </div>
+                            {!!dateError && <Alert severity={'error'}>{dateError}</Alert>}
                         </div>
                     </div>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={saveEditedImage} variant={'contained'}>
+                    <Button onClick={saveEditedImage} variant={'contained'} disabled={!!dateError}>
                         {t('general.save')}
                     </Button>
                     <Button onClick={closeEditImage}>{t('general.cancel')}</Button>

@@ -70,12 +70,12 @@
   "dashboardImageEditor": {
     "header": "Edit the selected image",
     "titleLabel": "Title",
-    "dateTypeLabel": "Date type",
+    "dateTypeLabel": "Date",
     "dateTypeExact": "Exact",
     "dateTypeRange": "Range",
-    "dateLabel": "Date",
-    "startDateLabel": "Start date",
-    "endDateLabel": "End date",
+    "dateLabel": "Year",
+    "startDateLabel": "Start year",
+    "endDateLabel": "End year",
     "descriptionLabel": "Description"
   },
   "imageEndPage": {
