@@ -16,6 +16,9 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { TextArea } from '../General/TextArea/TextArea';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 interface IProps {
     readonly image?: ISpgImage;
@@ -122,6 +125,9 @@ export const DashboardImageEditor: React.FC<IProps> = ({ image, saveImage }: IPr
                             </FormControl>
                             <div>
                                 <span className={'spg-image-editor__start-date-field'}>
+                                    <LocalizationProvider dateAdapter={AdapterMoment}>
+                                        <DatePicker views={['year']} label={'Start year'} />
+                                    </LocalizationProvider>
                                     <TextField
                                         label={
                                             editedImage?.date?.type !== DateFormat.RANGE
