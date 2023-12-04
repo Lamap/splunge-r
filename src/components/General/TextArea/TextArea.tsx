@@ -15,6 +15,7 @@ export const TextArea: React.FC<IProps> = ({ className, label, onChange, value }
 
     useEffect((): void => {
         setClassNameArray(['spg-textarea', ...(!!className ? [className] : []), ...(!!internalValue ? ['spg-textarea--has-value'] : [])]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [internalValue]);
 
     function onChangeTextArea(event: React.ChangeEvent<HTMLTextAreaElement>): void {

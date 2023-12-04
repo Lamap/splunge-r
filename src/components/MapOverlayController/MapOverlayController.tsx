@@ -18,7 +18,6 @@ export const MapOverlayController: React.FC<IProps> = ({ className, onOpacityCha
     function opacityChanged(id: string, value: number): void {
         !!onOpacityChanged && onOpacityChanged(id, value / 100);
     }
-    console.log(overlays);
     return (
         <div className={classnameArray.join(' ')}>
             <span className={`${baseClassname}__main-label`}>{t('mapOverlayController.mapsCaption')}</span>

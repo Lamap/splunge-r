@@ -223,3 +223,11 @@ export async function requestLogout(): Promise<void> {
         throw err;
     }
 }
+
+export async function requestLivelinessCheck(): Promise<void> {
+    try {
+        await axios.get(createApiUrl(ApiRoutes.SPG_HEALTH_CHECK));
+    } catch (err) {
+        console.warn('liveleness check failed', err);
+    }
+}

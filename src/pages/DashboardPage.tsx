@@ -61,7 +61,7 @@ export function DashboardPage(): React.ReactElement {
         const delayCheckTimer: number = window.setTimeout((): void => setShowServerSleepNotification(true), serverDelayTolerance);
         setPageisLoading(true);
         Promise.all([requestImagesFetch(), requestPointsFetch()])
-            .then(([fetchedImages, allPoints]) => {
+            .then(([fetchedImages, allPoints]): void => {
                 setImages(fetchedImages);
                 setPoints(allPoints);
             })
@@ -71,6 +71,7 @@ export function DashboardPage(): React.ReactElement {
                 setPageisLoading(false);
                 setShowServerSleepNotification(false);
             });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     async function createPointForImage(position: LatLngLiteral): Promise<void> {

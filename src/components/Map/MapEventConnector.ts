@@ -42,6 +42,7 @@ export const MapEventConnector: React.FC<IProps> = ({
                 west: bounds.getWest(),
             });
         !!onMapInitialised && onMapInitialised(map);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [map]);
 
     return null;

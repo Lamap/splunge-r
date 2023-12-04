@@ -60,6 +60,7 @@ export const ImagePage: React.FC = () => {
             .catch((err: Error): void => {
                 setErrorToast(t('imageEndPage.pointOfImageLoadError') || '');
             });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
     useEffect(() => {
         if (!bounds) {
