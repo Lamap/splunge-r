@@ -36,7 +36,7 @@ export function MainPage(): React.ReactElement {
     useEffect((): void => {
         const delayCheckTimer: number = window.setTimeout((): void => setShowServerSleepNotification(true), serverDelayTolerance);
         setPageisLoading(true);
-        Promise.all([requestImagesFetch(), requestPointsFetch()])
+        Promise.all([requestImagesFetch(), requestPointsFetch(true)])
             .then(([fetchedImages, allPoints]) => {
                 setImages(fetchedImages);
                 setPoints(allPoints);
