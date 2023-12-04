@@ -37,8 +37,9 @@ export function MainPage(): React.ReactElement {
         const delayCheckTimer: number = window.setTimeout((): void => setShowServerSleepNotification(true), serverDelayTolerance);
         setPageisLoading(true);
         Promise.all([requestImagesFetch(), requestPointsFetch(true)])
-            .then(([fetchedImages, allPoints]) => {
+            .then(([fetchedImages, allPoints]): void => {
                 setImages(fetchedImages);
+
                 setPoints(allPoints);
             })
             .catch((err: AxiosError) => setPageError(err))
@@ -47,6 +48,7 @@ export function MainPage(): React.ReactElement {
                 setPageisLoading(false);
                 setShowServerSleepNotification(false);
             });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     function launchImage(imageId: string): void {

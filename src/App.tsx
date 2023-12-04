@@ -14,11 +14,12 @@ import { AxiosSettings } from './utils/AxiosSettings';
 import { AppRoute } from './enums/AppRoute';
 import { Error404 } from './pages/Error404';
 import { Error403 } from './pages/Error403';
+import { useLivelinessHook } from './utils/livelinessHook';
 
 function App(): React.ReactElement {
     const [user] = useLocalStorageState<IUserBase | undefined>('user');
+    useLivelinessHook();
 
-    console.log('user', user);
     return (
         <Router>
             <AxiosSettings />

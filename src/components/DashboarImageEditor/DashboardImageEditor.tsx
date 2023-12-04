@@ -36,6 +36,7 @@ export const DashboardImageEditor: React.FC<IProps> = ({ image, saveImage }: IPr
 
     useEffect((): void => {
         validateDate(editedImage?.date);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [editedImage?.date]);
 
     function closeEditImage(): void {
